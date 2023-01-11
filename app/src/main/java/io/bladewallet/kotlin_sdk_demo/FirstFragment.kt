@@ -5,7 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
+import io.bladewallet.bladesdk.Blade
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentFirstBinding
 
 /**
@@ -33,7 +34,13 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+
+            Blade.init(15, requireContext(), binding.webViewContainer);
+
+            Snackbar.make(view, "Replace with your own action " + Blade.poww(5), Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
+
+//            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
     }
 

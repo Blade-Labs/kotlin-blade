@@ -1,0 +1,18 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+android {
+    namespace 'io.bladewallet.bladesdk'
+    compileSdkVersion 27
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.4.0'
+}
