@@ -1,11 +1,12 @@
 package io.bladewallet.kotlin_sdk_demo
 
+import BalanceDataResponse
+import BladeJSError
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.google.android.material.snackbar.Snackbar
 import io.bladewallet.bladesdk.Blade
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentFirstBinding
 
@@ -34,13 +35,21 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirst.setOnClickListener {
+            Blade.initialize("1NpEy10UxlZ7AeqkuiCws3zJLPehQqvm7ahefmNF6wREULFGlm6rNtY/dKG6tmM", "karatecombat", "Testnet", requireContext(), binding.webViewContainer) {
+                println("Init done!!!")
+            }
+        }
 
-            Blade.init(15, requireContext(), binding.webViewContainer);
+        binding.buttonSecond.setOnClickListener {
+            Blade.getBalance("0.0.49177063") { data: BalanceDataResponse?, error: BladeJSError? ->
+                if (data != null) {
+                    println(data)
+                }
+                if (error != null) {
+                    println(error)
+                }
+            }
 
-            Snackbar.make(view, "Replace with your own action " + Blade.poww(5), Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-
-//            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
     }
 

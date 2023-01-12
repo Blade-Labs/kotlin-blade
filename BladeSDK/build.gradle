@@ -11,8 +11,13 @@ java {
 android {
     namespace 'io.bladewallet.bladesdk'
     compileSdkVersion 27
+
+    defaultConfig {
+        minSdk 20
+    }
 }
 
 dependencies {
     implementation 'androidx.webkit:webkit:1.4.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
