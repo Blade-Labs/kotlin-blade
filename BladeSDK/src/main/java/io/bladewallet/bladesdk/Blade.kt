@@ -1,21 +1,5 @@
 package io.bladewallet.bladesdk
 
-import BalanceDataResponse
-import BalanceResponse
-import BladeJSError
-import CreatedAccountDataResponse
-import CreatedAccountResponse
-import PrivateKeyDataResponse
-import PrivateKeyResponse
-import Response
-import SignMessageDataResponse
-import SignMessageResponse
-import SignVerifyMessageDataResponse
-import SignVerifyMessageResponse
-import TransactionReceipt
-import TransactionReceiptResponse
-import TransferDataResponse
-import TransferResponse
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.ViewGroup.LayoutParams
@@ -77,17 +61,7 @@ object Blade {
     fun getBalance(id: String, completion: (BalanceDataResponse?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getBalance");
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            if (error != null) {
-                completion(null, error);
-                return@deferCompletion;
-            }
-            try {
-                val response = gson.fromJson(data, BalanceResponse::class.java)
-                completion(response.data, null)
-            } catch (error: Exception) {
-                    print(error)
-                    completion(null, BladeJSError("Error", "$error"))
-            }
+            typicalDeferredCallback<BalanceDataResponse, BalanceResponse>(data, error, completion)
         }
         executeJS("bladeSdk.getBalance('$id', '$completionKey')")
     }
@@ -95,16 +69,7 @@ object Blade {
     fun transferHbars(accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, completion: (TransferDataResponse?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("transferHbars");
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            if (error != null) {
-                return@deferCompletion completion(null, error)
-            }
-            try {
-                val response = gson.fromJson(data, TransferResponse::class.java)
-                completion(response.data, null)
-            } catch (error: Exception) {
-                print(error)
-                completion(null, BladeJSError("Error", "$error"))
-            }
+            typicalDeferredCallback<TransferDataResponse, TransferResponse>(data, error, completion)
         }
         executeJS("bladeSdk.transferHbars('$accountId', '$accountPrivateKey', '$receiverId', '$amount', '$completionKey')")
     }
@@ -112,16 +77,7 @@ object Blade {
     fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, completion: (TransferDataResponse?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("transferTokens");
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            if (error != null) {
-                return@deferCompletion completion(null, error)
-            }
-            try {
-                val response = gson.fromJson(data, TransferResponse::class.java)
-                completion(response.data, null)
-            } catch (error: Exception) {
-                print(error)
-                completion(null, BladeJSError("Error", "$error"))
-            }
+            typicalDeferredCallback<TransferDataResponse, TransferResponse>(data, error, completion)
         }
         executeJS("bladeSdk.transferTokens('$tokenId', '$accountId', '$accountPrivateKey', '$receiverId', '$amount', '$completionKey')")
     }
@@ -129,34 +85,16 @@ object Blade {
     fun createHederaAccount(completion: (CreatedAccountDataResponse?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("createAccount");
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            if (error != null) {
-                return@deferCompletion completion(null, error)
-            }
-            try {
-                val response = gson.fromJson(data, CreatedAccountResponse::class.java)
-                completion(response.data, null)
-            } catch (error: Exception) {
-                    print(error)
-                    completion(null, BladeJSError("Error", "$error"))
-            }
+            typicalDeferredCallback<CreatedAccountDataResponse, CreatedAccountResponse>(data, error, completion)
         }
         executeJS("bladeSdk.createAccount('$completionKey')")
     }
 
 
-    fun deleteHederaAccount(deleteAccountId: String, deletePrivateKey: String, transferAccountId: String, operatorAccountId: String, operatorPrivateKey: String, completion: (TransactionReceipt?, BladeJSError?) -> Unit) {
+    fun deleteHederaAccount(deleteAccountId: String, deletePrivateKey: String, transferAccountId: String, operatorAccountId: String, operatorPrivateKey: String, completion: (TransactionReceiptDataResponse?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("deleteHederaAccount");
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            if (error != null) {
-                return@deferCompletion completion(null, error)
-            }
-            try {
-                val response = gson.fromJson(data, TransactionReceiptResponse::class.java)
-                completion(response.data, null)
-            } catch (error: Exception) {
-                print(error)
-                completion(null, BladeJSError("Error", "$error"))
-            }
+            typicalDeferredCallback<TransactionReceiptDataResponse, TransactionReceiptResponse>(data, error, completion)
         }
         executeJS("bladeSdk.deleteAccount('$deleteAccountId', '$deletePrivateKey', '$transferAccountId', '$operatorAccountId', '$operatorPrivateKey', '$completionKey')")
     }
@@ -164,16 +102,7 @@ object Blade {
     fun getKeysFromMnemonic (menmonic: String, lookupNames: Boolean = false, completion: (PrivateKeyDataResponse?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getKeysFromMnemonic");
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            if (error != null) {
-                return@deferCompletion completion(null, error)
-            }
-            try {
-                val response = gson.fromJson(data, PrivateKeyResponse::class.java)
-                completion(response.data, null)
-            } catch (error: Exception) {
-                print(error)
-                completion(null, BladeJSError("Error", "$error"))
-            }
+            typicalDeferredCallback<PrivateKeyDataResponse, PrivateKeyResponse>(data, error, completion)
         }
         executeJS("bladeSdk.getKeysFromMnemonic('$menmonic', $lookupNames, '$completionKey')")
     }
@@ -181,17 +110,7 @@ object Blade {
     fun sign (messageString: String, privateKey: String, completion: (SignMessageDataResponse?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("sign");
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            if (error != null) {
-                return@deferCompletion completion(null, error)
-            }
-            try {
-                val response = gson.fromJson(data, SignMessageResponse::class.java)
-
-                completion(response.data, null)
-            } catch (error: Exception) {
-                print(error)
-                completion(null, BladeJSError("Error", "$error"))
-            }
+            typicalDeferredCallback<SignMessageDataResponse, SignMessageResponse>(data, error, completion)
         }
         executeJS("bladeSdk.sign('$messageString', '$privateKey', '$completionKey')")
     }
@@ -199,18 +118,52 @@ object Blade {
     fun signVerify(messageString: String, signature: String, publicKey: String, completion: (SignVerifyMessageDataResponse?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("signVerify");
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            if (error != null) {
-                return@deferCompletion completion(null, error)
-            }
-            try {
-                val response = gson.fromJson(data, SignVerifyMessageResponse::class.java)
-                completion(response.data, null)
-            } catch (error: Exception) {
-                print(error)
-                completion(null, BladeJSError("Error", "$error"))
-            }
+            typicalDeferredCallback<SignVerifyMessageDataResponse, SignVerifyMessageResponse>(data, error, completion)
         }
         executeJS("bladeSdk.signVerify('$messageString', '$signature', '$publicKey', '$completionKey')")
+    }
+
+//    fun contractCallFunction(contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, completion: (TransactionReceiptDataResponse?, BladeJSError?) -> Unit) {
+//        val completionKey = getCompletionKey("contractCallFunction");
+//        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+//            typicalDeferredCallback<TransactionReceiptDataResponse, TransactionReceiptResponse>(data, error, completion)
+//        }
+//        // TODO: let paramsEncoded = params.encode();
+//        executeJS("bladeSdk.contractCallFunction('$contractId', '$functionName', '$paramsEncoded', '$accountId', '$accountPrivateKey', $gas, '$completionKey')")
+//    }
+
+    fun hethersSign(messageString: String, privateKey: String, completion: (SignMessageDataResponse?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("hethersSign");
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<SignMessageDataResponse, SignMessageResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.hethersSign('$messageString', '$privateKey', '$completionKey')")
+    }
+
+    fun splitSignature(signature: String, completion: (SplitedSignature?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("splitSignature");
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<SplitedSignature, SplitedSignatureResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.splitSignature('$signature', '$completionKey')")
+    }
+
+//    fun getParamsSignature(params: ContractFunctionParameters, accountPrivateKey: String, completion: (SplitedSignature?, BladeJSError?) -> Unit) {
+//        val completionKey = getCompletionKey("getParamsSignature");
+//        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+//            typicalDeferredCallback<SplitedSignature, SplitedSignatureResponse>(data, error, completion)
+//        }
+//
+//        // TODO: let paramsEncoded = params.encode();
+//        executeJS("bladeSdk.getParamsSignature('$paramsEncoded', '$accountPrivateKey', '$completionKey')")
+//    }
+
+    fun getTransactions(accountId: String, transactionType: String, nextPage: String = "", completion: (TransactionsHistory?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getTransactions");
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<TransactionsHistory, TransactionsHistoryResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getTransactions('$accountId', '$transactionType', '$nextPage', '$completionKey')")
     }
 
     ////////////////////////////////////////////////////////////////
@@ -220,7 +173,7 @@ object Blade {
         try {
             val response = gson.fromJson(jsonString, Response::class.java)
 
-            if (response.completionKey == null) {
+            if (response.completionKey == "") {
                 throw Exception("Received JS response without completionKey")
             }
 
@@ -238,6 +191,20 @@ object Blade {
         } catch (e: Exception) {
             println(e)
             throw e;
+        }
+    }
+
+    private inline fun <Y, reified T:Result<Y>>typicalDeferredCallback(data: String, error: BladeJSError?, completion: (Y?, BladeJSError?) -> Unit) {
+        if (error != null) {
+            completion(null, error);
+            return;
+        }
+        try {
+            val response = gson.fromJson(data, T::class.java)
+            completion(response.data, null)
+        } catch (error: Exception) {
+            print(error)
+            completion(null, BladeJSError("Error", "$error"))
         }
     }
 

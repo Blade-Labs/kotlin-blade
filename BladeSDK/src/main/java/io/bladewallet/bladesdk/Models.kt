@@ -1,17 +1,25 @@
+package io.bladewallet.bladesdk
+
+interface Result<T>{
+    var completionKey: String
+    var data: T
+}
+
 data class BladeJSError(
     var name: String,
     var reason: String
 )
 
-data class Response(
-    var completionKey: String?,
-    var error: BladeJSError?
-)
+data class Response (
+    override var completionKey: String,
+    override var data: Any,
+    var error: BladeJSError?,
+) : Result<Any>
 
 data class BalanceResponse(
-    var completionKey: String,
-    var data: BalanceDataResponse
-)
+    override var completionKey: String,
+    override var data: BalanceDataResponse
+) : Result<BalanceDataResponse>
 
 data class BalanceDataResponse(
     var hbars: Double,
@@ -24,9 +32,9 @@ data class BalanceDataResponseToken(
 )
 
 data class TransferResponse(
-    var completionKey: String,
-    var data: TransferDataResponse
-)
+    override var completionKey: String,
+    override var data: TransferDataResponse
+): Result<TransferDataResponse>
 
 data class TransferDataResponse(
     var nodeId: String,
@@ -35,9 +43,9 @@ data class TransferDataResponse(
 )
 
 data class CreatedAccountResponse(
-    var completionKey: String,
-    var data: CreatedAccountDataResponse
-)
+    override var completionKey: String,
+    override var data: CreatedAccountDataResponse
+): Result<CreatedAccountDataResponse>
 
 data class CreatedAccountDataResponse(
     var seedPhrase: String,
@@ -48,11 +56,11 @@ data class CreatedAccountDataResponse(
 )
 
 data class TransactionReceiptResponse(
-    var completionKey: String,
-    var data: TransactionReceipt
-)
+    override var completionKey: String,
+    override var data: TransactionReceiptDataResponse
+): Result<TransactionReceiptDataResponse>
 
-data class TransactionReceipt(
+data class TransactionReceiptDataResponse(
     var status: String,
     var contractId: String?,
     var topicSequenceNumber: String?,
@@ -61,9 +69,9 @@ data class TransactionReceipt(
 )
 
 data class PrivateKeyResponse(
-    var completionKey: String,
-    var data: PrivateKeyDataResponse
-)
+    override var completionKey: String,
+    override var data: PrivateKeyDataResponse
+): Result<PrivateKeyDataResponse>
 
 data class PrivateKeyDataResponse(
     var privateKey: String,
@@ -72,20 +80,73 @@ data class PrivateKeyDataResponse(
     var evmAddress: String
 )
 
+data class SignMessageResponse(
+    override var completionKey: String,
+    override var data: SignMessageDataResponse
+): Result<SignMessageDataResponse>
+
 data class SignMessageDataResponse(
     var signedMessage: String
 )
 
-data class SignMessageResponse(
-    var completionKey: String,
-    var data: SignMessageDataResponse
-)
-
 data class SignVerifyMessageResponse(
-    var completionKey: String,
-    var data: SignVerifyMessageDataResponse
-)
+    override var completionKey: String,
+    override var data: SignVerifyMessageDataResponse
+): Result<SignVerifyMessageDataResponse>
 
 data class SignVerifyMessageDataResponse(
     var valid: Boolean
+)
+
+data class SplitedSignatureResponse(
+    override var completionKey: String,
+    override var data: SplitedSignature
+): Result<SplitedSignature>
+
+data class SplitedSignature(
+    var v: Int,
+    var r: String,
+    var s: String,
+)
+
+data class TransactionsHistoryResponse(
+    override var completionKey: String,
+    override var data: TransactionsHistory
+): Result<TransactionsHistory>
+
+data class TransactionsHistory(
+    var nextPage: String?,
+    var transactions: List<TransactionHistoryDetail>
+)
+
+data class TransactionHistoryDetail(
+    var fee: Int,
+    var memo: String,
+    var nftTransfers: List<TransactionHistoryNftTransfer>?,
+    var time: String,
+    var transactionId: String,
+    var transfers: List<TransactionHistoryTransfer>,
+    var type: String,
+    var plainData: List<TransactionHistoryPlainData>?
+)
+
+data class TransactionHistoryPlainData(
+    var type: String,
+    var token_id: String,
+    var account: String,
+    var amount: Double
+)
+
+data class TransactionHistoryTransfer(
+    var account: String,
+    var amount: Double,
+    var is_approval: Boolean
+)
+
+data class TransactionHistoryNftTransfer(
+    var is_approval: Boolean,
+    var receiver_account_id: String,
+    var sender_account_id: String,
+    var serial_number: Int,
+    var token_id: String
 )

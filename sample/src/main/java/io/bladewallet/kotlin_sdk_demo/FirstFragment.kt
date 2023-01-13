@@ -1,13 +1,13 @@
 package io.bladewallet.kotlin_sdk_demo
 
-import BalanceDataResponse
-import BladeJSError
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.bladewallet.bladesdk.Blade
+import io.bladewallet.bladesdk.BalanceDataResponse
+import io.bladewallet.bladesdk.BladeJSError
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentFirstBinding
 
 /**

@@ -38,8 +38,8 @@ dependencies {
 
 ```kotlin
 import io.bladewallet.bladesdk.Blade
-import BalanceDataResponse
-import BladeJSError
+import io.bladewallet.bladesdk.BalanceDataResponse
+import io.bladewallet.bladesdk.BladeJSError
 
 Blade.initialize("API_KEY", "dAppCode", "Testnet", requireContext()) {
   // ready to use BladeSDK
@@ -54,3 +54,10 @@ Blade.getBalance("0.0.49177063") { data: BalanceDataResponse?, error: BladeJSErr
 }
 
 ```
+
+## Todo
+
+- add method description
+- add examples
+- test
+- rename types to more consistency, and do so on SwiftBladeSDK
