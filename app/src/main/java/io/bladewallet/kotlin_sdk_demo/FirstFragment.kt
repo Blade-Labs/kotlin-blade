@@ -35,7 +35,7 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirst.setOnClickListener {
-            Blade.initialize("1NpEy10UxlZ7AeqkuiCws3zJLPehQqvm7ahefmNF6wREULFGlm6rNtY/dKG6tmM", "karatecombat", "Testnet", requireContext(), binding.webViewContainer) {
+            Blade.initialize("1NpEy10UxlZ7AeqkuiCws3zJLPehQqvm7ahefmNF6wREULFGlm6rNtY/dKG6tmM", "karatecombat", "Testnet", requireContext()) {
                 println("Init done!!!")
             }
         }
@@ -49,7 +49,6 @@ class FirstFragment : Fragment() {
                     println(error)
                 }
             }
-
         }
     }
 
