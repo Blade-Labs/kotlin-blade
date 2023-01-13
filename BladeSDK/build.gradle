@@ -10,14 +10,24 @@ java {
 
 android {
     namespace 'io.bladewallet.bladesdk'
-    compileSdkVersion 27
+    compileSdk 33
 
     defaultConfig {
-        minSdk 20
+        minSdk 21
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
 }
 
 dependencies {
-    implementation 'androidx.webkit:webkit:1.4.0'
+    implementation 'androidx.webkit:webkit:1.5.0'
     implementation 'com.google.code.gson:gson:2.10.1'
 }
