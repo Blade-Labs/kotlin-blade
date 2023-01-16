@@ -18,25 +18,25 @@ data class Response (
 
 data class BalanceResponse(
     override var completionKey: String,
-    override var data: BalanceDataResponse
-) : Result<BalanceDataResponse>
+    override var data: BalanceData
+) : Result<BalanceData>
 
-data class BalanceDataResponse(
+data class BalanceData(
     var hbars: Double,
-    var tokens: List<BalanceDataResponseToken>
+    var tokens: List<BalanceDataToken>
 )
 
-data class BalanceDataResponseToken(
+data class BalanceDataToken(
     var balance: Double,
     var tokenId: String
 )
 
 data class TransferResponse(
     override var completionKey: String,
-    override var data: TransferDataResponse
-): Result<TransferDataResponse>
+    override var data: TransferData
+): Result<TransferData>
 
-data class TransferDataResponse(
+data class TransferData(
     var nodeId: String,
     var transactionHash: String,
     var transactionId: String,
@@ -44,10 +44,10 @@ data class TransferDataResponse(
 
 data class CreatedAccountResponse(
     override var completionKey: String,
-    override var data: CreatedAccountDataResponse
-): Result<CreatedAccountDataResponse>
+    override var data: CreatedAccountData
+): Result<CreatedAccountData>
 
-data class CreatedAccountDataResponse(
+data class CreatedAccountData(
     var seedPhrase: String,
     var publicKey: String,
     var privateKey: String,
@@ -57,10 +57,10 @@ data class CreatedAccountDataResponse(
 
 data class TransactionReceiptResponse(
     override var completionKey: String,
-    override var data: TransactionReceiptDataResponse
-): Result<TransactionReceiptDataResponse>
+    override var data: TransactionReceiptData
+): Result<TransactionReceiptData>
 
-data class TransactionReceiptDataResponse(
+data class TransactionReceiptData(
     var status: String,
     var contractId: String?,
     var topicSequenceNumber: String?,
@@ -70,10 +70,10 @@ data class TransactionReceiptDataResponse(
 
 data class PrivateKeyResponse(
     override var completionKey: String,
-    override var data: PrivateKeyDataResponse
-): Result<PrivateKeyDataResponse>
+    override var data: PrivateKeyData
+): Result<PrivateKeyData>
 
-data class PrivateKeyDataResponse(
+data class PrivateKeyData(
     var privateKey: String,
     var publicKey: String,
     var accounts: List<String>,
@@ -82,28 +82,28 @@ data class PrivateKeyDataResponse(
 
 data class SignMessageResponse(
     override var completionKey: String,
-    override var data: SignMessageDataResponse
-): Result<SignMessageDataResponse>
+    override var data: SignMessageData
+): Result<SignMessageData>
 
-data class SignMessageDataResponse(
+data class SignMessageData(
     var signedMessage: String
 )
 
 data class SignVerifyMessageResponse(
     override var completionKey: String,
-    override var data: SignVerifyMessageDataResponse
-): Result<SignVerifyMessageDataResponse>
+    override var data: SignVerifyMessageData
+): Result<SignVerifyMessageData>
 
-data class SignVerifyMessageDataResponse(
+data class SignVerifyMessageData(
     var valid: Boolean
 )
 
 data class SplitedSignatureResponse(
     override var completionKey: String,
-    override var data: SplitedSignature
-): Result<SplitedSignature>
+    override var data: SplitSignatureData
+): Result<SplitSignatureData>
 
-data class SplitedSignature(
+data class SplitSignatureData(
     var v: Int,
     var r: String,
     var s: String,
@@ -111,10 +111,10 @@ data class SplitedSignature(
 
 data class TransactionsHistoryResponse(
     override var completionKey: String,
-    override var data: TransactionsHistory
-): Result<TransactionsHistory>
+    override var data: TransactionsHistoryData
+): Result<TransactionsHistoryData>
 
-data class TransactionsHistory(
+data class TransactionsHistoryData(
     var nextPage: String?,
     var transactions: List<TransactionHistoryDetail>
 )

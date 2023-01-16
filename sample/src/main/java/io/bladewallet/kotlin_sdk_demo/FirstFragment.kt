@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import io.bladewallet.bladesdk.Blade
-import io.bladewallet.bladesdk.BalanceDataResponse
+import io.bladewallet.bladesdk.BalanceData
 import io.bladewallet.bladesdk.BladeJSError
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentFirstBinding
 
@@ -41,7 +41,7 @@ class FirstFragment : Fragment() {
         }
 
         binding.buttonSecond.setOnClickListener {
-            Blade.getBalance("0.0.49177063") { data: BalanceDataResponse?, error: BladeJSError? ->
+            Blade.getBalance("0.0.49177063") { data: BalanceData?, error: BladeJSError? ->
                 if (data != null) {
                     println(data)
                 }
