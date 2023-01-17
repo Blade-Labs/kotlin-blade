@@ -1,5 +1,10 @@
 package io.bladewallet.bladesdk
 
+data class ContractFunctionParameter (
+    var type: String,
+    var value: List<String>
+)
+
 interface Result<T>{
     var completionKey: String
     var data: T
@@ -9,7 +14,6 @@ data class BladeJSError(
     var name: String,
     var reason: String
 )
-
 data class Response (
     override var completionKey: String,
     override var data: Any,

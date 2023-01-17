@@ -2,6 +2,10 @@
 
 [![](https://jitpack.io/v/Blade-Labs/kotlin-blade.svg)](https://jitpack.io/#Blade-Labs/kotlin-blade)
 
+## Requirements
+
+- Android 8.0+ (API level 26, Aug 2017) 
+
 ## Install
 
 See ["https://jitpack.io/#Blade-Labs/kotlin-blade"](https://jitpack.io/#Blade-Labs/kotlin-blade) for help on adding a package to your project.

@@ -41,7 +41,7 @@ object Blade {
         )
 
         webView.settings.javaScriptEnabled = true;
-        webView.loadUrl("file:///android_asset/index_android.html")
+        webView.loadUrl("file:///android_asset/index.html")
 
         webView.addJavascriptInterface(this, "bladeMessageHandler")
         webView.webViewClient = object : WebViewClient() {
@@ -90,7 +90,6 @@ object Blade {
         executeJS("bladeSdk.createAccount('$completionKey')")
     }
 
-
     fun deleteHederaAccount(deleteAccountId: String, deletePrivateKey: String, transferAccountId: String, operatorAccountId: String, operatorPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("deleteHederaAccount");
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
@@ -123,14 +122,13 @@ object Blade {
         executeJS("bladeSdk.signVerify('$messageString', '$signature', '$publicKey', '$completionKey')")
     }
 
-//    fun contractCallFunction(contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, completion: (TransactionReceiptDataResponse?, BladeJSError?) -> Unit) {
-//        val completionKey = getCompletionKey("contractCallFunction");
-//        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-//            typicalDeferredCallback<TransactionReceiptDataResponse, TransactionReceiptResponse>(data, error, completion)
-//        }
-//        // TODO: let paramsEncoded = params.encode();
-//        executeJS("bladeSdk.contractCallFunction('$contractId', '$functionName', '$paramsEncoded', '$accountId', '$accountPrivateKey', $gas, '$completionKey')")
-//    }
+    fun contractCallFunction(contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("contractCallFunction");
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.contractCallFunction('$contractId', '$functionName', '${params.encode()}', '$accountId', '$accountPrivateKey', $gas, '$completionKey')")
+    }
 
     fun hethersSign(messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("hethersSign");
@@ -148,15 +146,13 @@ object Blade {
         executeJS("bladeSdk.splitSignature('$signature', '$completionKey')")
     }
 
-//    fun getParamsSignature(params: ContractFunctionParameters, accountPrivateKey: String, completion: (SplitedSignature?, BladeJSError?) -> Unit) {
-//        val completionKey = getCompletionKey("getParamsSignature");
-//        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-//            typicalDeferredCallback<SplitedSignature, SplitedSignatureResponse>(data, error, completion)
-//        }
-//
-//        // TODO: let paramsEncoded = params.encode();
-//        executeJS("bladeSdk.getParamsSignature('$paramsEncoded', '$accountPrivateKey', '$completionKey')")
-//    }
+    fun getParamsSignature(params: ContractFunctionParameters, accountPrivateKey: String, completion: (SplitSignatureData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getParamsSignature");
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<SplitSignatureData, SplitedSignatureResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getParamsSignature('${params.encode()}', '$accountPrivateKey', '$completionKey')")
+    }
 
     fun getTransactions(accountId: String, transactionType: String, nextPage: String = "", completion: (TransactionsHistoryData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getTransactions");
