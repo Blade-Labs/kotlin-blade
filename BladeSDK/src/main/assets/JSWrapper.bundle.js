@@ -114888,6 +114888,7 @@ var SDK = /** @class */ (function () {
                 reason: error.reason || error.message || JSON.stringify(error)
             };
         }
+        console.log(responseObject);
         // @ts-ignore  // IOS or Android
         var bladeMessageHandler = ((_b = (_a = window === null || window === void 0 ? void 0 : window.webkit) === null || _a === void 0 ? void 0 : _a.messageHandlers) === null || _b === void 0 ? void 0 : _b.bladeMessageHandler) || (window === null || window === void 0 ? void 0 : window.bladeMessageHandler);
         if (bladeMessageHandler) {
