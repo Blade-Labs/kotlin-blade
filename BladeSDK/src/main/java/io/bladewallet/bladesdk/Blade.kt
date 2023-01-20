@@ -162,12 +162,12 @@ object Blade {
         executeJS("bladeSdk.getParamsSignature('${params.encode()}', '$accountPrivateKey', '$completionKey')")
     }
 
-    fun getTransactions(accountId: String, transactionType: String, nextPage: String = "", completion: (TransactionsHistoryData?, BladeJSError?) -> Unit) {
+    fun getTransactions(accountId: String, transactionType: String, nextPage: String = "", transactionsLimit: Int = 10, completion: (TransactionsHistoryData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getTransactions")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionsHistoryData, TransactionsHistoryResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getTransactions('$accountId', '$transactionType', '$nextPage', '$completionKey')")
+        executeJS("bladeSdk.getTransactions('$accountId', '$transactionType', '$nextPage', '$transactionsLimit', '$completionKey')")
     }
 
     ////////////////////////////////////////////////////////////////
