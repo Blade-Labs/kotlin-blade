@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import io.bladewallet.bladesdk.*
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentFirstBinding
-import java.math.BigInteger
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -23,7 +22,7 @@ class FirstFragment : Fragment() {
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentFirstBinding.inflate(inflater, container, false)
         return binding.root
@@ -48,6 +47,15 @@ class FirstFragment : Fragment() {
                     println(error)
                 }
             }
+
+//            Blade.createHederaAccount { createdAccountData, bladeJSError ->
+//                println(createdAccountData)
+//                println(bladeJSError)
+//            }
+
+
+
+
 
 //            val tuple1 = ContractFunctionParameters()
 //                .addInt64(5)

@@ -40,26 +40,26 @@ object Blade {
             LayoutParams.MATCH_PARENT
         )
 
-        webView.settings.javaScriptEnabled = true;
+        webView.settings.javaScriptEnabled = true
         webView.loadUrl("file:///android_asset/index.html")
 
         webView.addJavascriptInterface(this, "bladeMessageHandler")
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 // on webView init
-                webViewInitialized = true;
+                webViewInitialized = true
 
-                val completionKey = getCompletionKey("initBladeSdkJS");
+                val completionKey = getCompletionKey("initBladeSdkJS")
                 deferCompletion(completionKey) { _: String, _: BladeJSError? ->
-                    initCompletion();
+                    initCompletion()
                 }
-                executeJS("bladeSdk.init('$apiKey', '${network.lowercase()}', '$dAppCode', '$uuid', '$completionKey');");
+                executeJS("bladeSdk.init('$apiKey', '${network.lowercase()}', '$dAppCode', '$uuid', '$completionKey')")
             }
         }
     }
 
     fun getBalance(id: String, completion: (BalanceData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("getBalance");
+        val completionKey = getCompletionKey("getBalance")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<BalanceData, BalanceResponse>(data, error, completion)
         }
@@ -67,7 +67,7 @@ object Blade {
     }
 
     fun transferHbars(accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, completion: (TransferData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("transferHbars");
+        val completionKey = getCompletionKey("transferHbars")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransferData, TransferResponse>(data, error, completion)
         }
@@ -75,7 +75,7 @@ object Blade {
     }
 
     fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, completion: (TransferData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("transferTokens");
+        val completionKey = getCompletionKey("transferTokens")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransferData, TransferResponse>(data, error, completion)
         }
@@ -83,15 +83,23 @@ object Blade {
     }
 
     fun createHederaAccount(completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("createAccount");
+        val completionKey = getCompletionKey("createAccount")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<CreatedAccountData, CreatedAccountResponse>(data, error, completion)
         }
         executeJS("bladeSdk.createAccount('$completionKey')")
     }
 
+    fun getPendingAccount(transactionId: String, seedPhrase: String, completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getPendingAccount")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<CreatedAccountData, CreatedAccountResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getPendingAccount('$transactionId', '$seedPhrase', '$completionKey')")
+    }
+
     fun deleteHederaAccount(deleteAccountId: String, deletePrivateKey: String, transferAccountId: String, operatorAccountId: String, operatorPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("deleteHederaAccount");
+        val completionKey = getCompletionKey("deleteHederaAccount")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
@@ -99,7 +107,7 @@ object Blade {
     }
 
     fun getKeysFromMnemonic (menmonic: String, lookupNames: Boolean = false, completion: (PrivateKeyData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("getKeysFromMnemonic");
+        val completionKey = getCompletionKey("getKeysFromMnemonic")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<PrivateKeyData, PrivateKeyResponse>(data, error, completion)
         }
@@ -107,7 +115,7 @@ object Blade {
     }
 
     fun sign (messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("sign");
+        val completionKey = getCompletionKey("sign")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SignMessageData, SignMessageResponse>(data, error, completion)
         }
@@ -115,7 +123,7 @@ object Blade {
     }
 
     fun signVerify(messageString: String, signature: String, publicKey: String, completion: (SignVerifyMessageData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("signVerify");
+        val completionKey = getCompletionKey("signVerify")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SignVerifyMessageData, SignVerifyMessageResponse>(data, error, completion)
         }
@@ -123,7 +131,7 @@ object Blade {
     }
 
     fun contractCallFunction(contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("contractCallFunction");
+        val completionKey = getCompletionKey("contractCallFunction")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
@@ -131,7 +139,7 @@ object Blade {
     }
 
     fun hethersSign(messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("hethersSign");
+        val completionKey = getCompletionKey("hethersSign")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SignMessageData, SignMessageResponse>(data, error, completion)
         }
@@ -139,23 +147,23 @@ object Blade {
     }
 
     fun splitSignature(signature: String, completion: (SplitSignatureData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("splitSignature");
+        val completionKey = getCompletionKey("splitSignature")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            typicalDeferredCallback<SplitSignatureData, SplitedSignatureResponse>(data, error, completion)
+            typicalDeferredCallback<SplitSignatureData, SplitSignatureResponse>(data, error, completion)
         }
         executeJS("bladeSdk.splitSignature('$signature', '$completionKey')")
     }
 
     fun getParamsSignature(params: ContractFunctionParameters, accountPrivateKey: String, completion: (SplitSignatureData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("getParamsSignature");
+        val completionKey = getCompletionKey("getParamsSignature")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            typicalDeferredCallback<SplitSignatureData, SplitedSignatureResponse>(data, error, completion)
+            typicalDeferredCallback<SplitSignatureData, SplitSignatureResponse>(data, error, completion)
         }
         executeJS("bladeSdk.getParamsSignature('${params.encode()}', '$accountPrivateKey', '$completionKey')")
     }
 
     fun getTransactions(accountId: String, transactionType: String, nextPage: String = "", completion: (TransactionsHistoryData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("getTransactions");
+        val completionKey = getCompletionKey("getTransactions")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionsHistoryData, TransactionsHistoryResponse>(data, error, completion)
         }
@@ -165,7 +173,7 @@ object Blade {
     ////////////////////////////////////////////////////////////////
 
     @JavascriptInterface
-    public fun postMessage(jsonString: String) {
+    fun postMessage(jsonString: String) {
         try {
             val response = gson.fromJson(jsonString, Response::class.java)
 
@@ -182,18 +190,18 @@ object Blade {
                     deferredCompletion(jsonString, null)
                 }
             } else {
-                throw Exception("Deferred function not exists");
+                throw Exception("Deferred function not exists")
             }
         } catch (e: Exception) {
             println(e)
-            throw e;
+            throw e
         }
     }
 
     private inline fun <Y, reified T:Result<Y>>typicalDeferredCallback(data: String, error: BladeJSError?, completion: (Y?, BladeJSError?) -> Unit) {
         if (error != null) {
-            completion(null, error);
-            return;
+            completion(null, error)
+            return
         }
         try {
             val response = gson.fromJson(data, T::class.java)
@@ -209,7 +217,7 @@ object Blade {
             println("BladeSDK not initialized")
             throw Exception("BladeSDK not initialized")
         }
-        webView.evaluateJavascript("javascript:$script", null);
+        webView.evaluateJavascript("javascript:$script", null)
     }
 
     private fun deferCompletion(forKey: String, completion: (data: String, error: BladeJSError?) -> Unit) {
@@ -217,7 +225,7 @@ object Blade {
     }
 
     private fun getCompletionKey(tag: String): String {
-        completionId += 1;
-        return tag + completionId;
+        completionId += 1
+        return tag + completionId
     }
 }

@@ -55,8 +55,10 @@ data class CreatedAccountData(
     var seedPhrase: String,
     var publicKey: String,
     var privateKey: String,
-    var accountId: String,
+    var accountId: String?,
     var evmAddress: String,
+    var transactionId: String?,
+    var status: String
 )
 
 data class TransactionReceiptResponse(
@@ -102,7 +104,7 @@ data class SignVerifyMessageData(
     var valid: Boolean
 )
 
-data class SplitedSignatureResponse(
+data class SplitSignatureResponse(
     override var completionKey: String,
     override var data: SplitSignatureData
 ): Result<SplitSignatureData>
