@@ -133,7 +133,8 @@ data class TransactionHistoryDetail(
     var transactionId: String,
     var transfers: List<TransactionHistoryTransfer>,
     var type: String,
-    var plainData: List<TransactionHistoryPlainData>?
+    var plainData: List<TransactionHistoryPlainData>?,
+    var consensusTimestamp: String
 )
 
 data class TransactionHistoryPlainData(
