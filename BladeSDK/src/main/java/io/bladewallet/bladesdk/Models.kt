@@ -58,7 +58,8 @@ data class CreatedAccountData(
     var accountId: String?,
     var evmAddress: String,
     var transactionId: String?,
-    var status: String
+    var status: String,
+    var queueNumber: Int?
 )
 
 data class TransactionReceiptResponse(
