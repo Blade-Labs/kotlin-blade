@@ -74,12 +74,12 @@ object Blade {
         executeJS("bladeSdk.transferHbars('$accountId', '$accountPrivateKey', '$receiverId', '$amount', '$completionKey')")
     }
 
-    fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, completion: (TransferData?, BladeJSError?) -> Unit) {
+    fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, freeTransfer: Boolean = true, completion: (TransferData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("transferTokens")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransferData, TransferResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.transferTokens('$tokenId', '$accountId', '$accountPrivateKey', '$receiverId', '$amount', '$completionKey')")
+        executeJS("bladeSdk.transferTokens('$tokenId', '$accountId', '$accountPrivateKey', '$receiverId', '$amount', $freeTransfer, '$completionKey')")
     }
 
     fun createHederaAccount(completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
