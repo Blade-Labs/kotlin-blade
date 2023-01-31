@@ -130,12 +130,12 @@ object Blade {
         executeJS("bladeSdk.signVerify('$messageString', '$signature', '$publicKey', '$completionKey')")
     }
 
-    fun contractCallFunction(contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
+    fun contractCallFunction(contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, bladePayFee: Boolean, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("contractCallFunction")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.contractCallFunction('$contractId', '$functionName', '${params.encode()}', '$accountId', '$accountPrivateKey', $gas, '$completionKey')")
+        executeJS("bladeSdk.contractCallFunction('$contractId', '$functionName', '${params.encode()}', '$accountId', '$accountPrivateKey', $gas, $bladePayFee, '$completionKey')")
     }
 
     fun hethersSign(messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
