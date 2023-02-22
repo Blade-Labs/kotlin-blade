@@ -35,6 +35,17 @@ data class BalanceDataToken(
     var tokenId: String
 )
 
+data class AccountInfoResponse(
+    override var completionKey: String,
+    override var data: AccountInfoData
+): Result<AccountInfoData>
+
+data class AccountInfoData(
+    var accountId: String,
+    var evmAddress: String,
+    var calculatedEvmAddress: String
+)
+
 data class TransferResponse(
     override var completionKey: String,
     override var data: TransferData

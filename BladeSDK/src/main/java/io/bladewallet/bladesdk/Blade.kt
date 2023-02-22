@@ -106,6 +106,14 @@ object Blade {
         executeJS("bladeSdk.deleteAccount('$deleteAccountId', '$deletePrivateKey', '$transferAccountId', '$operatorAccountId', '$operatorPrivateKey', '$completionKey')")
     }
 
+    fun getAccountInfo(accountId: String, completion: (AccountInfoData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getAccountInfo")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<AccountInfoData, AccountInfoResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getAccountInfo('$accountId', '$completionKey')")
+    }
+
     fun getKeysFromMnemonic (menmonic: String, lookupNames: Boolean = false, completion: (PrivateKeyData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getKeysFromMnemonic")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
