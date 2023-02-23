@@ -145,7 +145,7 @@ data class TransactionHistoryDetail(
     var transactionId: String,
     var transfers: List<TransactionHistoryTransfer>,
     var type: String,
-    var plainData: List<TransactionHistoryPlainData>?,
+    var plainData: TransactionHistoryPlainData?,
     var consensusTimestamp: String
 )
 
