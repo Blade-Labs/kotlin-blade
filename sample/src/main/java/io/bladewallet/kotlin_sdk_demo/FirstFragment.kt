@@ -1,10 +1,10 @@
 package io.bladewallet.kotlin_sdk_demo
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import io.bladewallet.bladesdk.*
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentFirstBinding
 
@@ -32,6 +32,13 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val contractId = "0.0.8316"
+        val privateKey =
+            "3030020100300706052b8104000a042204208c44783cceb2d6711a5e583a81cc66c45fd291bd0f594f11f2e324b35c0559de"
+        val accountId = "0.0.3604734"
+        val evmAddress = "0xda647a72b1fa451dada9eb10ddead1b21eaa36cc"
+
+
         binding.buttonFirst.setOnClickListener {
             Blade.initialize("1NpEy10UxlZ7AeqkuiCws3zJLPehQqvm7ahefmNF6wREULFGlm6rNtY/dKG6tmM", "karatecombat", "Testnet", requireContext()) {
                 println("Init done!!!")
@@ -39,7 +46,18 @@ class FirstFragment : Fragment() {
         }
 
         binding.buttonSecond.setOnClickListener {
-            Blade.getBalance("0.0.49177063") { data: BalanceData?, error: BladeJSError? ->
+//            Blade.getBalance("0.0.49177063") { data: BalanceData?, error: BladeJSError? ->
+//                if (data != null) {
+//                    println(data)
+//                }
+//                if (error != null) {
+//                    println(error)
+//                }
+//            }
+
+            var params = ContractFunctionParameters().addString(evmAddress);
+            Blade.contractCallFunction(contractId, "set_message", params, accountId, privateKey, 55000, true) { data, error: BladeJSError? ->
+                println("=== SET  CONTRACT ===")
                 if (data != null) {
                     println(data)
                 }
@@ -99,6 +117,19 @@ class FirstFragment : Fragment() {
 //                println(data);
 //                println(error);
 //            }
+        }
+
+        binding.buttonThird.setOnClickListener {
+            val params = ContractFunctionParameters();
+            Blade.contractCallQueryFunction(contractId, "get_message", params, accountId, privateKey, 55000, true, listOf("string", "int32")) { data, error: BladeJSError? ->
+                println("=== GET  CONTRACT ===")
+                if (data != null) {
+                    println(data)
+                }
+                if (error != null) {
+                    println(error)
+                }
+            }
         }
     }
 
