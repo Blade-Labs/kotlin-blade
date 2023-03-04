@@ -146,6 +146,15 @@ object Blade {
         executeJS("bladeSdk.contractCallFunction('$contractId', '$functionName', '${params.encode()}', '$accountId', '$accountPrivateKey', $gas, $bladePayFee, '$completionKey')")
     }
 
+    fun contractCallQueryFunction(contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, bladePayFee: Boolean, returnTypes: List<String>, completion: (ContractQueryData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("contractCallQueryFunction")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<ContractQueryData, ContractQueryResponse>(data, error, completion)
+        }
+
+        executeJS("bladeSdk.contractCallQueryFunction('$contractId', '$functionName', '${params.encode()}', '$accountId', '$accountPrivateKey', $gas, $bladePayFee, ${returnTypes.joinToString(",", "[", "]") {"\"$it\""}}, '$completionKey')")
+    }
+
     fun hethersSign(messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("hethersSign")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->

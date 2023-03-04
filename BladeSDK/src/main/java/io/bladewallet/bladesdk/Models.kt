@@ -86,6 +86,21 @@ data class TransactionReceiptData(
     var serials: List<String>?
 )
 
+data class ContractQueryResponse(
+    override var completionKey: String,
+    override var data: ContractQueryData
+): Result<ContractQueryData>
+
+data class ContractQueryData(
+    var gasUsed: Int,
+    var values: List<ContractQueryRecord>
+)
+
+data class ContractQueryRecord(
+    var type: String,
+    var value: String
+)
+
 data class PrivateKeyResponse(
     override var completionKey: String,
     override var data: PrivateKeyData
