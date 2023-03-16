@@ -13,7 +13,7 @@ import java.util.*
 object Blade {
     private lateinit var webView: WebView
     private lateinit var apiKey: String
-    private val uuid = UUID(0,0).toString()
+    private lateinit var uuid: String
     private var network: String = "Testnet"
     private lateinit var dAppCode: String
     private var webViewInitialized: Boolean = false
@@ -33,6 +33,15 @@ object Blade {
         this.apiKey = apiKey
         this.dAppCode = dAppCode
         this.network = network
+
+        val sharedPreference = context.getSharedPreferences("BladeSDK", Context.MODE_PRIVATE)
+        this.uuid = sharedPreference.getString("deviceId", "") ?: ""
+        if (this.uuid == "") {
+            val editor = sharedPreference.edit()
+            this.uuid = UUID.randomUUID().toString()
+            editor.putString("deviceId",this.uuid)
+            editor.apply()
+        }
 
         this.webView = WebView(context)
         this.webView.layoutParams = LayoutParams(
