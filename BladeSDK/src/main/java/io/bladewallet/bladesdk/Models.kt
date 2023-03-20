@@ -184,3 +184,12 @@ data class TransactionHistoryNftTransfer(
     var serial_number: Int,
     var token_id: String
 )
+
+data class IntegrationUrlResponse(
+    override var completionKey: String,
+    override var data: IntegrationUrlData
+): Result<IntegrationUrlData>
+
+data class IntegrationUrlData(
+    var url: String?,
+)

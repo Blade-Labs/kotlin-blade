@@ -196,6 +196,14 @@ object Blade {
         executeJS("bladeSdk.getTransactions('$accountId', '$transactionType', '$nextPage', '$transactionsLimit', '$completionKey')")
     }
 
+    fun getC14url(asset: String, account: String, amount: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getC14url")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<IntegrationUrlData, IntegrationUrlResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getC14url('$asset', '$account', '$amount', '$completionKey')")
+    }
+
     ////////////////////////////////////////////////////////////////
 
     @JavascriptInterface
