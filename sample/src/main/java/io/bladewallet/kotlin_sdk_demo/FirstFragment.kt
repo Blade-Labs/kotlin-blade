@@ -66,6 +66,18 @@ class FirstFragment : Fragment() {
                 }
             }
 
+//            Blade.getC14url("hbar", "0.0.1242322", "444") { data, error: BladeJSError? ->
+//                println("result url:")
+//                if (data != null) {
+//                    println(data)
+//                }
+//                if (error != null) {
+//                    println(error)
+//                }
+//            }
+
+
+
 //            Blade.createHederaAccount { createdAccountData, bladeJSError ->
 //                println(createdAccountData)
 //                println(bladeJSError)
