@@ -1,67 +1,13 @@
-# Kotlin Blade SDK
+# Introduction
 
-[![](https://jitpack.io/v/Blade-Labs/kotlin-blade.svg)](https://jitpack.io/#Blade-Labs/kotlin-blade)
+## Welcome to Kotlin Blade SDK
 
-## Requirements
+The Kotlin Blade project is a web application framework for Kotlin that provides developers with a simple and intuitive way to build web applications. It is built on top of the Blade framework, which is a lightweight web framework for Java.
 
-- Android 8.0+ (API level 26, Aug 2017) 
+Kotlin Blade makes it easy to build RESTful web services and web applications. It includes features such as routing, middleware, JSON handling, and templating. It also has support for WebSocket communication and HTTP/2.
 
-## Install
+The project is open source and hosted on GitHub, allowing developers to contribute to its development and report issues. It has an active community of contributors and users who provide support and feedback.
 
-See ["https://jitpack.io/#Blade-Labs/kotlin-blade"](https://jitpack.io/#Blade-Labs/kotlin-blade) for help on adding a package to your project.
+Some of the key features of Kotlin Blade include:
 
-```groovy
-// ./settings.gradle
-dependencyResolutionManagement {
-    repositories {
-        ...
-        maven { url 'https://jitpack.io' }
-    }
-}
-```
-
-```groovy
-// ./app/build.gradle
-dependencies {
-    ...
-    implementation 'com.github.Blade-Labs:kotlin-blade:0.4.0'
-}
-```
-
-```xml
-<!-- ./app/src/main/AndroidManifest.xml-->
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
-    ...
-    <uses-permission android:name="android.permission.INTERNET" />
-    ...
-</manifest>
-```
-
-## Usage
-
-```kotlin
-import io.bladewallet.bladesdk.Blade
-import io.bladewallet.bladesdk.BalanceDataResponse
-import io.bladewallet.bladesdk.BladeJSError
-
-Blade.initialize("API_KEY", "dAppCode", "Testnet", requireContext()) {
-  // ready to use BladeSDK
-  println("init complete")
-}
-
-// Get balance by hedera id
-Blade.getBalance("0.0.49177063") { data: BalanceDataResponse?, error: BladeJSError? ->
-    if (data != null) {
-        println(data)
-    }
-}
-
-```
-
-## Todo
-
-- add method description
-- add examples
-- test
-- rename types to more consistency, and do so on SwiftBladeSDK
+Simple and intuitive syntax Lightweight and fast performance Routing and middleware support JSON handling and templating WebSocket and HTTP/2 support Easy integration with other libraries and frameworks Overall, Kotlin Blade is a promising web application framework for Kotlin developers who want to build efficient and scalable web applications.
