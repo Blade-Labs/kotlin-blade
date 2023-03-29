@@ -132,19 +132,3 @@ Finally, the function returns the current object of type ContractFunctionParamet
     }
 ```
 
-### Review
-
-Performing a thorough code review of a project as large as Kotlin Blade would require a significant amount of time and expertise.
-
-Here is a brief description of the main files in the Kotlin Blade project:
-
-* `build.gradle.kts`: This is the Gradle build file for the project. It specifies the project dependencies, plugins, and other build settings.
-* `settings.gradle.kts`: This file is used to configure the Gradle settings for the project, such as the project name and modules.
-* `src/main/kotlin/com/blade/Blade.kt`: This file contains the main entry point for the Kotlin Blade framework. It sets up the server and handles incoming requests.
-* `src/main/kotlin/com/blade/middleware`: This directory contains various middleware components that can be used with Kotlin Blade. These include components for handling static files, logging, and CORS.
-* `src/main/kotlin/com/blade/http`: This directory contains classes and interfaces for handling HTTP requests and responses, including routes and handlers.
-* `src/main/kotlin/com/blade/mvc`: This directory contains classes and interfaces for building Model-View-Controller (MVC) applications with Kotlin Blade. It includes support for controllers, models, and views.
-* `src/main/kotlin/com/blade/launcher`: This directory contains classes for launching the Kotlin Blade server using various methods, including from a JAR file and as a standalone executable.
-* `src/test/kotlin/com/blade`: This directory contains unit tests for the Kotlin Blade framework.
-
-Overall, the Kotlin Blade project appears to be well-organized and cleanly structured. It follows common conventions and patterns for building web frameworks in Kotlin, such as using routing and middleware components. The code is also well-documented and includes helpful comments and examples.
