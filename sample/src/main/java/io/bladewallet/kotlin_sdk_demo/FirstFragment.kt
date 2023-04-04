@@ -34,13 +34,13 @@ class FirstFragment : Fragment() {
 
         val contractId = "0.0.8316"
         val privateKey =
-            "3030020100300706052b8104000a042204208c44783cceb2d6711a5e583a81cc66c45fd291bd0f594f11f2e324b35c0559de"
-        val accountId = "0.0.3604734"
-        val evmAddress = "0xda647a72b1fa451dada9eb10ddead1b21eaa36cc"
+            "3030020100300706052b8104000a04220420ebccecef769bb5597d0009123a0fd96d2cdbe041c2a2da937aaf8bdc8731799b"
+        val accountId = "0.0.8235"
+        val message = "hello world"
 
 
         binding.buttonFirst.setOnClickListener {
-            Blade.initialize("1NpEy10UxlZ7AeqkuiCws3zJLPehQqvm7ahefmNF6wREULFGlm6rNtY/dKG6tmM", "karatecombat", "Testnet", requireContext()) {
+            Blade.initialize("api-key", "dAppCode", "Testnet", requireContext()) {
                 println("Init done!!!")
             }
         }
@@ -55,8 +55,9 @@ class FirstFragment : Fragment() {
 //                }
 //            }
 
-            var params = ContractFunctionParameters().addString(evmAddress);
-            Blade.contractCallFunction(contractId, "set_message", params, accountId, privateKey, 55000, true) { data, error: BladeJSError? ->
+            println("contract call")
+            var params = ContractFunctionParameters().addString(message);
+            Blade.contractCallFunction(contractId, "set_message", params, accountId, privateKey, 55000, false) { data, error: BladeJSError? ->
                 println("=== SET  CONTRACT ===")
                 if (data != null) {
                     println(data)
@@ -133,7 +134,7 @@ class FirstFragment : Fragment() {
 
         binding.buttonThird.setOnClickListener {
             val params = ContractFunctionParameters();
-            Blade.contractCallQueryFunction(contractId, "get_message", params, accountId, privateKey, 55000, true, listOf("string", "int32")) { data, error: BladeJSError? ->
+            Blade.contractCallQueryFunction(contractId, "get_message", params, accountId, privateKey, 55000, false, listOf("string", "int32")) { data, error: BladeJSError? ->
                 println("=== GET  CONTRACT ===")
                 if (data != null) {
                     println(data)

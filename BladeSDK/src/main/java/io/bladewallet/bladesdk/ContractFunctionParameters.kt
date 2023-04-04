@@ -82,7 +82,8 @@ class ContractFunctionParameters {
 
     fun encode(): String {
         try {
-            return gson.toJson(params).replace("\\", "\\\\");
+            val jsonEncoded = gson.toJson(params)
+            return Base64.getEncoder().encodeToString(jsonEncoded.toByteArray())
         } catch (error: Exception) {
             println(error)
         }
