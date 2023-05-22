@@ -6,14 +6,18 @@ import android.view.ViewGroup.LayoutParams
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.fingerprintjs.android.fpjs_pro.*
 import com.google.gson.Gson
 import java.util.*
+import java.util.concurrent.Semaphore
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
+    private const val sdkVersion: String = "Kotlin@0.5.9";
     private lateinit var webView: WebView
     private lateinit var apiKey: String
     private lateinit var uuid: String
+    private lateinit var visitorId: String
     private var network: String = "Testnet"
     private lateinit var dAppCode: String
     private var webViewInitialized: Boolean = false
@@ -21,6 +25,7 @@ object Blade {
     private lateinit var initCompletion: (() -> Unit)
     private var deferCompletions = mutableMapOf<String, (String, BladeJSError?) -> Unit>()
     private val gson = Gson()
+    private val visitorIdSemaphore = Semaphore(0)
 
     @SuppressLint("SetJavaScriptEnabled")
     fun initialize(apiKey: String, dAppCode: String, network: String, context: Context, completion: () -> Unit) {
@@ -33,6 +38,10 @@ object Blade {
         this.apiKey = apiKey
         this.dAppCode = dAppCode
         this.network = network
+
+        getVisitorId(context) { visitorId ->
+            this.visitorId = visitorId
+        }
 
         val sharedPreference = context.getSharedPreferences("BladeSDK", Context.MODE_PRIVATE)
         this.uuid = sharedPreference.getString("deviceId", "") ?: ""
@@ -62,7 +71,8 @@ object Blade {
                 deferCompletion(completionKey) { _: String, _: BladeJSError? ->
                     initCompletion()
                 }
-                executeJS("bladeSdk.init('$apiKey', '${network.lowercase()}', '$dAppCode', '$uuid', '$completionKey')")
+                waitUntilVisitorIdReady()
+                executeJS("bladeSdk.init('$apiKey', '${network.lowercase()}', '$dAppCode', '$uuid', '$visitorId', '$sdkVersion', '$completionKey')")
             }
         }
     }
@@ -91,12 +101,12 @@ object Blade {
         executeJS("bladeSdk.transferTokens('$tokenId', '$accountId', '$accountPrivateKey', '$receiverId', '$amount', $freeTransfer, '$completionKey')")
     }
 
-    fun createHederaAccount(completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
+    fun createHederaAccount(deviceId: String, completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("createAccount")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<CreatedAccountData, CreatedAccountResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.createAccount('$completionKey')")
+        executeJS("bladeSdk.createAccount('$deviceId', '$completionKey')")
     }
 
     fun getPendingAccount(transactionId: String, seedPhrase: String, completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
@@ -261,5 +271,30 @@ object Blade {
     private fun getCompletionKey(tag: String): String {
         completionId += 1
         return tag + completionId
+    }
+
+    private fun getVisitorId(context: Context, callback: (String) -> Unit) {
+        val factory = FingerprintJSFactory(context)
+        val configuration = Configuration(
+            apiKey= "Li4RsMbgPldpOVfWjnaF",
+//            region = Configuration.Region.US,
+            endpointUrl = "https://identity.bladewallet.io"
+        )
+
+        val fpjsClient = factory.createInstance(configuration)
+
+        fpjsClient.getVisitorId(fun(result: FingerprintJSProResponse) {
+            callback(result.visitorId);
+            visitorIdSemaphore.release()
+        }, fun(_) {
+            // Error getting fingerprint
+            callback("")
+            visitorIdSemaphore.release()
+        })
+    }
+
+    private fun waitUntilVisitorIdReady() {
+        visitorIdSemaphore.acquire();
+        visitorIdSemaphore.release();
     }
 }

@@ -46,14 +46,22 @@ class FirstFragment : Fragment() {
         }
 
         binding.buttonSecond.setOnClickListener {
-//            Blade.getBalance("0.0.49177063") { data: BalanceData?, error: BladeJSError? ->
-//                if (data != null) {
-//                    println(data)
-//                }
-//                if (error != null) {
-//                    println(error)
-//                }
-//            }
+
+            Blade.createHederaAccount("android device id") { createdAccountData, bladeJSError ->
+                println(createdAccountData)
+                println(bladeJSError)
+            }
+            return@setOnClickListener;
+
+            Blade.getBalance(accountId) { data: BalanceData?, error: BladeJSError? ->
+                if (data != null) {
+                    println(data)
+                }
+                if (error != null) {
+                    println(error)
+                }
+            }
+            return@setOnClickListener;
 
             println("contract call")
             var params = ContractFunctionParameters().addString(message);
