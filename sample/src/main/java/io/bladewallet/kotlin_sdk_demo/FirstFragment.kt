@@ -40,18 +40,27 @@ class FirstFragment : Fragment() {
 
 
         binding.buttonFirst.setOnClickListener {
-            Blade.initialize("api-key", "dAppCode", "Testnet", requireContext()) {
+            Blade.initialize("api-key", "dAppCode", "Testnet", BladeEnv.Prod, requireContext()) { infoData, bladeJSError ->
                 println("Init done!!!")
+                println(infoData)
+                println(bladeJSError)
             }
         }
 
         binding.buttonSecond.setOnClickListener {
 
+            Blade.transferHbars("accountid", "private key", "reciever id", 123.2, "tansaction ' memo") { transactionResult, bladeJSError ->
+                println(transactionResult)
+                println(bladeJSError)
+            }
+
+            return@setOnClickListener
+
             Blade.createHederaAccount("android device id") { createdAccountData, bladeJSError ->
                 println(createdAccountData)
                 println(bladeJSError)
             }
-            return@setOnClickListener;
+            return@setOnClickListener
 
             Blade.getBalance(accountId) { data: BalanceData?, error: BladeJSError? ->
                 if (data != null) {
@@ -61,10 +70,10 @@ class FirstFragment : Fragment() {
                     println(error)
                 }
             }
-            return@setOnClickListener;
+            return@setOnClickListener
 
             println("contract call")
-            var params = ContractFunctionParameters().addString(message);
+            var params = ContractFunctionParameters().addString(message)
             Blade.contractCallFunction(contractId, "set_message", params, accountId, privateKey, 55000, false) { data, error: BladeJSError? ->
                 println("=== SET  CONTRACT ===")
                 if (data != null) {
@@ -141,7 +150,7 @@ class FirstFragment : Fragment() {
         }
 
         binding.buttonThird.setOnClickListener {
-            val params = ContractFunctionParameters();
+            val params = ContractFunctionParameters()
             Blade.contractCallQueryFunction(contractId, "get_message", params, accountId, privateKey, 55000, false, listOf("string", "int32")) { data, error: BladeJSError? ->
                 println("=== GET  CONTRACT ===")
                 if (data != null) {
