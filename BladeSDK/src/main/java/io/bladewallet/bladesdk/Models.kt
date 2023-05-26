@@ -20,6 +20,22 @@ data class Response (
     var error: BladeJSError?,
 ) : Result<Any>
 
+data class InfoResponse(
+    override var completionKey: String,
+    override var data: InfoData
+): Result<InfoData>
+
+data class InfoData(
+    var apiKey: String,
+    var dAppCode: String,
+    var network: String,
+    var visitorId: String,
+    var deviceUuid: String,
+    var sdkEnvironment: String,
+    var sdkVersion: String,
+    var nonce: Int
+)
+
 data class BalanceResponse(
     override var completionKey: String,
     override var data: BalanceData
@@ -193,3 +209,8 @@ data class IntegrationUrlResponse(
 data class IntegrationUrlData(
     var url: String?,
 )
+
+enum class BladeEnv(val value: String) {
+    Prod("Prod"),
+    CI("CI")
+}

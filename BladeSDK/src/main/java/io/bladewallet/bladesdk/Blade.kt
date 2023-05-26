@@ -6,63 +6,79 @@ import android.view.ViewGroup.LayoutParams
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import com.fingerprintjs.android.fpjs_pro.*
 import com.google.gson.Gson
 import java.util.*
+import java.util.concurrent.Semaphore
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private lateinit var webView: WebView
+    private const val sdkVersion: String = "Kotlin@0.5.9"
+    private var webView: WebView? = null
     private lateinit var apiKey: String
-    private lateinit var uuid: String
+    private lateinit var deviceUuid: String
+    private lateinit var visitorId: String
     private var network: String = "Testnet"
     private lateinit var dAppCode: String
     private var webViewInitialized: Boolean = false
     private var completionId: Int = 0
-    private lateinit var initCompletion: (() -> Unit)
+    private lateinit var initCompletion: ((InfoData?, BladeJSError?) -> Unit)
     private var deferCompletions = mutableMapOf<String, (String, BladeJSError?) -> Unit>()
     private val gson = Gson()
+    private val visitorIdSemaphore = Semaphore(0)
 
     @SuppressLint("SetJavaScriptEnabled")
-    fun initialize(apiKey: String, dAppCode: String, network: String, context: Context, completion: () -> Unit) {
+    fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv, context: Context, completion: (InfoData?, BladeJSError?) -> Unit) {
         if (webViewInitialized) {
             println("Error while doing double init of BladeSDK")
             throw Exception("Error while doing double init of BladeSDK")
         }
         initCompletion = completion
-
         this.apiKey = apiKey
         this.dAppCode = dAppCode
         this.network = network
 
+        getVisitorId(context) { visitorId ->
+            this.visitorId = visitorId
+        }
+
         val sharedPreference = context.getSharedPreferences("BladeSDK", Context.MODE_PRIVATE)
-        this.uuid = sharedPreference.getString("deviceId", "") ?: ""
-        if (this.uuid == "") {
+        this.deviceUuid = sharedPreference.getString("deviceId", "") ?: ""
+        if (this.deviceUuid == "") {
             val editor = sharedPreference.edit()
-            this.uuid = UUID.randomUUID().toString()
-            editor.putString("deviceId",this.uuid)
+            this.deviceUuid = UUID.randomUUID().toString()
+            editor.putString("deviceId", this.deviceUuid)
             editor.apply()
         }
 
-        this.webView = WebView(context)
-        this.webView.layoutParams = LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.MATCH_PARENT
-        )
+        webView = WebView(context)
+        webView?.let { webView ->
+            webView.layoutParams = LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT
+            )
 
-        webView.settings.javaScriptEnabled = true
-        webView.loadUrl("file:///android_asset/index.html")
+            webView.settings.javaScriptEnabled = true
+            webView.loadUrl("file:///android_asset/index.html")
 
-        webView.addJavascriptInterface(this, "bladeMessageHandler")
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                // on webView init
-                webViewInitialized = true
+            webView.addJavascriptInterface(this, "bladeMessageHandler")
+            webView.webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    // on webView init
+                    webViewInitialized = true
 
-                val completionKey = getCompletionKey("initBladeSdkJS")
-                deferCompletion(completionKey) { _: String, _: BladeJSError? ->
-                    initCompletion()
+                    waitUntilVisitorIdReady()
+                    if (visitorId !== "") {
+                        val completionKey = getCompletionKey("initBladeSdkJS")
+                        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+                            typicalDeferredCallback<InfoData, InfoResponse>(data, error, initCompletion)
+                        }
+                        executeJS("bladeSdk.init('${esc(apiKey)}', '${esc(network.lowercase())}', '${esc(dAppCode)}', '$deviceUuid', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
+                    } else {
+                        initCompletion(null, BladeJSError("Init failed", "Failed to get visitor id"))
+                        cleanup()
+                    }
                 }
-                executeJS("bladeSdk.init('$apiKey', '${network.lowercase()}', '$dAppCode', '$uuid', '$completionKey')")
             }
         }
     }
@@ -72,31 +88,31 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<BalanceData, BalanceResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getBalance('$id', '$completionKey')")
+        executeJS("bladeSdk.getBalance('${esc(id)}', '$completionKey')")
     }
 
-    fun transferHbars(accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, completion: (TransferData?, BladeJSError?) -> Unit) {
+    fun transferHbars(accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, memo: String, completion: (TransferData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("transferHbars")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransferData, TransferResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.transferHbars('$accountId', '$accountPrivateKey', '$receiverId', '$amount', '$completionKey')")
+        executeJS("bladeSdk.transferHbars('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverId)}', '$amount', '${esc(memo)}', '$completionKey')")
     }
 
-    fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, freeTransfer: Boolean = true, completion: (TransferData?, BladeJSError?) -> Unit) {
+    fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, memo: String, freeTransfer: Boolean = true, completion: (TransferData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("transferTokens")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransferData, TransferResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.transferTokens('$tokenId', '$accountId', '$accountPrivateKey', '$receiverId', '$amount', $freeTransfer, '$completionKey')")
+        executeJS("bladeSdk.transferTokens('${esc(tokenId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverId)}', '$amount', '${esc(memo)}', $freeTransfer, '$completionKey')")
     }
 
-    fun createHederaAccount(completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
+    fun createHederaAccount(deviceId: String, completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("createAccount")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<CreatedAccountData, CreatedAccountResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.createAccount('$completionKey')")
+        executeJS("bladeSdk.createAccount('${esc(deviceId)}', '$completionKey')")
     }
 
     fun getPendingAccount(transactionId: String, seedPhrase: String, completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
@@ -104,7 +120,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<CreatedAccountData, CreatedAccountResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getPendingAccount('$transactionId', '$seedPhrase', '$completionKey')")
+        executeJS("bladeSdk.getPendingAccount('${esc(transactionId)}', '${esc(seedPhrase)}', '$completionKey')")
     }
 
     fun deleteHederaAccount(deleteAccountId: String, deletePrivateKey: String, transferAccountId: String, operatorAccountId: String, operatorPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
@@ -112,7 +128,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.deleteAccount('$deleteAccountId', '$deletePrivateKey', '$transferAccountId', '$operatorAccountId', '$operatorPrivateKey', '$completionKey')")
+        executeJS("bladeSdk.deleteAccount('${esc(deleteAccountId)}', '${esc(deletePrivateKey)}', '${esc(transferAccountId)}', '${esc(operatorAccountId)}', '${esc(operatorPrivateKey)}', '$completionKey')")
     }
 
     fun getAccountInfo(accountId: String, completion: (AccountInfoData?, BladeJSError?) -> Unit) {
@@ -120,7 +136,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<AccountInfoData, AccountInfoResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getAccountInfo('$accountId', '$completionKey')")
+        executeJS("bladeSdk.getAccountInfo('${esc(accountId)}', '$completionKey')")
     }
 
     fun getKeysFromMnemonic (menmonic: String, lookupNames: Boolean = false, completion: (PrivateKeyData?, BladeJSError?) -> Unit) {
@@ -128,7 +144,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<PrivateKeyData, PrivateKeyResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getKeysFromMnemonic('$menmonic', $lookupNames, '$completionKey')")
+        executeJS("bladeSdk.getKeysFromMnemonic('${esc(menmonic)}', $lookupNames, '$completionKey')")
     }
 
     fun sign (messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
@@ -136,7 +152,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SignMessageData, SignMessageResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.sign('$messageString', '$privateKey', '$completionKey')")
+        executeJS("bladeSdk.sign('${esc(messageString)}', '${esc(privateKey)}', '$completionKey')")
     }
 
     fun signVerify(messageString: String, signature: String, publicKey: String, completion: (SignVerifyMessageData?, BladeJSError?) -> Unit) {
@@ -144,7 +160,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SignVerifyMessageData, SignVerifyMessageResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.signVerify('$messageString', '$signature', '$publicKey', '$completionKey')")
+        executeJS("bladeSdk.signVerify('${esc(messageString)}', '${esc(signature)}', '${esc(publicKey)}', '$completionKey')")
     }
 
     fun contractCallFunction(contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, bladePayFee: Boolean, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
@@ -152,7 +168,8 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.contractCallFunction('$contractId', '$functionName', '${params.encode()}', '$accountId', '$accountPrivateKey', $gas, $bladePayFee, '$completionKey')")
+        // TODO check if we need to escape ContractFunctionParams.encode() result \'
+        executeJS("bladeSdk.contractCallFunction('${esc(contractId)}', '${esc(functionName)}', '${params.encode()}', '${esc(accountId)}', '${esc(accountPrivateKey)}', $gas, $bladePayFee, '$completionKey')")
     }
 
     fun contractCallQueryFunction(contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, bladePayFee: Boolean, returnTypes: List<String>, completion: (ContractQueryData?, BladeJSError?) -> Unit) {
@@ -161,7 +178,7 @@ object Blade {
             typicalDeferredCallback<ContractQueryData, ContractQueryResponse>(data, error, completion)
         }
 
-        executeJS("bladeSdk.contractCallQueryFunction('$contractId', '$functionName', '${params.encode()}', '$accountId', '$accountPrivateKey', $gas, $bladePayFee, ${returnTypes.joinToString(",", "[", "]") {"\"$it\""}}, '$completionKey')")
+        executeJS("bladeSdk.contractCallQueryFunction('${esc(contractId)}', '${esc(functionName)}', '${params.encode()}', '${esc(accountId)}', '${esc(accountPrivateKey)}', $gas, $bladePayFee, ${returnTypes.joinToString(",", "[", "]") {"\'${esc(it)}\'"}}, '$completionKey')")
     }
 
     fun hethersSign(messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
@@ -169,7 +186,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SignMessageData, SignMessageResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.hethersSign('$messageString', '$privateKey', '$completionKey')")
+        executeJS("bladeSdk.hethersSign('${esc(messageString)}', '${esc(privateKey)}', '$completionKey')")
     }
 
     fun splitSignature(signature: String, completion: (SplitSignatureData?, BladeJSError?) -> Unit) {
@@ -177,7 +194,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SplitSignatureData, SplitSignatureResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.splitSignature('$signature', '$completionKey')")
+        executeJS("bladeSdk.splitSignature('${esc(signature)}', '$completionKey')")
     }
 
     fun getParamsSignature(params: ContractFunctionParameters, accountPrivateKey: String, completion: (SplitSignatureData?, BladeJSError?) -> Unit) {
@@ -185,7 +202,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SplitSignatureData, SplitSignatureResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getParamsSignature('${params.encode()}', '$accountPrivateKey', '$completionKey')")
+        executeJS("bladeSdk.getParamsSignature('${params.encode()}', '${esc(accountPrivateKey)}', '$completionKey')")
     }
 
     fun getTransactions(accountId: String, transactionType: String, nextPage: String = "", transactionsLimit: Int = 10, completion: (TransactionsHistoryData?, BladeJSError?) -> Unit) {
@@ -193,7 +210,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionsHistoryData, TransactionsHistoryResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getTransactions('$accountId', '$transactionType', '$nextPage', '$transactionsLimit', '$completionKey')")
+        executeJS("bladeSdk.getTransactions('${esc(accountId)}', '${esc(transactionType)}', '${esc(nextPage)}', '$transactionsLimit', '$completionKey')")
     }
 
     fun getC14url(asset: String, account: String, amount: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
@@ -201,7 +218,23 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<IntegrationUrlData, IntegrationUrlResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getC14url('$asset', '$account', '$amount', '$completionKey')")
+        executeJS("bladeSdk.getC14url('${esc(asset)}', '${esc(account)}', '${esc(amount)}', '$completionKey')")
+    }
+
+    fun cleanup() {
+        webView?.let { webView ->
+            webView.removeJavascriptInterface("bladeMessageHandler")
+            webView.webViewClient = object : WebViewClient() {} // empty WebViewClient
+            webView.clearCache(true)
+            webView.clearHistory()
+            webView.destroy()
+        }
+        webView = null
+
+        webViewInitialized = false
+        deferCompletions.clear()
+        apiKey = ""
+        dAppCode = ""
     }
 
     ////////////////////////////////////////////////////////////////
@@ -251,7 +284,11 @@ object Blade {
             println("BladeSDK not initialized")
             throw Exception("BladeSDK not initialized")
         }
-        webView.evaluateJavascript("javascript:$script", null)
+        webView?.evaluateJavascript("javascript:$script", null)
+    }
+
+    private fun esc(string: String): String {
+        return string.replace("'", "\\'")
     }
 
     private fun deferCompletion(forKey: String, completion: (data: String, error: BladeJSError?) -> Unit) {
@@ -261,5 +298,30 @@ object Blade {
     private fun getCompletionKey(tag: String): String {
         completionId += 1
         return tag + completionId
+    }
+
+    private fun getVisitorId(context: Context, callback: (String) -> Unit) {
+        val factory = FingerprintJSFactory(context)
+        val configuration = Configuration(
+            apiKey= "Li4RsMbgPldpOVfWjnaF",
+            region = Configuration.Region.EU,
+            endpointUrl = "https://identity.bladewallet.io"
+        )
+
+        val fpjsClient = factory.createInstance(configuration)
+
+        fpjsClient.getVisitorId(fun(result: FingerprintJSProResponse) {
+            callback(result.visitorId)
+            visitorIdSemaphore.release()
+        }, fun(_) {
+            // Error getting fingerprint
+            callback("")
+            visitorIdSemaphore.release()
+        })
+    }
+
+    private fun waitUntilVisitorIdReady() {
+        visitorIdSemaphore.acquire()
+        visitorIdSemaphore.release()
     }
 }
