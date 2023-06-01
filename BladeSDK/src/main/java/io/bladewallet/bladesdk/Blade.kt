@@ -8,16 +8,17 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.fingerprintjs.android.fpjs_pro.*
 import com.google.gson.Gson
+import kotlinx.coroutines.*
 import java.util.*
-import java.util.concurrent.Semaphore
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.5.9"
+    private const val sdkVersion: String = "Kotlin@0.5.10"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private lateinit var deviceUuid: String
-    private lateinit var visitorId: String
+    private var visitorId: String = ""
+    private lateinit var remoteConfig: RemoteConfig
     private var network: String = "Testnet"
     private lateinit var dAppCode: String
     private var webViewInitialized: Boolean = false
@@ -25,7 +26,6 @@ object Blade {
     private lateinit var initCompletion: ((InfoData?, BladeJSError?) -> Unit)
     private var deferCompletions = mutableMapOf<String, (String, BladeJSError?) -> Unit>()
     private val gson = Gson()
-    private val visitorIdSemaphore = Semaphore(0)
 
     @SuppressLint("SetJavaScriptEnabled")
     fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv, context: Context, completion: (InfoData?, BladeJSError?) -> Unit) {
@@ -38,10 +38,6 @@ object Blade {
         this.dAppCode = dAppCode
         this.network = network
 
-        getVisitorId(context) { visitorId ->
-            this.visitorId = visitorId
-        }
-
         val sharedPreference = context.getSharedPreferences("BladeSDK", Context.MODE_PRIVATE)
         this.deviceUuid = sharedPreference.getString("deviceId", "") ?: ""
         if (this.deviceUuid == "") {
@@ -51,32 +47,43 @@ object Blade {
             editor.apply()
         }
 
-        webView = WebView(context)
-        webView?.let { webView ->
-            webView.layoutParams = LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.MATCH_PARENT
-            )
+        val coroutineScope = CoroutineScope(Dispatchers.Main)
+        coroutineScope.launch {
+            runBlocking {
+                try {
+                    remoteConfig = getRemoteConfig(apiKey, network, dAppCode, sdkVersion, bladeEnv);
+                    visitorId = getVisitorId(remoteConfig.fpApiKey, context);
+                } catch (e: java.lang.Exception) {
+                    initCompletion(null, BladeJSError("Init failed", e.toString()))
+                }
+            }
 
-            webView.settings.javaScriptEnabled = true
-            webView.loadUrl("file:///android_asset/index.html")
+            if (visitorId == "") {
+                return@launch;
+            }
 
-            webView.addJavascriptInterface(this, "bladeMessageHandler")
-            webView.webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    // on webView init
-                    webViewInitialized = true
+            launch(Dispatchers.Main) {
+                webView = WebView(context)
+                webView?.let { webView ->
+                    webView.layoutParams = LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        LayoutParams.MATCH_PARENT
+                    )
 
-                    waitUntilVisitorIdReady()
-                    if (visitorId !== "") {
-                        val completionKey = getCompletionKey("initBladeSdkJS")
-                        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-                            typicalDeferredCallback<InfoData, InfoResponse>(data, error, initCompletion)
+                    webView.settings.javaScriptEnabled = true
+                    webView.loadUrl("file:///android_asset/index.html")
+
+                    webView.addJavascriptInterface(this@Blade, "bladeMessageHandler")
+                    webView.webViewClient = object : WebViewClient() {
+                        override fun onPageFinished(view: WebView?, url: String?) {
+                            // on webView init
+                            webViewInitialized = true
+                            val completionKey = getCompletionKey("initBladeSdkJS")
+                            deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+                                typicalDeferredCallback<InfoData, InfoResponse>(data, error, initCompletion)
+                            }
+                            executeJS("bladeSdk.init('${esc(apiKey)}', '${esc(network.lowercase())}', '${esc(dAppCode)}', '$deviceUuid', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
                         }
-                        executeJS("bladeSdk.init('${esc(apiKey)}', '${esc(network.lowercase())}', '${esc(dAppCode)}', '$deviceUuid', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
-                    } else {
-                        initCompletion(null, BladeJSError("Init failed", "Failed to get visitor id"))
-                        cleanup()
                     }
                 }
             }
@@ -298,30 +305,5 @@ object Blade {
     private fun getCompletionKey(tag: String): String {
         completionId += 1
         return tag + completionId
-    }
-
-    private fun getVisitorId(context: Context, callback: (String) -> Unit) {
-        val factory = FingerprintJSFactory(context)
-        val configuration = Configuration(
-            apiKey= "Li4RsMbgPldpOVfWjnaF",
-            region = Configuration.Region.EU,
-            endpointUrl = "https://identity.bladewallet.io"
-        )
-
-        val fpjsClient = factory.createInstance(configuration)
-
-        fpjsClient.getVisitorId(fun(result: FingerprintJSProResponse) {
-            callback(result.visitorId)
-            visitorIdSemaphore.release()
-        }, fun(_) {
-            // Error getting fingerprint
-            callback("")
-            visitorIdSemaphore.release()
-        })
-    }
-
-    private fun waitUntilVisitorIdReady() {
-        visitorIdSemaphore.acquire()
-        visitorIdSemaphore.release()
     }
 }
