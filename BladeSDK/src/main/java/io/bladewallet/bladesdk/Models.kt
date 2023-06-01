@@ -210,6 +210,10 @@ data class IntegrationUrlData(
     var url: String?,
 )
 
+data class RemoteConfig(
+    var fpApiKey: String
+)
+
 enum class BladeEnv(val value: String) {
     Prod("Prod"),
     CI("CI")

@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.*
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentFirstBinding
+import kotlinx.coroutines.launch
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -37,13 +39,21 @@ class FirstFragment : Fragment() {
             "3030020100300706052b8104000a04220420ebccecef769bb5597d0009123a0fd96d2cdbe041c2a2da937aaf8bdc8731799b"
         val accountId = "0.0.8235"
         val message = "hello world"
-
+        binding.buttonSecond.isEnabled = false
+        binding.buttonThird.isEnabled = false
 
         binding.buttonFirst.setOnClickListener {
             Blade.initialize("api-key", "dAppCode", "Testnet", BladeEnv.Prod, requireContext()) { infoData, bladeJSError ->
-                println("Init done!!!")
-                println(infoData)
-                println(bladeJSError)
+                if (infoData != null) {
+                    println("BladeInit success: $infoData")
+                    lifecycleScope.launch {
+                        binding.buttonFirst.isEnabled = false
+                        binding.buttonSecond.isEnabled = true
+                        binding.buttonThird.isEnabled = true
+                    }
+                } else {
+                    println("BladeInit fail: ${bladeJSError}")
+                }
             }
         }
 
