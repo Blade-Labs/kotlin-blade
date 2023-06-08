@@ -18,6 +18,7 @@ dependencyResolutionManagement {
     repositories {
         ...
         maven { url 'https://jitpack.io' }
+        maven { url 'https://maven.fpregistry.io/releases' }
     }
 }
 ```
@@ -26,7 +27,7 @@ dependencyResolutionManagement {
 // ./app/build.gradle
 dependencies {
     ...
-    implementation 'com.github.Blade-Labs:kotlin-blade:0.4.0'
+    implementation 'com.github.Blade-Labs:kotlin-blade:0.5.10'
 }
 ```
 
