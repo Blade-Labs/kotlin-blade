@@ -13,10 +13,9 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.5.10"
+    private const val sdkVersion: String = "Kotlin@0.6.0"
     private var webView: WebView? = null
     private lateinit var apiKey: String
-    private lateinit var deviceUuid: String
     private var visitorId: String = ""
     private lateinit var remoteConfig: RemoteConfig
     private var network: String = "Testnet"
@@ -38,28 +37,19 @@ object Blade {
         this.dAppCode = dAppCode
         this.network = network
 
-        val sharedPreference = context.getSharedPreferences("BladeSDK", Context.MODE_PRIVATE)
-        this.deviceUuid = sharedPreference.getString("deviceId", "") ?: ""
-        if (this.deviceUuid == "") {
-            val editor = sharedPreference.edit()
-            this.deviceUuid = UUID.randomUUID().toString()
-            editor.putString("deviceId", this.deviceUuid)
-            editor.apply()
-        }
-
         val coroutineScope = CoroutineScope(Dispatchers.Main)
         coroutineScope.launch {
             runBlocking {
                 try {
-                    remoteConfig = getRemoteConfig(apiKey, network, dAppCode, sdkVersion, bladeEnv);
-                    visitorId = getVisitorId(remoteConfig.fpApiKey, context);
+                    remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
+                    visitorId = getVisitorId(remoteConfig.fpApiKey, context)
                 } catch (e: java.lang.Exception) {
                     initCompletion(null, BladeJSError("Init failed", e.toString()))
                 }
             }
 
             if (visitorId == "") {
-                return@launch;
+                return@launch
             }
 
             launch(Dispatchers.Main) {
@@ -82,7 +72,7 @@ object Blade {
                             deferCompletion(completionKey) { data: String, error: BladeJSError? ->
                                 typicalDeferredCallback<InfoData, InfoResponse>(data, error, initCompletion)
                             }
-                            executeJS("bladeSdk.init('${esc(apiKey)}', '${esc(network.lowercase())}', '${esc(dAppCode)}', '$deviceUuid', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
+                            executeJS("bladeSdk.init('${esc(apiKey)}', '${esc(network.lowercase())}', '${esc(dAppCode)}', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
                         }
                     }
                 }
@@ -257,7 +247,6 @@ object Blade {
 
             val deferredCompletion = deferCompletions[response.completionKey]
             if (deferredCompletion != null) {
-                // TODO: fix this hacky way of throwing error on data parse
                 if (response.error != null) {
                     deferredCompletion("", response.error)
                 } else {

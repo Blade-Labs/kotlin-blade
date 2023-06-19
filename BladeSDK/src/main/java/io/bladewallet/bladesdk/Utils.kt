@@ -16,7 +16,7 @@ import kotlin.coroutines.suspendCoroutine
 import com.google.gson.Gson
 
 
-internal suspend fun getRemoteConfig(apiKey: String, network: String, dAppCode: String, sdkVersion: String, bladeEnv: BladeEnv): RemoteConfig = withContext(Dispatchers.IO) {
+internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersion: String, bladeEnv: BladeEnv): RemoteConfig = withContext(Dispatchers.IO) {
     val url: String = if (bladeEnv === BladeEnv.Prod) {
         "https://rest.prod.bladewallet.io/openapi/v7/sdk/config"
     } else {
@@ -26,7 +26,6 @@ internal suspend fun getRemoteConfig(apiKey: String, network: String, dAppCode: 
     val connection = URL(url).openConnection() as HttpURLConnection
     connection.requestMethod = "GET"
 
-    connection.setRequestProperty("x-sdk-token", apiKey)
     connection.setRequestProperty("x-network", network.uppercase())
     connection.setRequestProperty("x-dapp-code", dAppCode)
     connection.setRequestProperty("x-sdk-version", sdkVersion)
