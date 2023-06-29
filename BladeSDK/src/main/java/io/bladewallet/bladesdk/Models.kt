@@ -30,7 +30,6 @@ data class InfoData(
     var dAppCode: String,
     var network: String,
     var visitorId: String,
-    var deviceUuid: String,
     var sdkEnvironment: String,
     var sdkVersion: String,
     var nonce: Int
