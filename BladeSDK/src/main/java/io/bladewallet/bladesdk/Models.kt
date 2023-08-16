@@ -182,8 +182,9 @@ data class TransactionHistoryDetail(
 data class TransactionHistoryPlainData(
     var type: String,
     var token_id: String,
-    var account: String,
-    var amount: Double
+    var amount: Double,
+    var senders: List<String>,
+    var receivers: List<String>
 )
 
 data class TransactionHistoryTransfer(
