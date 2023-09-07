@@ -43,7 +43,7 @@ class FirstFragment : Fragment() {
         binding.buttonThird.isEnabled = false
 
         binding.buttonFirst.setOnClickListener {
-            Blade.initialize("api-key", "dAppCode", "Testnet", BladeEnv.Prod, requireContext()) { infoData, bladeJSError ->
+            Blade.initialize("api-key", "dAppCode", "Testnet", BladeEnv.CI, requireContext()) { infoData, bladeJSError ->
                 if (infoData != null) {
                     println("BladeInit success: $infoData")
                     lifecycleScope.launch {
