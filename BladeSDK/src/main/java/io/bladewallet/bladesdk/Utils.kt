@@ -20,7 +20,7 @@ internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersi
     val url: String = if (bladeEnv === BladeEnv.Prod) {
         "https://rest.prod.bladewallet.io/openapi/v7/sdk/config"
     } else {
-        "https://rest.ci.bladewallet.io/openapi/v7/sdk/config"
+        "https://api.bld-dev.bladewallet.io/openapi/v7/sdk/config"
     }
 
     val connection = URL(url).openConnection() as HttpURLConnection
