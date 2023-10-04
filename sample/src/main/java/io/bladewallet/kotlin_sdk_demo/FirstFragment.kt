@@ -34,16 +34,21 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val contractId = "0.0.8316"
+        val apiKey = "FG9dUBQcBaBAPgCHz7DqmNZzrJyhewAMJytjwp3VFIEMFTXQyVSIDq6wRvtPcSAt"
+        val dAppCode = "unitysdktest"
+        val accountId = "0.0.346533"
+        val accountId2 = "0.0.346530"
+        val contractId = "0.0.416245"
+        val tokenId = "0.0.433870"
+        val publicKey = "302d300706052b8104000a032200029dc73991b0d9cdbb59b2cd0a97a0eaff6de801726cb39804ea9461df6be2dd30"
         val privateKey =
-            "3030020100300706052b8104000a04220420ebccecef769bb5597d0009123a0fd96d2cdbe041c2a2da937aaf8bdc8731799b"
-        val accountId = "0.0.8235"
-        val message = "hello world"
+            "302d300706052b8104000a032200029dc73991b0d9cdbb59b2cd0a97a0eaff6de801726cb39804ea9461df6be2dd30"
+        val message = "hello"
         binding.buttonSecond.isEnabled = false
         binding.buttonThird.isEnabled = false
 
         binding.buttonFirst.setOnClickListener {
-            Blade.initialize("api-key", "dAppCode", "Testnet", BladeEnv.CI, requireContext()) { infoData, bladeJSError ->
+            Blade.initialize(apiKey, dAppCode, "Testnet", BladeEnv.CI, requireContext()) { infoData, bladeJSError ->
                 if (infoData != null) {
                     println("BladeInit success: $infoData")
                     lifecycleScope.launch {
@@ -59,16 +64,16 @@ class FirstFragment : Fragment() {
 
         binding.buttonSecond.setOnClickListener {
             Blade.getTransactions(
-                "0.0.346533",
+                accountId,
                 "CRYPTOTRANSFERTOKEN",
                 "",
                 10
             ) { data: TransactionsHistoryData?, error: BladeJSError? ->
-                println(data);
-                println(error);
+                println(data)
+                println(error)
             }
 
-//            Blade.transferHbars("accountid", "private key", "reciever id", 123.2, "tansaction ' memo") { transactionResult, bladeJSError ->
+//            Blade.transferHbars(accountId, privateKey, accountId2, 123.2, "tansaction ' memo") { transactionResult, bladeJSError ->
 //                println(transactionResult)
 //                println(bladeJSError)
 //            }
@@ -103,7 +108,7 @@ class FirstFragment : Fragment() {
 //                }
 //            }
 
-//            Blade.getC14url("hbar", "0.0.1242322", "444") { data, error: BladeJSError? ->
+//            Blade.getC14url("hbar", accountId, "444") { data, error: BladeJSError? ->
 //                println("result url:")
 //                if (data != null) {
 //                    println(data)
@@ -157,11 +162,11 @@ class FirstFragment : Fragment() {
 //                .addUInt256(BigInteger("12345"))
 //
 //            Blade.contractCallFunction(
-//                "0.0.48915363",
+//                contractId,
 //                "set_message",
 //                params,
-//                "0.0.48905075",
-//                "302e020100300506032b65700422042042df7851440d10c1599999f28653ae31d59adc0bc4b7d18caaae777da38e385f"
+//                accountId,
+//                privateKey
 //            ) { data: TransactionReceiptData?, error: BladeJSError? ->
 //                println(data);
 //                println(error);
