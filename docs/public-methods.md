@@ -238,7 +238,7 @@ fun contractCallQueryFunction(contractId: String, functionName: String, params: 
 }
 ```
 
-## Sign message with private key (hethers lib)
+## Sign message with private key (ethers lib)
 
 ### Parameters:
 
@@ -247,12 +247,12 @@ fun contractCallQueryFunction(contractId: String, functionName: String, params: 
  * `completion`: callback function, with result of SignMessageData or BladeJSError
 
 ```kotlin
-fun hethersSign(messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
-    val completionKey = getCompletionKey("hethersSign")
+fun ethersSign(messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("ethersSign")
     deferCompletion(completionKey) { data: String, error: BladeJSError? ->
         typicalDeferredCallback<SignMessageData, SignMessageResponse>(data, error, completion)
     }
-    executeJS("bladeSdk.hethersSign('${esc(messageString)}', '${esc(privateKey)}', '$completionKey')")
+    executeJS("bladeSdk.ethersSign('${esc(messageString)}', '${esc(privateKey)}', '$completionKey')")
 }
 ```
 
