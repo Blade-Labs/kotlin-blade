@@ -13,7 +13,7 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.4"
+    private const val sdkVersion: String = "Kotlin@0.6.5"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -37,43 +37,39 @@ object Blade {
         this.dAppCode = dAppCode
         this.network = network
 
-        val coroutineScope = CoroutineScope(Dispatchers.Main)
-        coroutineScope.launch {
-            runBlocking {
-                try {
-                    remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
-                    visitorId = getVisitorId(remoteConfig.fpApiKey, context)
-                } catch (e: java.lang.Exception) {
-                    initCompletion(null, BladeJSError("Init failed", e.toString()))
-                }
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
+                visitorId = getVisitorId(remoteConfig.fpApiKey, context)
+            } catch (e: java.lang.Exception) {
+                initCompletion(null, BladeJSError("Init failed", e.toString()))
+                return@launch
             }
 
             if (visitorId == "") {
                 return@launch
             }
 
-            launch(Dispatchers.Main) {
-                webView = WebView(context)
-                webView?.let { webView ->
-                    webView.layoutParams = LayoutParams(
-                        LayoutParams.MATCH_PARENT,
-                        LayoutParams.MATCH_PARENT
-                    )
+            webView = WebView(context)
+            webView?.let { webView ->
+                webView.layoutParams = LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.MATCH_PARENT
+                )
 
-                    webView.settings.javaScriptEnabled = true
-                    webView.loadUrl("file:///android_asset/index.html")
+                webView.settings.javaScriptEnabled = true
+                webView.loadUrl("file:///android_asset/index.html")
 
-                    webView.addJavascriptInterface(this@Blade, "bladeMessageHandler")
-                    webView.webViewClient = object : WebViewClient() {
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            // on webView init
-                            webViewInitialized = true
-                            val completionKey = getCompletionKey("initBladeSdkJS")
-                            deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-                                typicalDeferredCallback<InfoData, InfoResponse>(data, error, initCompletion)
-                            }
-                            executeJS("bladeSdk.init('${esc(apiKey)}', '${esc(network.lowercase())}', '${esc(dAppCode)}', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
+                webView.addJavascriptInterface(this@Blade, "bladeMessageHandler")
+                webView.webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        // on webView init
+                        webViewInitialized = true
+                        val completionKey = getCompletionKey("initBladeSdkJS")
+                        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+                            typicalDeferredCallback<InfoData, InfoResponse>(data, error, initCompletion)
                         }
+                        executeJS("bladeSdk.init('${esc(apiKey)}', '${esc(network.lowercase())}', '${esc(dAppCode)}', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
                     }
                 }
             }
@@ -283,18 +279,18 @@ object Blade {
     }
 
     /**
-     * Sign message with private key (hethers lib)
+     * Sign message with private key (ethers lib)
      *
      * @param messageString: message in base64 string
      * @param privateKey: private key string
      * @param completion callback function, with result of SignMessageData or BladeJSError
      */
-    fun hethersSign(messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
-        val completionKey = getCompletionKey("hethersSign")
+    fun ethersSign(messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("ethersSign")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SignMessageData, SignMessageResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.hethersSign('${esc(messageString)}', '${esc(privateKey)}', '$completionKey')")
+        executeJS("bladeSdk.ethersSign('${esc(messageString)}', '${esc(privateKey)}', '$completionKey')")
     }
 
     /**
