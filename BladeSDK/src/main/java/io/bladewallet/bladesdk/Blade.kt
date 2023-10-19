@@ -13,7 +13,7 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.5"
+    private const val sdkVersion: String = "Kotlin@0.6.6"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -353,6 +353,63 @@ object Blade {
             typicalDeferredCallback<IntegrationUrlData, IntegrationUrlResponse>(data, error, completion)
         }
         executeJS("bladeSdk.getC14url('${esc(asset)}', '${esc(account)}', '${esc(amount)}', '$completionKey')")
+    }
+
+    /**
+     * Get swap quotes from different services
+     *
+     * @param sourceCode: name (HBAR, KARATE, other token code)
+     * @param sourceAmount: amount to swap, buy or sell
+     * @param targetCode: name (HBAR, KARATE, USDC, other token code)
+     * @param strategy: one of enum CryptoFlowServiceStrategy (Buy, Sell, Swap)
+     * @param completion: callback function, with result of SwapQuotesData or BladeJSError
+    */
+    fun exchangeGetQuotes(sourceCode: String, sourceAmount: Double, targetCode: String, strategy: CryptoFlowServiceStrategy, completion: (SwapQuotesData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("exchangeGetQuotes")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<SwapQuotesData, SwapQuotesResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.exchangeGetQuotes('${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', '${esc(strategy.value)}', '$completionKey')")
+    }
+
+    /**
+     * Get configured url to buy or sell tokens or fiat
+     *
+     * @param strategy: Buy / Sell
+     * @param accountId: account id
+     * @param sourceCode: name (HBAR, KARATE, USDC, other token code)
+     * @param sourceAmount: amount to buy/sell
+     * @param targetCode: name (HBAR, KARATE, USDC, other token code)
+     * @param slippage: slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage.
+     * @param serviceId: service id to use for swap (saucerswap, onmeta, etc)
+     * @param completion: callback function, with result of IntegrationUrlData or BladeJSError
+    */
+    fun getTradeUrl(strategy: CryptoFlowServiceStrategy, accountId: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getTradeUrl")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<IntegrationUrlData, IntegrationUrlResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getTradeUrl('${esc(strategy.value)}', '${esc(accountId)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '$completionKey')")
+    }
+
+    /**
+     * Swap tokens
+     *
+     * @param accountId: account id
+     * @param accountPrivateKey: account private key
+     * @param sourceCode: name (HBAR, KARATE, other token code)
+     * @param sourceAmount: amount to swap
+     * @param targetCode: name (HBAR, KARATE, other token code)
+     * @param slippage: slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage.
+     * @param serviceId: service id to use for swap (saucerswap, etc)
+     * @param completion: callback function, with result of ResultData or BladeJSError
+    */
+    fun swapTokens(accountId: String, accountPrivateKey: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (ResultData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("swapTokens")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<ResultData, ResultResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.swapTokens('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '$completionKey')")
     }
 
     /**

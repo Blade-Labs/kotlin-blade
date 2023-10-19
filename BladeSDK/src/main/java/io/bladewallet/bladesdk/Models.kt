@@ -210,6 +210,61 @@ data class IntegrationUrlData(
     var url: String?,
 )
 
+data class SwapQuotesResponse(
+    override var completionKey: String,
+    override var data: SwapQuotesData
+): Result<SwapQuotesData>
+
+data class SwapQuotesData(
+    var quotes: List<ICryptoFlowQuote>
+)
+
+data class ICryptoFlowQuote(
+    var service: ICryptoFlowQuoteService,
+    var source: IAssetQuote,
+    var target: IAssetQuote,
+    var rate: Double?,
+    var widgetUrl: String?,
+    var paymentMethods: List<String>?
+)
+
+data class ICryptoFlowQuoteService(
+    var id: String,
+    var name: String,
+    var logo: String,
+    var description: String?
+)
+data class IAssetQuote(
+    var asset: ICryptoFlowAsset,
+    var amountExpected: Double,
+    var totalFee: Double?,
+)
+
+data class ICryptoFlowAsset(
+    var name: String,
+    var code: String,
+    var type: String,
+    // crypto only
+    var address: String?,
+    var chainId: Int?,
+    var decimals: Int?,
+    var minAmount: Double?,
+    var maxAmount: Double?,
+    // fiat only
+    var symbol: String?,
+    // both
+    var imageUrl: String?,
+)
+
+data class ResultResponse(
+    override var completionKey: String,
+    override var data: ResultData
+): Result<ResultData>
+
+data class ResultData(
+    var success: Boolean
+)
+
 data class RemoteConfig(
     var fpApiKey: String
 )
@@ -217,4 +272,10 @@ data class RemoteConfig(
 enum class BladeEnv(val value: String) {
     Prod("Prod"),
     CI("CI")
+}
+
+enum class CryptoFlowServiceStrategy(val value: String) {
+    BUY("Buy"),
+    SELL("Sell"),
+    SWAP("Swap")
 }
