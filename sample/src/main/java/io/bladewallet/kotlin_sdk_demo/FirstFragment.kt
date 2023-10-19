@@ -48,7 +48,7 @@ class FirstFragment : Fragment() {
         binding.buttonThird.isEnabled = false
 
         binding.buttonFirst.setOnClickListener {
-            Blade.initialize(apiKey, dAppCode, "Testnet", BladeEnv.CI, requireContext()) { infoData, bladeJSError ->
+            Blade.initialize(apiKey, dAppCode, "Mainnet", BladeEnv.CI, requireContext()) { infoData, bladeJSError ->
                 if (infoData != null) {
                     println("BladeInit success: $infoData")
                     lifecycleScope.launch {
@@ -63,6 +63,47 @@ class FirstFragment : Fragment() {
         }
 
         binding.buttonSecond.setOnClickListener {
+
+//        // QUOTES SWAP
+//        Blade.exchangeGetQuotes("HBAR", 2.0, "KARATE", CryptoFlowServiceStrategy.SWAP) { data, error ->
+//            println("res: ${data ?: error}");
+//            // SwapQuotesData(quotes=[ICryptoFlowQuote(service=ICryptoFlowQuoteService(id=saucerswap, name=Saucerswap, logo=https://img.bld-dev.bladewallet.io/crypto-flow-img/saucerswap.svg, description=null), source=IAssetQuote(asset=ICryptoFlowAsset(name=WHBAR [new], code=HBAR, type=crypto, address=0.0.1456986, chainId=295, decimals=8, minAmount=null, maxAmount=null, symbol=null, imageUrl=null), amountExpected=2.0, totalFee=null), target=IAssetQuote(asset=ICryptoFlowAsset(name=Karate, code=KARATE, type=crypto, address=0.0.2283230, chainId=295, decimals=8, minAmount=null, maxAmount=null, symbol=null, imageUrl=null), amountExpected=161.67068371, totalFee=null), rate=null, widgetUrl=null, paymentMethods=null)])
+//        }
+//
+//        // QUOTES BUY
+//        Blade.exchangeGetQuotes("EUR", 50.0, "HBAR", CryptoFlowServiceStrategy.BUY) { data, error ->
+//            println(data ?: error);
+//            // SwapQuotesData(quotes=[ICryptoFlowQuote(service=ICryptoFlowQuoteService(id=moonpay, name=Moonpay, logo=https://img.bld-dev.bladewallet.io/crypto-flow-img/moonpay.svg, description=null), source=IAssetQuote(asset=ICryptoFlowAsset(name=Euro, code=EUR, type=fiat, address=null, chainId=null, decimals=null, minAmount=null, maxAmount=null, symbol=eur, imageUrl=null), amountExpected=50.0, totalFee=1.0300000000000011), target=IAssetQuote(asset=ICryptoFlowAsset(name=Hedera Hashgraph, code=HBAR, type=crypto, address=, chainId=295, decimals=null, minAmount=20.0, maxAmount=2000.0, symbol=null, imageUrl=null), amountExpected=1071.0, totalFee=null), rate=0.045702478947599066, widgetUrl=https://buy.moonpay.com/?apiKey=pk_live_2uZEjEOa31JWcga7QGg5Lq8Klx7mEXUj&enabledPayments=credit_debit_card%2Capple_pay%2Cgoogle_pay%2Csamsung_pay%2Csepa_bank_transfer%2Cgbp_bank_transfer%2Cgbp_open_banking_payment&colorCode=%23EF6345&theme=dark&showOnlyCurrencies=hbar%2Cusdc_hedera&defaultCurrencyCode=hbar&baseCurrencyCode=eur&baseCurrencyAmount=50&walletAddress=undefined, paymentMethods=null), ICryptoFlowQuote(service=ICryptoFlowQuoteService(id=c14, name=C14, logo=https://img.bld-dev.bladewallet.io/crypto-flow-img/c14.svg, description=null), source=IAssetQuote(asset=ICryptoFlowAsset(name=EUR, code=EUR, type=fiat, address=null, chainId=null, decimals=null, minAmount=null, maxAmount=null, symbol=EUR, imageUrl=null), amountExpected=50.0, totalFee=1.51), target=IAssetQuote(asset=ICryptoFlowAsset(name=Hedera, code=HBAR, type=crypto, address=0.0.0, chainId=295, decimals=null, minAmount=null, maxAmount=null, symbol=null, imageUrl=null), amountExpected=1083.53, totalFee=null), rate=null, widgetUrl=https://pay.c14.money/?clientId=00ce2e0a-ee66-4971-a0e9-b9d627d106b0&targetAssetId=d9b45743-e712-4088-8a31-65ee6f371022&targetAssetIdLock=false&sourceCurrencyCode=EUR&sourceAmount=50&quoteAmountLock=false&targetAddress=undefined&targetAddressLock=false, paymentMethods=null)])
+//        }
+//
+//        // QUOTES SELL
+//        Blade.exchangeGetQuotes("USDC", 50.0, "PHP", CryptoFlowServiceStrategy.SELL) { data, error ->
+//            println(data ?: error);
+//            // SwapQuotesData(quotes=[ICryptoFlowQuote(service=ICryptoFlowQuoteService(id=onmeta, name=OnMeta, logo=https://img.bld-dev.bladewallet.io/crypto-flow-img/onmeta.svg, description=null), source=IAssetQuote(asset=ICryptoFlowAsset(name=USD Coin, code=USDC, type=crypto, address=0.0.456858, chainId=295, decimals=6, minAmount=null, maxAmount=null, symbol=null, imageUrl=https://www.saucerswap.finance/images/tokens/usdc.svg), amountExpected=50.500008, totalFee=null), target=IAssetQuote(asset=ICryptoFlowAsset(name=PHP, code=PHP, type=fiat, address=null, chainId=null, decimals=null, minAmount=null, maxAmount=null, symbol=₱, imageUrl=null), amountExpected=2766.3926570000003, totalFee=27.663926570000005), rate=55.32784438, widgetUrl=https://platform.onmeta.in/?apiKey=347ba290-a100-423a-9ff0-1e6b6152eb47&chainId=295&tokenSymbol=USDC&fiatAmount=2766.3926570000003&fiatType=php&walletAddress=undefined&onRamp=disabled&offRamp=enabled, paymentMethods=null)])
+//        }
+//
+//        // SWAP HBAR TO KARATE
+//        Blade.swapTokens("0.0.832167", "3030020100300706052b8104000.....", "HBAR", 1.0, "KARATE", 0.5, "saucerswap") { data, error ->
+//            println(data ?: error);
+//            // ResultData(success=true)
+//            // or
+//            // BladeJSError(name=StatusError, reason=transaction 0.0.832167@1697713937.103782570 failed precheck with status INSUFFICIENT_PAYER_BALANCE)
+//        }
+//
+//        // BUY URL
+//        Blade.getTradeUrl(CryptoFlowServiceStrategy.BUY, "0.0.2625650", "EUR", 50.0, "HBAR", 0.5, "moonpay") { data, error ->
+//            println(data ?: error);
+//            // IntegrationUrlData(url=https://buy.moonpay.com/?apiKey=pk_live_2uZEjEOa31JWcga7QGg5Lq8Klx7mEXUj&enabledPayments=credit_debit_card%2Capple_pay%2Cgoogle_pay%2Csamsung_pay%2Csepa_bank_transfer%2Cgbp_bank_transfer%2Cgbp_open_banking_payment&colorCode=%23EF6345&theme=dark&showOnlyCurrencies=hbar%2Cusdc_hedera&defaultCurrencyCode=hbar&baseCurrencyCode=eur&baseCurrencyAmount=50&walletAddress=0.0.2625650)
+//        }
+//
+//        // SELL URL
+//        Blade.getTradeUrl(CryptoFlowServiceStrategy.SELL, "0.0.2625650", "USDC", 50.0, "PHP", 0.5, "onmeta") { data, error ->
+//            println(data ?: error);
+//            // IntegrationUrlData(url=https://platform.onmeta.in/?apiKey=347ba290-a100-423a-9ff0-1e6b6152eb47&chainId=295&tokenSymbol=USDC&fiatAmount=2766.3926570000003&fiatType=php&walletAddress=0.0.2625650&onRamp=disabled&offRamp=enabled)
+//        }
+
+
+
             Blade.getTransactions(
                 accountId,
                 "CRYPTOTRANSFERTOKEN",

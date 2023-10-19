@@ -17,10 +17,15 @@ import com.google.gson.Gson
 
 
 internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersion: String, bladeEnv: BladeEnv): RemoteConfig = withContext(Dispatchers.IO) {
-    val url: String = if (bladeEnv === BladeEnv.Prod) {
-        "https://rest.prod.bladewallet.io/openapi/v7/sdk/config"
+    val url: String
+    val fallbackConfig = RemoteConfig(fpApiKey = "")
+
+    if (bladeEnv === BladeEnv.Prod) {
+        url = "https://rest.prod.bladewallet.io/openapi/v7/sdk/config"
+        fallbackConfig.fpApiKey = "Li4RsMbgPldpOVfWjnaF"
     } else {
-        "https://api.bld-dev.bladewallet.io/openapi/v7/sdk/config"
+        url = "https://api.bld-dev.bladewallet.io/openapi/v7/sdk/config"
+        fallbackConfig.fpApiKey = "0fScXqpS7MzpCl9HgEsI"
     }
 
     val connection = URL(url).openConnection() as HttpURLConnection
@@ -49,10 +54,12 @@ internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersi
             val remoteConfig = Gson().fromJson(jsonString, RemoteConfig::class.java)
             return@withContext remoteConfig
         } catch (error: Exception) {
-            throw Exception("${error}. Data: `${jsonString}`")
+            // throw Exception("${error}. Data: `${jsonString}`")
+            return@withContext fallbackConfig
         }
     } else {
-        throw Exception(response.toString())
+        // throw Exception(response.toString())
+        return@withContext fallbackConfig
     }
 }
 

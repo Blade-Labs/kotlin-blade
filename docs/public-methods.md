@@ -330,6 +330,72 @@ fun getC14url(asset: String, account: String, amount: String = "", completion: (
 }
 ```
 
+## Method to get swap quotes from different services
+
+### Parameters:
+
+ * `sourceCode`: name (HBAR, KARATE, other token code)
+ * `sourceAmount`: amount to swap, buy or sell
+ * `targetCode`: name (HBAR, KARATE, USDC, other token code)
+ * `strategy`: one of enum CryptoFlowServiceStrategy (Buy, Sell, Swap)
+ * `completion`: callback function, with result of SwapQuotesData or BladeJSError
+
+```kotlin
+fun exchangeGetQuotes(sourceCode: String, sourceAmount: Double, targetCode: String, strategy: CryptoFlowServiceStrategy, completion: (SwapQuotesData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("exchangeGetQuotes")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<SwapQuotesData, SwapQuotesResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.exchangeGetQuotes('${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', '${esc(strategy.value)}', '$completionKey')")
+}
+```
+
+## Method to get configured url to buy or sell tokens or fiat
+
+### Parameters:
+     
+ * `strategy`: Buy / Sell
+ * `accountId`: account id
+ * `sourceCode`: name (HBAR, KARATE, USDC, other token code)
+ * `sourceAmount`: amount to buy/sell
+ * `targetCode`: name (HBAR, KARATE, USDC, other token code)
+ * `slippage`: slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage.
+ * `serviceId`: service id to use for swap (saucerswap, onmeta, etc)
+ * `completion`: callback function, with result of IntegrationUrlData or BladeJSError
+   
+```kotlin
+fun getTradeUrl(strategy: CryptoFlowServiceStrategy, accountId: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("getTradeUrl")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<IntegrationUrlData, IntegrationUrlResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.getTradeUrl('${esc(strategy.value)}', '${esc(accountId)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '$completionKey')")
+}
+```
+
+## Method to swap tokens
+
+### Parameters:
+
+ * `accountId`: account id
+ * `accountPrivateKey`: account private key
+ * `sourceCode`: name (HBAR, KARATE, other token code)
+ * `sourceAmount`: amount to swap
+ * `targetCode`: name (HBAR, KARATE, other token code)
+ * `slippage`: slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage.
+ * `serviceId`: service id to use for swap (saucerswap, etc)
+ * `completion`: callback function, with result of ResultData or BladeJSError
+ 
+```kotlin
+fun swapTokens(accountId: String, accountPrivateKey: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (ResultData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("swapTokens")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<ResultData, ResultResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.swapTokens('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '$completionKey')")
+}
+```
+
 ## Method to clean-up webView
 
 ```kotlin
