@@ -51,6 +51,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
                     android:hint="@string/label_dAppCode"
+                    android:singleLine="true"
                     android:textSize="14sp" />
             </TableRow>
 
@@ -71,6 +72,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
                     android:hint="@string/label_apiKey"
+                    android:singleLine="true"
                     android:textSize="14sp" />
             </TableRow>
 
@@ -141,6 +143,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
                     android:hint="@string/label_accountId"
+                    android:singleLine="true"
                     android:textSize="14sp" />
             </TableRow>
 
@@ -161,6 +164,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
                     android:hint="@string/label_accountPrivateKey"
+                    android:singleLine="true"
                     android:textSize="14sp" />
             </TableRow>
 
@@ -181,6 +185,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
                     android:hint="@string/label_contractId"
+                    android:singleLine="true"
                     android:textSize="14sp" />
             </TableRow>
 
@@ -201,6 +206,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
                     android:hint="@string/label_tokenId"
+                    android:singleLine="true"
                     android:textSize="14sp" />
             </TableRow>
 
@@ -220,9 +226,10 @@
                     android:id="@+id/stopButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/button_stop"
+                    android:layout_margin="5dp"
                     android:layout_weight="5"
-                    android:layout_margin="5dp" />
+                    android:enabled="false"
+                    android:text="@string/button_stop" />
             </TableRow>
         </TableLayout>
 

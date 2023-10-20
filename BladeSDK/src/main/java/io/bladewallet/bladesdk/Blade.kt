@@ -77,6 +77,23 @@ object Blade {
     }
 
     /**
+     * Get SDK info
+     *
+     * @param completion: callback function, with result of InfoData or BladeJSError
+     */
+    fun getInfo(completion: (InfoData?, BladeJSError?) -> Unit) {
+        if (!webViewInitialized) {
+            completion(null, BladeJSError("Error", "BladeSDK not initialized"))
+            return
+        }
+        val completionKey = getCompletionKey("getInfo")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<InfoData, InfoResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getInfo('$completionKey')")
+    }
+
+    /**
      * Get balances by Hedera id (address)
      *
      * @param id Hedera account id

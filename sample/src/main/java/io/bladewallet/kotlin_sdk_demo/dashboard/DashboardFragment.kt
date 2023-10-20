@@ -8,8 +8,12 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import io.bladewallet.bladesdk.Blade
+import io.bladewallet.bladesdk.BladeEnv
+import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentDashboardBinding
+import kotlinx.coroutines.launch
 
 class DashboardFragment : Fragment() {
 
@@ -22,16 +26,75 @@ class DashboardFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        val dashboardViewModel =
-                ViewModelProvider(this).get(DashboardViewModel::class.java)
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-//        val textView: TextView = binding.textDashboard
-//        dashboardViewModel.text.observe(viewLifecycleOwner) {
-//            textView.text = it
-//        }
+        fun toggleElements(enable: Boolean): Boolean {
+            binding.dAppCodeEditText.isEnabled = enable
+            binding.apiTokenEditText.isEnabled = enable
+            binding.networkSpinner.isEnabled = enable
+            binding.bladeEnvSpinner.isEnabled = enable
+            binding.accountIdEditText.isEnabled = enable
+            binding.privateKeyEditText.isEnabled = enable
+            binding.contractIdEditText.isEnabled = enable
+            binding.tokenIdEditText.isEnabled = enable
+            binding.initButton.isEnabled = enable
+            return enable;
+        }
+
+        fun output(text: String) {
+            binding.outputTextView.setText(text)
+        }
+
+        Blade.getInfo { infoData, bladeJSError ->
+            lifecycleScope.launch {
+                if (infoData != null) {
+                    binding.stopButton.isEnabled = true
+                    toggleElements(false)
+                    output("$infoData")
+                } else {
+                    toggleElements(true)
+                    binding.stopButton.isEnabled = false
+                    output("$bladeJSError")
+                }
+            }
+        }
+
+        binding.initButton.setOnClickListener {
+            Config.dAppCode = binding.dAppCodeEditText.text.toString();
+            Config.apiKey = binding.apiTokenEditText.text.toString();
+            Config.accountId = binding.accountIdEditText.text.toString();
+            Config.privateKey = binding.privateKeyEditText.text.toString();
+            Config.contractId = binding.contractIdEditText.text.toString();
+            Config.tokenId = binding.tokenIdEditText.text.toString();
+
+            toggleElements(false);
+
+            Blade.initialize(
+                Config.apiKey,
+                Config.dAppCode,
+                Config.network,
+                Config.bladeEnv,
+                requireContext()
+            ) { infoData, bladeJSError ->
+                lifecycleScope.launch {
+                    if (infoData != null) {
+                        binding.stopButton.isEnabled = true
+                        output("$infoData")
+                    } else {
+                        toggleElements(true)
+                        output("$bladeJSError")
+                    }
+                }
+            }
+        }
+
+        binding.stopButton.setOnClickListener {
+            Blade.cleanup()
+            output("Blade stopped")
+            binding.stopButton.isEnabled = !toggleElements(true)
+        }
 
         val items = arrayOf("Select Network", "Mainnet", "Testnet")
         object : ArrayAdapter<String>(
@@ -53,16 +116,13 @@ class DashboardFragment : Fragment() {
         }.also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.networkSpinner.adapter = it
+            binding.networkSpinner.setSelection(items.indexOf(Config.network).coerceAtLeast(0))
 
             binding.networkSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val selectedItem = items[position]
-                    Toast.makeText(requireContext(), "Selected: $selectedItem", Toast.LENGTH_SHORT).show()
+                    Config.network = items[position]
                 }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    // Handle the case where nothing is selected
-                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
         }
 
@@ -88,37 +148,23 @@ class DashboardFragment : Fragment() {
         }.also {
             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             binding.bladeEnvSpinner.adapter = it
+            binding.bladeEnvSpinner.setSelection(bladeEnvs.indexOf(Config.bladeEnv.value).coerceAtLeast(0))
 
             binding.bladeEnvSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    val selectedItem = bladeEnvs[position]
-                    Toast.makeText(requireContext(), "Selected: $selectedItem", Toast.LENGTH_SHORT).show()
+                    Config.bladeEnv = if (bladeEnvs[position] === BladeEnv.Prod.toString()) BladeEnv.Prod else BladeEnv.CI
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    // Handle the case where nothing is selected
-                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
         }
 
-
-
-
-//
-//        ArrayAdapter(
-//            requireContext(),
-//            android.R.layout.simple_spinner_dropdown_item,
-//            arrayOf("Select BladeEnv", "Prod", "CI"),
-//        ).also { adapter ->
-//            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-//            binding.bladeEnvSpinner.adapter = adapter
-//
-//
-//
-//        }
-
-
-
+        binding.dAppCodeEditText.setText(Config.dAppCode);
+        binding.apiTokenEditText.setText(Config.apiKey);
+        binding.accountIdEditText.setText(Config.accountId);
+        binding.privateKeyEditText.setText(Config.privateKey);
+        binding.contractIdEditText.setText(Config.contractId);
+        binding.tokenIdEditText.setText(Config.tokenId);
         return root
     }
 
