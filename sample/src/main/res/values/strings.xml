@@ -1,10 +1,34 @@
 <resources>
     <string name="app_name">Blade-demo</string>
+
+    <string name="init_blade_section">Init Blade section</string>
+
+    <string name="title_home">Init</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <string name="section_init_data">Init Blade section</string>
+    <string name="label_dAppCode">dAppCode</string>
+    <string name="label_apiKey">ApiKey</string>
+    <string name="label_network">Network</string>
+    <string name="label_bladeEnv">Blade Env</string>
+    <string name="section_demo_data">Demo data section</string>
+    <string name="label_accountId">Account id</string>
+    <string name="label_accountPrivateKey">Private key</string>
+    <string name="label_contractId">Contract id</string>
+    <string name="label_tokenId">Token id</string>
+    <string name="button_init">Init</string>
+    <string name="button_stop">Stop</string>
+    <string name="label_output">Output:</string>
+
+
+
+
+
+
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="init">Init</string>
     <string name="action_1">Action 1</string>
     <string name="action_2">Action 2</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+
 </resources>
