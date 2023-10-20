@@ -7,26 +7,24 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.*
-import io.bladewallet.kotlin_sdk_demo.databinding.FragmentFirstBinding
+import io.bladewallet.kotlin_sdk_demo.databinding.FragmentHomeBinding
 import kotlinx.coroutines.launch
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
-class FirstFragment : Fragment() {
+class HomeFragment : Fragment() {
 
-    private var _binding: FragmentFirstBinding? = null
+    private var _binding: FragmentHomeBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
+            inflater: LayoutInflater,
+            container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
 
     }
@@ -48,7 +46,7 @@ class FirstFragment : Fragment() {
         binding.buttonThird.isEnabled = false
 
         binding.buttonFirst.setOnClickListener {
-            Blade.initialize(apiKey, dAppCode, "Mainnet", BladeEnv.CI, requireContext()) { infoData, bladeJSError ->
+            Blade.initialize(apiKey, dAppCode, "Testnet", BladeEnv.CI, requireContext()) { infoData, bladeJSError ->
                 if (infoData != null) {
                     println("BladeInit success: $infoData")
                     lifecycleScope.launch {
@@ -104,15 +102,15 @@ class FirstFragment : Fragment() {
 
 
 
-            Blade.getTransactions(
-                accountId,
-                "CRYPTOTRANSFERTOKEN",
-                "",
-                10
-            ) { data: TransactionsHistoryData?, error: BladeJSError? ->
-                println(data)
-                println(error)
-            }
+//            Blade.getTransactions(
+//                accountId,
+//                "CRYPTOTRANSFERTOKEN",
+//                "",
+//                10
+//            ) { data: TransactionsHistoryData?, error: BladeJSError? ->
+//                println(data)
+//                println(error)
+//            }
 
 //            Blade.transferHbars(accountId, privateKey, accountId2, 123.2, "tansaction ' memo") { transactionResult, bladeJSError ->
 //                println(transactionResult)
@@ -127,15 +125,15 @@ class FirstFragment : Fragment() {
 //            }
 //            return@setOnClickListener
 //
-//            Blade.getBalance(accountId) { data: BalanceData?, error: BladeJSError? ->
-//                if (data != null) {
-//                    println(data)
-//                }
-//                if (error != null) {
-//                    println(error)
-//                }
-//            }
-//            return@setOnClickListener
+            Blade.getBalance(accountId) { data: BalanceData?, error: BladeJSError? ->
+                if (data != null) {
+                    println(data)
+                }
+                if (error != null) {
+                    println(error)
+                }
+            }
+            return@setOnClickListener
 //
 //            println("contract call")
 //            var params = ContractFunctionParameters().addString(message)

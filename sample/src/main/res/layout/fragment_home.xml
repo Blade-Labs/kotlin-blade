@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FirstFragment">
+    tools:context=".HomeFragment">
 
     <TextView
         android:id="@+id/textview_first"
@@ -50,5 +50,5 @@
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:id="@+id/webViewContainer"
-        ></RelativeLayout>
+    />
 </androidx.constraintlayout.widget.ConstraintLayout>
