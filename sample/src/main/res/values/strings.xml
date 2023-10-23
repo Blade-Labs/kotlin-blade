@@ -32,6 +32,10 @@
     <string name="button_get_mnemonic">from mnemonic</string>
     <string name="button_sign">sign</string>
     <string name="button_verify">verify</string>
+    <string name="button_transfer_hbars">send HBARS</string>
+    <string name="button_transfer_tokens">send tokens</string>
+    <string name="label_receiver">receiver</string>
+    <string name="label_amount">amount</string>
 
 
 

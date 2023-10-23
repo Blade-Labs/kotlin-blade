@@ -39,12 +39,12 @@ class ExamplesFragment : Fragment() {
             binding.buttonBalance.isEnabled = enable
             binding.buttonTransactions.isEnabled = enable
             binding.buttonCreateAccount.isEnabled = enable
-//            binding.buttonDeleteAccount.isEnabled = enable
             binding.editMnemonicMessageSignature.isEnabled = enable
             binding.buttonGetFromMnemonic.isEnabled = enable
             binding.buttonSign.isEnabled = enable
             binding.buttonVerify.isEnabled = enable
-//            binding.initButton.isEnabled = enable
+            binding.buttonTransferHbars.isEnabled = enable
+            binding.buttonTransferTokens.isEnabled = enable
             return enable;
         }
 
@@ -76,6 +76,8 @@ class ExamplesFragment : Fragment() {
 
         binding.editAccountId.setText(Config.accountId);
         binding.editMnemonicMessageSignature.setText(Config.mnemonic);
+        binding.editTextReceiver.setText(Config.accountId2);
+        binding.editTextAmount.setText("1");
 
         binding.buttonBalance.setOnClickListener {
             output("")
@@ -178,6 +180,36 @@ class ExamplesFragment : Fragment() {
             }
         }
 
+        binding.buttonTransferHbars.setOnClickListener {
+            output("")
+            Blade.transferHbars(
+                accountId = Config.accountId,
+                accountPrivateKey = Config.privateKey,
+                receiverId = binding.editTextReceiver.text.toString(),
+                amount = binding.editTextAmount.text.toString().toDouble(),
+                memo = "Test HBar transfer from Kotlin-Blade SDK"
+            ) { result, bladeJSError ->
+                lifecycleScope.launch {
+                    output("${ result ?: bladeJSError}");
+                }
+            }
+        }
+
+        binding.buttonTransferTokens.setOnClickListener {
+            output("")
+            Blade.transferTokens(
+                tokenId = Config.tokenId,
+                accountId = Config.accountId,
+                accountPrivateKey = Config.privateKey,
+                receiverId = binding.editTextReceiver.text.toString(),
+                amount = binding.editTextAmount.text.toString().toDouble(),
+                memo = "Test token transfer from Kotlin-Blade SDK"
+            ) { result, bladeJSError ->
+                lifecycleScope.launch {
+                    output("${ result ?: bladeJSError}");
+                }
+            }
+        }
 
         return root
     }
