@@ -3,9 +3,9 @@
 
     <string name="init_blade_section">Init Blade section</string>
 
-    <string name="title_home">Init</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_init">Init</string>
+    <string name="title_examples">Examples</string>
+    <string name="title_exchange">Exchange</string>
 
     <string name="section_init_data">Init Blade section</string>
     <string name="label_dAppCode">dAppCode</string>
@@ -15,11 +15,23 @@
     <string name="section_demo_data">Demo data section</string>
     <string name="label_accountId">Account id</string>
     <string name="label_accountPrivateKey">Private key</string>
+    <string name="label_accountPublicKey">Public key</string>
     <string name="label_contractId">Contract id</string>
     <string name="label_tokenId">Token id</string>
     <string name="button_init">Init</string>
     <string name="button_stop">Stop</string>
     <string name="label_output">Output:</string>
+
+
+    <string name="button_balance">get balance</string>
+    <string name="button_transactions">get transactions</string>
+    <string name="button_create_account">create account</string>
+    <string name="button_delete_account">delete account</string>
+    <string name="title_mnemonic_message_signature">Mnemonic / Message / Signature</string>
+
+    <string name="button_get_mnemonic">from mnemonic</string>
+    <string name="button_sign">sign</string>
+    <string name="button_verify">verify</string>
 
 
 

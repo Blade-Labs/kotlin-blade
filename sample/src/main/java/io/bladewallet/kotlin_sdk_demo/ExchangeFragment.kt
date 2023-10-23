@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.*
-import io.bladewallet.kotlin_sdk_demo.databinding.FragmentHomeBinding
+import io.bladewallet.kotlin_sdk_demo.databinding.FragmentExchangeBinding
 import kotlinx.coroutines.launch
 
-class HomeFragment : Fragment() {
+class ExchangeFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentExchangeBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -24,7 +24,7 @@ class HomeFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View {
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentExchangeBinding.inflate(inflater, container, false)
         return binding.root
 
     }

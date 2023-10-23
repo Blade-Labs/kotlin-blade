@@ -3,23 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_examples">
+
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="io.bladewallet.kotlin_sdk_demo.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_init"
+        android:name="io.bladewallet.kotlin_sdk_demo.init.InitFragment"
+        android:label="@string/title_init"
+        tools:layout="@layout/fragment_init" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="io.bladewallet.kotlin_sdk_demo.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_examples"
+        android:name="io.bladewallet.kotlin_sdk_demo.examples.ExamplesFragment"
+        android:label="@string/title_examples"
+        tools:layout="@layout/fragment_examples" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="io.bladewallet.kotlin_sdk_demo.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_exchange"
+        android:name="io.bladewallet.kotlin_sdk_demo.ExchangeFragment"
+        android:label="@string/title_exchange"
+        tools:layout="@layout/fragment_exchange" />
 </navigation>

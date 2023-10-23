@@ -14,8 +14,9 @@ object Config {
     var tokenId = "0.0.433870"
     var publicKey = "302d300706052b8104000a032200029dc73991b0d9cdbb59b2cd0a97a0eaff6de801726cb39804ea9461df6be2dd30"
     var privateKey =
-        "302d300706052b8104000a032200029dc73991b0d9cdbb59b2cd0a97a0eaff6de801726cb39804ea9461df6be2dd30"
+        "3030020100300706052b8104000a04220420ebccecef769bb5597d0009123a0fd96d2cdbe041c2a2da937aaf8bdc8731799b"
     var message = "hello"
+    var mnemonic = "target waste stamp attend toss elephant cause citizen detail public click baby"
 
     fun doSomething() {
         // Implement your logic here

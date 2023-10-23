@@ -1,23 +1,23 @@
-package io.bladewallet.kotlin_sdk_demo.dashboard
+package io.bladewallet.kotlin_sdk_demo.init
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.Blade
 import io.bladewallet.bladesdk.BladeEnv
 import io.bladewallet.kotlin_sdk_demo.Config
-import io.bladewallet.kotlin_sdk_demo.databinding.FragmentDashboardBinding
+import io.bladewallet.kotlin_sdk_demo.databinding.FragmentInitBinding
 import kotlinx.coroutines.launch
 
-class DashboardFragment : Fragment() {
+class InitFragment : Fragment() {
 
-    private var _binding: FragmentDashboardBinding? = null
+    private var _binding: FragmentInitBinding? = null
 
     private val binding get() = _binding!!
 
@@ -26,8 +26,9 @@ class DashboardFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
+        var startOperation: Long = System.currentTimeMillis();
 
-        _binding = FragmentDashboardBinding.inflate(inflater, container, false)
+        _binding = FragmentInitBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         fun toggleElements(enable: Boolean): Boolean {
@@ -37,13 +38,26 @@ class DashboardFragment : Fragment() {
             binding.bladeEnvSpinner.isEnabled = enable
             binding.accountIdEditText.isEnabled = enable
             binding.privateKeyEditText.isEnabled = enable
+            binding.publicKeyEditText.isEnabled = enable
             binding.contractIdEditText.isEnabled = enable
             binding.tokenIdEditText.isEnabled = enable
             binding.initButton.isEnabled = enable
             return enable;
         }
 
+        @SuppressLint("SetTextI18n")
         fun output(text: String) {
+            binding.textTitleOutput.setText("Output:");
+            if (text == "") {
+                startOperation = System.currentTimeMillis();
+                binding.progressBar.visibility = View.VISIBLE;
+            } else {
+                println(text)
+                if (binding.outputTextView.text.toString() == "") {
+                    binding.textTitleOutput.setText("Output (${System.currentTimeMillis() - startOperation}ms):");
+                }
+                binding.progressBar.visibility = View.GONE;
+            }
             binding.outputTextView.setText(text)
         }
 
@@ -66,10 +80,12 @@ class DashboardFragment : Fragment() {
             Config.apiKey = binding.apiTokenEditText.text.toString();
             Config.accountId = binding.accountIdEditText.text.toString();
             Config.privateKey = binding.privateKeyEditText.text.toString();
+            Config.publicKey = binding.publicKeyEditText.text.toString();
             Config.contractId = binding.contractIdEditText.text.toString();
             Config.tokenId = binding.tokenIdEditText.text.toString();
 
             toggleElements(false);
+            output("")
 
             Blade.initialize(
                 Config.apiKey,
@@ -163,6 +179,7 @@ class DashboardFragment : Fragment() {
         binding.apiTokenEditText.setText(Config.apiKey);
         binding.accountIdEditText.setText(Config.accountId);
         binding.privateKeyEditText.setText(Config.privateKey);
+        binding.publicKeyEditText.setText(Config.publicKey);
         binding.contractIdEditText.setText(Config.contractId);
         binding.tokenIdEditText.setText(Config.tokenId);
         return root

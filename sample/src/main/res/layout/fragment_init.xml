@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".dashboard.DashboardFragment">
+    tools:context=".init.InitFragment">
 
     <!-- Controls Section -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -177,6 +177,27 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
+                    android:text="@string/label_accountPublicKey" />
+
+                <EditText
+                    android:id="@+id/publicKeyEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7"
+                    android:hint="@string/label_accountPublicKey"
+                    android:singleLine="true"
+                    android:textSize="14sp" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="0sp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
                     android:text="@string/label_contractId" />
 
                 <EditText
@@ -236,7 +257,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/textOutput"
+        android:id="@+id/textTitleOutput"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/label_output"
@@ -251,9 +272,18 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
 
-        app:layout_constraintTop_toBottomOf="@+id/textOutput"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textIsSelectable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textTitleOutput" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textTitleOutput"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

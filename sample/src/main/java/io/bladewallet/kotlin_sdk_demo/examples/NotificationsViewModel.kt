@@ -1,4 +1,4 @@
-package io.bladewallet.kotlin_sdk_demo.notifications
+package io.bladewallet.kotlin_sdk_demo.examples
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
