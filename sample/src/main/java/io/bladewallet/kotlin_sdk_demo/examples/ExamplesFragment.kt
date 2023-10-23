@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import io.bladewallet.bladesdk.AccountInfoData
 import io.bladewallet.bladesdk.Blade
+import io.bladewallet.bladesdk.ContractFunctionParameters
 import io.bladewallet.bladesdk.CreatedAccountData
 import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentExamplesBinding
@@ -43,6 +43,8 @@ class ExamplesFragment : Fragment() {
             binding.buttonGetFromMnemonic.isEnabled = enable
             binding.buttonSign.isEnabled = enable
             binding.buttonVerify.isEnabled = enable
+            binding.buttonContractCall.isEnabled = enable
+            binding.buttonContractQuery.isEnabled = enable
             binding.buttonTransferHbars.isEnabled = enable
             binding.buttonTransferTokens.isEnabled = enable
             return enable;
@@ -179,6 +181,46 @@ class ExamplesFragment : Fragment() {
                 }
             }
         }
+
+        binding.buttonContractCall.setOnClickListener {
+            output("")
+            val parameters = ContractFunctionParameters().addString("${binding.editMnemonicMessageSignature.text.toString()} ${System.currentTimeMillis()}")
+
+            Blade.contractCallFunction(
+                contractId = Config.contractId,
+                functionName = "set_message",
+                params = parameters,
+                accountId = Config.accountId,
+                accountPrivateKey = Config.privateKey,
+                gas = 155000,
+                bladePayFee = false
+            ) { result, bladeJSError ->
+                lifecycleScope.launch {
+                    output("${ result ?: bladeJSError}");
+                }
+            }
+        }
+
+        binding.buttonContractQuery.setOnClickListener {
+            output("")
+            val parameters = ContractFunctionParameters()
+
+            Blade.contractCallQueryFunction(
+                contractId = Config.contractId,
+                functionName = "get_message",
+                params = parameters,
+                accountId = Config.accountId,
+                accountPrivateKey = Config.privateKey,
+                gas = 55000,
+                bladePayFee = false,
+                returnTypes = listOf("string", "int32")
+            ) { result, bladeJSError ->
+                lifecycleScope.launch {
+                    output("${ result ?: bladeJSError}");
+                }
+            }
+        }
+
 
         binding.buttonTransferHbars.setOnClickListener {
             output("")
