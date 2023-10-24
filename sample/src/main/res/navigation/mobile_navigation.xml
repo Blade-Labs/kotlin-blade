@@ -20,7 +20,7 @@
 
     <fragment
         android:id="@+id/navigation_exchange"
-        android:name="io.bladewallet.kotlin_sdk_demo.ExchangeFragment"
+        android:name="io.bladewallet.kotlin_sdk_demo.exchange.ExchangeFragment"
         android:label="@string/title_exchange"
         tools:layout="@layout/fragment_exchange" />
 </navigation>

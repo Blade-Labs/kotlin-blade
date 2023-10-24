@@ -36,17 +36,14 @@
     <string name="button_contract_query">contract query</string>
     <string name="button_transfer_hbars">send HBARS</string>
     <string name="button_transfer_tokens">send tokens</string>
-    <string name="label_receiver">receiver</string>
-    <string name="label_amount">amount</string>
-
-
-
-
-
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="init">Init</string>
-    <string name="action_1">Action 1</string>
-    <string name="action_2">Action 2</string>
-
+    <string name="label_receiver">Receiver</string>
+    <string name="label_amount">Amount</string>
+    <string name="label_source">Source</string>
+    <string name="label_target">Target</string>
+    <string name="label_strategy">Strategy</string>
+    <string name="button_get_quotes">get quotes</string>
+    <string name="label_service">Service</string>
+    <string name="button_buy">buy</string>
+    <string name="button_sell">sell</string>
+    <string name="button_swap">swap</string>
 </resources>

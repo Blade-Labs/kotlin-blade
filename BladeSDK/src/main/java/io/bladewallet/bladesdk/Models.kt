@@ -277,5 +277,11 @@ enum class BladeEnv(val value: String) {
 enum class CryptoFlowServiceStrategy(val value: String) {
     BUY("Buy"),
     SELL("Sell"),
-    SWAP("Swap")
+    SWAP("Swap");
+
+    companion object {
+        fun fromValue(value: String): CryptoFlowServiceStrategy? {
+            return values().find { it.value == value }
+        }
+    }
 }
