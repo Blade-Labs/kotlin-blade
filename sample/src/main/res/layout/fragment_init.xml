@@ -29,9 +29,10 @@
                 android:layout_height="wrap_content"
                 android:text="@string/section_init_data"
                 android:textAlignment="textStart"
-                app:layout_constraintTop_toTopOf="parent"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TableRow
                 android:layout_width="wrap_content"
@@ -123,7 +124,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/section_demo_data"
-                android:textAlignment="textStart" />
+                android:textAlignment="textStart"
+                android:textStyle="bold" />
 
 
             <TableRow

@@ -8,11 +8,11 @@
 
     <item
         android:id="@+id/navigation_examples"
-        android:icon="@drawable/ic_examples_black_24dp"
+        android:icon="@drawable/ic_exchange_black_24dp"
         android:title="@string/title_examples" />
 
     <item
         android:id="@+id/navigation_exchange"
-        android:icon="@drawable/ic_exchange_black_24dp"
+        android:icon="@android:drawable/stat_notify_sync"
         android:title="@string/title_exchange" />
 </menu>
