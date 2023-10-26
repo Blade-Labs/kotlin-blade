@@ -6,7 +6,7 @@
 * Open in Android studio
 * Run `sample` on your device or emulator
 
-![](assets/run.png)
+![](../docs/assets/run.png)
 
 ### Video
 

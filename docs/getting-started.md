@@ -10,7 +10,7 @@
 
 ### Example app
 
-This repository contains [sample app](example.md), please check 
+This repository contains [sample app](../sample/example.md), please check 
 
 ### Install
 
