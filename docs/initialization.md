@@ -5,7 +5,7 @@ Also it will init fingerprintjs and retrieve visitorId, which is required for Bl
 
 ```kotlin
 import io.bladewallet.bladesdk.Blade
-import io.bladewallet.bladesdk.BalanceDataResponse
+import io.bladewallet.bladesdk.BalanceData
 import io.bladewallet.bladesdk.BladeJSError
 
 Blade.initialize("api-key", "dAppCode", "Testnet", BladeEnv.Prod, requireContext()) { infoData, bladeJSError ->
@@ -21,9 +21,9 @@ After init you can call any public method, e.g.:
 
 ```kotlin
 // Get balance by hedera account id
-Blade.getBalance("0.0.49177063") { data: BalanceDataResponse?, error: BladeJSError? ->
+Blade.getBalance("0.0.49177063") { data: BalanceData?, error: BladeJSError? ->
     if (data != null) {
-        println(data)
+        println(data ?: error)
     }
 }
 ```

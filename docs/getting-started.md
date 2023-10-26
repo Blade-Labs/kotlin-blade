@@ -1,4 +1,4 @@
-# Getting Started
+# 🚀 Getting Started
 
 ### Kotlin Blade SDK
 
@@ -7,6 +7,10 @@
 ### Requirements
 
 * Android 8.0+ (API level 26, Aug 2017)
+
+### Example app
+
+This repository contains [sample app](example.md), please check 
 
 ### Install
 

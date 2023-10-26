@@ -209,6 +209,64 @@ data class IntegrationUrlData(
 ```
 
 ```kotlin
+data class SwapQuotesData(
+    var quotes: List<ICryptoFlowQuote>
+)
+```
+
+```kotlin
+data class ICryptoFlowQuote(
+    var service: ICryptoFlowQuoteService,
+    var source: IAssetQuote,
+    var target: IAssetQuote,
+    var rate: Double?,
+    var widgetUrl: String?,
+    var paymentMethods: List<String>?
+)
+```
+
+```kotlin
+data class ICryptoFlowQuoteService(
+    var id: String,
+    var name: String,
+    var logo: String,
+    var description: String?
+)
+```
+
+```kotlin
+data class IAssetQuote(
+    var asset: ICryptoFlowAsset,
+    var amountExpected: Double,
+    var totalFee: Double?,
+)
+```
+
+```kotlin
+data class ICryptoFlowAsset(
+    var name: String,
+    var code: String,
+    var type: String,
+    // crypto only
+    var address: String?,
+    var chainId: Int?,
+    var decimals: Int?,
+    var minAmount: Double?,
+    var maxAmount: Double?,
+    // fiat only
+    var symbol: String?,
+    // both
+    var imageUrl: String?,
+)
+```
+
+```kotlin
+data class ResultData(
+var success: Boolean
+)
+```
+
+```kotlin
 data class RemoteConfig(
     var fpApiKey: String
 )
@@ -218,5 +276,19 @@ data class RemoteConfig(
 enum class BladeEnv(val value: String) {
     Prod("Prod"),
     CI("CI")
+}
+```
+
+```kotlin
+enum class CryptoFlowServiceStrategy(val value: String) {
+    BUY("Buy"),
+    SELL("Sell"),
+    SWAP("Swap");
+
+    companion object {
+        fun fromValue(value: String): CryptoFlowServiceStrategy? {
+            return values().find { it.value == value }
+        }
+    }
 }
 ```
