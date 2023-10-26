@@ -5,6 +5,7 @@
 * Clone repository https://github.com/Blade-Labs/kotlin-blade
 * Open in Android studio
 * Run `sample` on your device or emulator
+
 ![](assets/run.png)
 
 ### Video
