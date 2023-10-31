@@ -13,7 +13,7 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.6"
+    private const val sdkVersion: String = "Kotlin@0.6.7"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -74,6 +74,23 @@ object Blade {
                 }
             }
         }
+    }
+
+    /**
+     * Get SDK info
+     *
+     * @param completion: callback function, with result of InfoData or BladeJSError
+     */
+    fun getInfo(completion: (InfoData?, BladeJSError?) -> Unit) {
+        if (!webViewInitialized) {
+            completion(null, BladeJSError("Error", "BladeSDK not initialized"))
+            return
+        }
+        val completionKey = getCompletionKey("getInfo")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<InfoData, InfoResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getInfo('$completionKey')")
     }
 
     /**

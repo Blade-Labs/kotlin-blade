@@ -1,15 +1,49 @@
 <resources>
     <string name="app_name">Blade-demo</string>
-    <string name="action_settings">Settings</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="init">Init</string>
-    <string name="action_1">Action 1</string>
-    <string name="action_2">Action 2</string>
+    <string name="init_blade_section">Init Blade section</string>
+
+    <string name="title_init">Init</string>
+    <string name="title_examples">Examples</string>
+    <string name="title_exchange">Exchange</string>
+
+    <string name="section_init_data">Init Blade section</string>
+    <string name="label_dAppCode">dAppCode</string>
+    <string name="label_apiKey">ApiKey</string>
+    <string name="label_network">Network</string>
+    <string name="label_bladeEnv">Blade Env</string>
+    <string name="section_demo_data">Demo data section</string>
+    <string name="label_accountId">Account id</string>
+    <string name="label_accountPrivateKey">Private key</string>
+    <string name="label_accountPublicKey">Public key</string>
+    <string name="label_contractId">Contract id</string>
+    <string name="label_tokenId">Token id</string>
+    <string name="button_init">Init</string>
+    <string name="button_stop">Stop</string>
+    <string name="label_output">Output:</string>
+
+
+    <string name="button_balance">get balance</string>
+    <string name="button_transactions">get transactions</string>
+    <string name="button_create_account">create account</string>
+    <string name="button_delete_account">delete account</string>
+    <string name="title_mnemonic_message_signature">Mnemonic / Message / Signature</string>
+
+    <string name="button_get_mnemonic">from mnemonic</string>
+    <string name="button_sign">sign</string>
+    <string name="button_verify">verify</string>
+    <string name="button_contract_call">contract call</string>
+    <string name="button_contract_query">contract query</string>
+    <string name="button_transfer_hbars">send HBARS</string>
+    <string name="button_transfer_tokens">send tokens</string>
+    <string name="label_receiver">Receiver</string>
+    <string name="label_amount">Amount</string>
+    <string name="label_source">Source</string>
+    <string name="label_target">Target</string>
+    <string name="label_strategy">Strategy</string>
+    <string name="button_get_quotes">get quotes</string>
+    <string name="label_service">Service</string>
+    <string name="button_buy">buy</string>
+    <string name="button_sell">sell</string>
+    <string name="button_swap">swap</string>
 </resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_init">
+
+
+    <fragment
+        android:id="@+id/navigation_init"
+        android:name="io.bladewallet.kotlin_sdk_demo.init.InitFragment"
+        android:label="@string/title_init"
+        tools:layout="@layout/fragment_init" />
+
+    <fragment
+        android:id="@+id/navigation_examples"
+        android:name="io.bladewallet.kotlin_sdk_demo.examples.ExamplesFragment"
+        android:label="@string/title_examples"
+        tools:layout="@layout/fragment_examples" />
+
+    <fragment
+        android:id="@+id/navigation_exchange"
+        android:name="io.bladewallet.kotlin_sdk_demo.exchange.ExchangeFragment"
+        android:label="@string/title_exchange"
+        tools:layout="@layout/fragment_exchange" />
+</navigation>

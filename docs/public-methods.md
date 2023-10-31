@@ -1,5 +1,83 @@
 # Public methods 📢
 
+## Init BladeSDK
+
+### Parameters:
+
+* `apiKey: String` - your apiKey (unique per platform, network and bladeEnv)
+* `dAppCode: String` - your dAppCode
+* `network: String` - Hedera network, supported: `Testnet` or `Mainnet`
+* `bladeEnv: BladeEnv` - Blade API environment: `.Prod` or `.CI`
+* `context: Context` - application context
+
+```kotlin
+@SuppressLint("SetJavaScriptEnabled")
+fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv, context: Context, completion: (InfoData?, BladeJSError?) -> Unit) {
+    if (webViewInitialized) {
+        println("Error while doing double init of BladeSDK")
+        throw Exception("Error while doing double init of BladeSDK")
+    }
+    initCompletion = completion
+    this.apiKey = apiKey
+    this.dAppCode = dAppCode
+    this.network = network
+
+    CoroutineScope(Dispatchers.Main).launch {
+        try {
+            remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
+            visitorId = getVisitorId(remoteConfig.fpApiKey, context)
+        } catch (e: java.lang.Exception) {
+            initCompletion(null, BladeJSError("Init failed", e.toString()))
+            return@launch
+        }
+
+        if (visitorId == "") {
+            return@launch
+        }
+
+        webView = WebView(context)
+        webView?.let { webView ->
+            webView.layoutParams = LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT
+            )
+
+            webView.settings.javaScriptEnabled = true
+            webView.loadUrl("file:///android_asset/index.html")
+
+            webView.addJavascriptInterface(this@Blade, "bladeMessageHandler")
+            webView.webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    // on webView init
+                    webViewInitialized = true
+                    val completionKey = getCompletionKey("initBladeSdkJS")
+                    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+                        typicalDeferredCallback<InfoData, InfoResponse>(data, error, initCompletion)
+                    }
+                    executeJS("bladeSdk.init('${esc(apiKey)}', '${esc(network.lowercase())}', '${esc(dAppCode)}', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
+                }
+            }
+        }
+    }
+}
+```
+
+## Get SDK info and check if SDK initialized
+
+```kotlin
+fun getInfo(completion: (InfoData?, BladeJSError?) -> Unit) {
+    if (!webViewInitialized) {
+        completion(null, BladeJSError("Error", "BladeSDK not initialized"))
+        return
+    }
+    val completionKey = getCompletionKey("getInfo")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<InfoData, InfoResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.getInfo('$completionKey')")
+}
+```
+
 ## Get balances by Hedera id (address)
 
 ### Parameters:
