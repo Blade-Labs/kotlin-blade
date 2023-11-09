@@ -1,10 +1,9 @@
 name: Build demo app
 
 on:
-  release:
-    types: [created]
-  pull_request:
-    branches: [ "*" ]
+  push:
+    tags:
+      - '*'
 
 jobs:
   debug-apk:
@@ -21,12 +20,6 @@ jobs:
 
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
-
-#      - name: Upload APK
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: sample-app.apk
-#          path: sample/build/outputs/apk/debug/sample-debug.apk
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@2.7.0
