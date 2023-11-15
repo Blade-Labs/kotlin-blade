@@ -13,7 +13,7 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.7"
+    private const val sdkVersion: String = "Kotlin@0.6.8"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""

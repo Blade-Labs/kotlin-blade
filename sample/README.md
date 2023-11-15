@@ -12,6 +12,10 @@
 
 [<img src="https://i.ytimg.com/vi/DffduclXHQ0/maxresdefault.jpg" width="50%">](https://www.youtube.com/watch?v=DffduclXHQ0 "Demo video")
 
+### Latest APK Build
+
+[Download apk from latest release assets](https://github.com/Blade-Labs/kotlin-blade/releases/latest)
+
 ### App structure
 
 Demo app uses BottomNavigationView with 3 tabs, loading different fragments. 
