@@ -321,7 +321,7 @@ data class CoinDataImage(
 )
 
 data class CoinDataMarket(
-    val currentPrice: Map<String, Double>
+    val current_price: Map<String, Double>
 )
 
 enum class BladeEnv(val value: String) {
