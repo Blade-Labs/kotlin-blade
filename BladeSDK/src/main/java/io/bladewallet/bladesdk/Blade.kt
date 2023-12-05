@@ -13,7 +13,7 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.8"
+    private const val sdkVersion: String = "Kotlin@0.6.9"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -105,6 +105,33 @@ object Blade {
             typicalDeferredCallback<BalanceData, BalanceResponse>(data, error, completion)
         }
         executeJS("bladeSdk.getBalance('${esc(id)}', '$completionKey')")
+    }
+
+    /**
+     * Get list of all available coins on CoinGecko.
+     *
+     * @param completion callback function, with result of CoinListData or BladeJSError
+     */
+    fun getCoinList(completion: (CoinListData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getCoinList")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<CoinListData, CoinListResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getCoinList('$completionKey')")
+    }
+
+    /**
+     * Get coin price and coin info from CoinGecko. Search can be coin id or address in one of the coin platforms.
+     *
+     * @param search CoinGecko coinId, or address in one of the coin platforms or `hbar` (default, alias for `hedera-hashgraph`)
+     * @param completion callback function, with result of CoinListData or BladeJSError
+     */
+    fun getCoinPrice(search: String, completion: (CoinInfoData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getCoinPrice")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<CoinInfoData, CoinInfoResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getCoinPrice('${esc(search)}', '$completionKey')")
     }
 
     /**

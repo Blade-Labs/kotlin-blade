@@ -273,6 +273,82 @@ data class RemoteConfig(
 ```
 
 ```kotlin
+data class CoinListResponse(
+    override var completionKey: String,
+    override var data: CoinListData
+) : Result<CoinListData>
+```
+
+```kotlin
+data class CoinListData(
+    var coins: List<CoinItem>
+)
+```
+
+```kotlin
+data class CoinItem (
+    var id: String,
+    var symbol: String,
+    var name: String,
+    var platforms: List<CoinGeckoPlatform>
+)
+```
+
+```kotlin
+data class CoinGeckoPlatform (
+    var name: String,
+    var address: String
+)
+```
+
+```kotlin
+data class CoinInfoResponse(
+    override var completionKey: String,
+    override var data: CoinInfoData
+) : Result<CoinInfoData>
+```
+
+```kotlin
+data class CoinInfoData(
+    var coin: CoinData,
+    var priceUsd: Double
+)
+```
+
+```kotlin
+data class CoinData(
+    var id: String,
+    var symbol: String,
+    var name: String,
+    var web_slug: String,
+    var description: CoinDataDescription,
+    var image: CoinDataImage,
+    var market_data: CoinDataMarket,
+    var platforms: List<CoinGeckoPlatform>
+)
+```
+
+```kotlin
+data class CoinDataDescription(
+    val en: String
+)
+```
+
+```kotlin
+data class CoinDataImage(
+    val thumb: String,
+    val small: String,
+    val large: String
+)
+```
+
+```kotlin
+data class CoinDataMarket(
+    val currentPrice: Map<String, Double>
+)
+```
+
+```kotlin
 enum class BladeEnv(val value: String) {
     Prod("Prod"),
     CI("CI")
