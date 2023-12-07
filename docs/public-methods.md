@@ -95,6 +95,39 @@ fun getBalance(id: String, completion: (BalanceData?, BladeJSError?) -> Unit) {
 }
 ```
 
+## Get list of all available coins on CoinGecko.
+
+### Parameters:
+
+ * `completion`: callback function, with result of `CoinListData` or `BladeJSError`
+
+```kotlin
+fun getCoinList(completion: (CoinListData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("getCoinList")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<CoinListData, CoinListResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.getCoinList('$completionKey')")
+}
+```
+
+## Get coin price and coin info from CoinGecko. Search can be coin id or address in one of the coin platforms.
+
+### Parameters:
+
+ * `search`: CoinGecko coinId, or address in one of the coin platforms or `hbar` (default, alias for `hedera-hashgraph`)
+ * `completion`: callback function, with result of `BalanceData` or `BladeJSError`
+
+```kotlin
+fun getCoinPrice(search: String, completion: (CoinInfoData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("getCoinPrice")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<CoinInfoData, CoinInfoResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.getCoinPrice('${esc(search)}', '$completionKey')")
+}
+```
+
 ##  Method to execure Hbar transfers from current account to receiver
 
 ### Parameters:

@@ -15,4 +15,9 @@
         android:id="@+id/navigation_exchange"
         android:icon="@android:drawable/stat_notify_sync"
         android:title="@string/title_exchange" />
+
+    <item
+        android:id="@+id/navigation_other"
+        android:icon="@drawable/ic_other_black_24dp"
+        android:title="@string/title_other" />
 </menu>

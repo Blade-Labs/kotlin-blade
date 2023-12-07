@@ -97,8 +97,7 @@ data class TransactionReceiptData(
     var status: String,
     var contractId: String?,
     var topicSequenceNumber: String?,
-    var totalSupply: String?,
-    var serials: List<String>?
+    var totalSupply: String?
 )
 
 data class ContractQueryResponse(
@@ -267,6 +266,62 @@ data class ResultData(
 
 data class RemoteConfig(
     var fpApiKey: String
+)
+
+data class CoinListResponse(
+    override var completionKey: String,
+    override var data: CoinListData
+) : Result<CoinListData>
+
+data class CoinListData(
+    var coins: List<CoinItem>
+)
+
+data class CoinItem (
+    var id: String,
+    var symbol: String,
+    var name: String,
+    var platforms: List<CoinGeckoPlatform>
+)
+
+data class CoinGeckoPlatform (
+    var name: String,
+    var address: String
+)
+
+data class CoinInfoResponse(
+    override var completionKey: String,
+    override var data: CoinInfoData
+) : Result<CoinInfoData>
+
+data class CoinInfoData(
+    var coin: CoinData,
+    var priceUsd: Double
+)
+
+data class CoinData(
+    var id: String,
+    var symbol: String,
+    var name: String,
+    var web_slug: String,
+    var description: CoinDataDescription,
+    var image: CoinDataImage,
+    var market_data: CoinDataMarket,
+    var platforms: List<CoinGeckoPlatform>
+)
+
+data class CoinDataDescription(
+    val en: String
+)
+
+data class CoinDataImage(
+    val thumb: String,
+    val small: String,
+    val large: String
+)
+
+data class CoinDataMarket(
+    val current_price: Map<String, Double>
 )
 
 enum class BladeEnv(val value: String) {
