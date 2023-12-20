@@ -92,7 +92,8 @@ class InitFragment : Fragment() {
                 Config.dAppCode,
                 Config.network,
                 Config.bladeEnv,
-                requireContext()
+                requireContext(),
+                false
             ) { infoData, bladeJSError ->
                 lifecycleScope.launch {
                     if (infoData != null) {

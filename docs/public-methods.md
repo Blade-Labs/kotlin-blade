@@ -9,11 +9,12 @@
 * `network: String` - Hedera network, supported: `Testnet` or `Mainnet`
 * `bladeEnv: BladeEnv` - Blade API environment: `.Prod` or `.CI`
 * `context: Context` - application context
+* `force: Boolean` - will force initialization of webView even if it was already initialized
 
 ```kotlin
 @SuppressLint("SetJavaScriptEnabled")
-fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv, context: Context, completion: (InfoData?, BladeJSError?) -> Unit) {
-    if (webViewInitialized) {
+fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit) {
+    if (webViewInitialized && !force) {
         println("Error while doing double init of BladeSDK")
         throw Exception("Error while doing double init of BladeSDK")
     }
@@ -24,8 +25,14 @@ fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: Blad
 
     CoroutineScope(Dispatchers.Main).launch {
         try {
-            remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
-            visitorId = getVisitorId(remoteConfig.fpApiKey, context)
+            val sharedPreferences = context.getSharedPreferences(context.resources.getString(R.string.sharedPreferences), Context.MODE_PRIVATE);
+            visitorId = sharedPreferences.getString(context.resources.getString(R.string.visitorIdKey), "") ?: ""
+
+            if (visitorId == "") {
+                remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
+                visitorId = getVisitorId(remoteConfig.fpApiKey, context)
+                sharedPreferences.edit().putString(context.resources.getString(R.string.visitorIdKey), visitorId).apply()
+            }
         } catch (e: java.lang.Exception) {
             initCompletion(null, BladeJSError("Init failed", e.toString()))
             return@launch
@@ -33,6 +40,13 @@ fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: Blad
 
         if (visitorId == "") {
             return@launch
+        }
+
+        if (webView != null) {
+            webView?.clearCache(true)
+            webView?.clearHistory()
+            webView?.destroy();
+            webView = null
         }
 
         webView = WebView(context)
