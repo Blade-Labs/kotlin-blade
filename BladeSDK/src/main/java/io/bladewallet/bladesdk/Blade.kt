@@ -44,7 +44,10 @@ object Blade {
                 if (visitorId == "") {
                     remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
                     visitorId = getVisitorId(remoteConfig.fpApiKey, context)
-                    sharedPreferences.edit().putString(context.resources.getString(R.string.visitorIdKey), visitorId).apply()
+                    sharedPreferences.edit()
+                        .putString(context.resources.getString(R.string.visitorIdKey), visitorId)
+                        .putInt(context.resources.getString(R.string.visitorIdTimestampKey), (System.currentTimeMillis() / 1000).toInt())
+                        .apply()
                 }
             } catch (e: java.lang.Exception) {
                 initCompletion(null, BladeJSError("Init failed", e.toString()))

@@ -2,4 +2,5 @@
 <resources>
     <string name="sharedPreferences">sharedPreferences</string>
     <string name="visitorIdKey">visitorIdKey</string>
+    <string name="visitorIdTimestampKey">visitorIdTimestampKey</string>
 </resources>
