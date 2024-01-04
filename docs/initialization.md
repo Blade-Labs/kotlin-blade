@@ -8,7 +8,7 @@ import io.bladewallet.bladesdk.Blade
 import io.bladewallet.bladesdk.BalanceData
 import io.bladewallet.bladesdk.BladeJSError
 
-Blade.initialize("api-key", "dAppCode", "Testnet", BladeEnv.Prod, requireContext()) { infoData, bladeJSError ->
+Blade.initialize("api-key", "dAppCode", "Testnet", BladeEnv.Prod, requireContext(), false) { infoData, bladeJSError ->
     if (infoData != null) {
         println("BladeInit success: $infoData")
     } else {

@@ -13,7 +13,7 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.9"
+    private const val sdkVersion: String = "Kotlin@0.6.10"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -27,8 +27,8 @@ object Blade {
     private val gson = Gson()
 
     @SuppressLint("SetJavaScriptEnabled")
-    fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv, context: Context, completion: (InfoData?, BladeJSError?) -> Unit) {
-        if (webViewInitialized) {
+    fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit) {
+        if (webViewInitialized && !force) {
             println("Error while doing double init of BladeSDK")
             throw Exception("Error while doing double init of BladeSDK")
         }
@@ -39,8 +39,16 @@ object Blade {
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
-                visitorId = getVisitorId(remoteConfig.fpApiKey, context)
+                val sharedPreferences = context.getSharedPreferences(context.resources.getString(R.string.sharedPreferences), Context.MODE_PRIVATE);
+                visitorId = sharedPreferences.getString(context.resources.getString(R.string.visitorIdKey), "") ?: ""
+                if (visitorId == "") {
+                    remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
+                    visitorId = getVisitorId(remoteConfig.fpApiKey, context)
+                    sharedPreferences.edit()
+                        .putString(context.resources.getString(R.string.visitorIdKey), visitorId)
+                        .putInt(context.resources.getString(R.string.visitorIdTimestampKey), (System.currentTimeMillis() / 1000).toInt())
+                        .apply()
+                }
             } catch (e: java.lang.Exception) {
                 initCompletion(null, BladeJSError("Init failed", e.toString()))
                 return@launch
@@ -48,6 +56,13 @@ object Blade {
 
             if (visitorId == "") {
                 return@launch
+            }
+
+            if (webView != null) {
+                webView?.clearCache(true)
+                webView?.clearHistory()
+                webView?.destroy();
+                webView = null
             }
 
             webView = WebView(context)
