@@ -20,4 +20,9 @@
         android:id="@+id/navigation_other"
         android:icon="@drawable/ic_other_black_24dp"
         android:title="@string/title_other" />
+
+    <item
+        android:id="@+id/navigation_token"
+        android:icon="@android:drawable/star_on"
+        android:title="@string/title_token" />
 </menu>

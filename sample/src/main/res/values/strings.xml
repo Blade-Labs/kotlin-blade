@@ -7,6 +7,7 @@
     <string name="title_examples">Examples</string>
     <string name="title_exchange">Exchange</string>
     <string name="title_other">Other</string>
+    <string name="title_token">Token</string>
 
     <string name="section_init_data">Init Blade section</string>
     <string name="label_dAppCode">dAppCode</string>
@@ -23,6 +24,8 @@
     <string name="button_stop">Stop</string>
     <string name="label_output">Output:</string>
     <string name="label_coinSearchString">Search</string>
+    <string name="label_tokenName">Token name</string>
+    <string name="label_tokenSymbol">Token symbol</string>
 
 
     <string name="button_balance">get balance</string>
@@ -32,6 +35,11 @@
     <string name="title_mnemonic_message_signature">Mnemonic / Message / Signature</string>
     <string name="button_get_coin_list">Get coin list</string>
     <string name="button_get_coin_price">Get coin price</string>
+    <string name="button_create_token">Create NFT token</string>
+    <string name="button_mint_token">Mint token</string>
+    <string name="button_associate_token">Associate token</string>
+    <string name="button_send_token">Send token</string>
+    <string name="button_pick_image">Select image</string>
 
     <string name="button_get_mnemonic">from mnemonic</string>
     <string name="button_sign">sign</string>

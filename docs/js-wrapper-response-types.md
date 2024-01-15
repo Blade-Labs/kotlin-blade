@@ -80,14 +80,6 @@ data class AccountInfoData(
 ```
 
 ```kotlin
-data class TransferData(
-    var nodeId: String,
-    var transactionHash: String,
-    var transactionId: String,
-)
-```
-
-```kotlin
 data class CreatedAccountData(
     var seedPhrase: String,
     var publicKey: String,
@@ -162,7 +154,7 @@ data class TransactionsHistoryData(
 
 ```kotlin
 data class TransactionHistoryDetail(
-    var fee: Int,
+    var fee: Double,
     var memo: String,
     var nftTransfers: List<TransactionHistoryNftTransfer>?,
     var time: String,
@@ -262,7 +254,13 @@ data class ICryptoFlowAsset(
 
 ```kotlin
 data class ResultData(
-var success: Boolean
+    var success: Boolean
+)
+```
+
+```kotlin
+data class CreateTokenData(
+    var tokenId: String
 )
 ```
 
@@ -346,6 +344,49 @@ data class CoinDataImage(
 data class CoinDataMarket(
     val currentPrice: Map<String, Double>
 )
+```
+
+```kotlin
+data class KeyRecord(
+    val privateKey: String,
+    val type: KeyType
+)
+```
+
+```kotlin
+data class NFTStorageConfig(
+    val provider: NFTStorageProvider,
+    val apiKey: String
+)
+```
+
+```kotlin
+enum class NFTStorageProvider(val value: String) {
+    nftStorage("nftStorage");
+
+    companion object {
+        fun fromValue(value: String): NFTStorageProvider? {
+            return NFTStorageProvider.values().find { it.value == value }
+        }
+    }
+}
+```
+
+```kotlin
+enum class KeyType(val value: String) {
+    admin("admin"),
+    kyc("kyc"),
+    freeze("freeze"),
+    wipe("wipe"),
+    pause("pause"),
+    feeSchedule("feeSchedule");
+
+    companion object {
+        fun fromValue(value: String): KeyType? {
+            return KeyType.values().find { it.value == value }
+        }
+    }
+}
 ```
 
 ```kotlin

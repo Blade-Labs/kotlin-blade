@@ -13,7 +13,7 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.10"
+    private const val sdkVersion: String = "Kotlin@0.6.11"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -39,7 +39,7 @@ object Blade {
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
-                val sharedPreferences = context.getSharedPreferences(context.resources.getString(R.string.sharedPreferences), Context.MODE_PRIVATE);
+                val sharedPreferences = context.getSharedPreferences(context.resources.getString(R.string.sharedPreferences), Context.MODE_PRIVATE)
                 visitorId = sharedPreferences.getString(context.resources.getString(R.string.visitorIdKey), "") ?: ""
                 if (visitorId == "") {
                     remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
@@ -61,7 +61,7 @@ object Blade {
             if (webView != null) {
                 webView?.clearCache(true)
                 webView?.clearHistory()
-                webView?.destroy();
+                webView?.destroy()
                 webView = null
             }
 
@@ -157,12 +157,12 @@ object Blade {
      * @param receiverId: receiver
      * @param amount: amount
      * @param memo: memo (limited to 100 characters)
-     * @param completion callback function, with result of TransferData or BladeJSError
+     * @param completion callback function, with result of TransactionReceiptData or BladeJSError
      */
-    fun transferHbars(accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, memo: String, completion: (TransferData?, BladeJSError?) -> Unit) {
+    fun transferHbars(accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, memo: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("transferHbars")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            typicalDeferredCallback<TransferData, TransferResponse>(data, error, completion)
+            typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
         executeJS("bladeSdk.transferHbars('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverId)}', '$amount', '${esc(memo)}', '$completionKey')")
     }
@@ -174,17 +174,17 @@ object Blade {
      * @param accountId: sender account id
      * @param accountPrivateKey: sender's private key to sign transfer transaction
      * @param receiverId: receiver
-     * @param amount: amount
+     * @param amountOrSerial: amount of fungible tokens to send (with token-decimals correction) on NFT serial number
      * @param memo: memo (limited to 100 characters)
      * @param freeTransfer: for tokens configured for this dAppCode on Blade backend
-     * @param completion callback function, with result of TransferData or BladeJSError
+     * @param completion callback function, with result of TransactionReceiptData or BladeJSError
      */
-    fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, memo: String, freeTransfer: Boolean = true, completion: (TransferData?, BladeJSError?) -> Unit) {
+    fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amountOrSerial: Double, memo: String, freeTransfer: Boolean = true, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("transferTokens")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            typicalDeferredCallback<TransferData, TransferResponse>(data, error, completion)
+            typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.transferTokens('${esc(tokenId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverId)}', '$amount', '${esc(memo)}', $freeTransfer, '$completionKey')")
+        executeJS("bladeSdk.transferTokens('${esc(tokenId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverId)}', '$amountOrSerial', '${esc(memo)}', $freeTransfer, '$completionKey')")
     }
 
     /**
@@ -462,13 +462,94 @@ object Blade {
      * @param slippage: slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage.
      * @param serviceId: service id to use for swap (saucerswap, etc)
      * @param completion: callback function, with result of ResultData or BladeJSError
-    */
+     */
     fun swapTokens(accountId: String, accountPrivateKey: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (ResultData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("swapTokens")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<ResultData, ResultResponse>(data, error, completion)
         }
         executeJS("bladeSdk.swapTokens('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '$completionKey')")
+    }
+
+    /**
+     * Create token (NFT or Fungible Token)
+     *
+     * @param treasuryAccountId: treasury account id
+     * @param supplyPrivateKey: supply account private key
+     * @param tokenName: token name (string up to 100 bytes)
+     * @param tokenSymbol: token symbol (string up to 100 bytes)
+     * @param isNft: set token type NFT
+     * @param keys: token keys
+     * @param decimals: token decimals (0 for nft)
+     * @param initialSupply: token initial supply (0 for nft)
+     * @param maxSupply: token max supply
+     * @param completion: callback function, with result of CreateTokenData or BladeJSError
+     */
+    fun createToken(
+        treasuryAccountId: String,
+        supplyPrivateKey: String,
+        tokenName: String,
+        tokenSymbol: String,
+        isNft: Boolean,
+        keys: List<KeyRecord>,
+        decimals: Int,
+        initialSupply: Int,
+        maxSupply: Int,
+        completion: (CreateTokenData?, BladeJSError?) -> Unit
+    ) {
+        val completionKey = getCompletionKey("createToken")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<CreateTokenData, CreateTokenResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.createToken('${esc(treasuryAccountId)}', '${esc(supplyPrivateKey)}', '${esc(tokenName)}', '${esc(tokenSymbol)}', ${isNft}, ${keys.joinToString(",", "[", "]") {gson.toJson(it)}}, ${decimals}, ${initialSupply}, ${maxSupply}, '$completionKey')")
+    }
+
+    /**
+     * Associate token to account
+     *
+     * @param tokenId: token id
+     * @param accountId: account id to associate token
+     * @param accountPrivateKey: account private key
+     * @param completion: callback function, with result of TransactionReceiptData or BladeJSError
+     */
+    fun associateToken(
+        tokenId: String,
+        accountId: String,
+        accountPrivateKey: String,
+        completion: (TransactionReceiptData?, BladeJSError?) -> Unit
+    ) {
+        val completionKey = getCompletionKey("associateToken")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.associateToken('${esc(tokenId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '$completionKey')")
+    }
+
+    /**
+     * Mint one NFT
+     *
+     * @param tokenId: token id to mint NFT
+     * @param supplyAccountId: token supply account id
+     * @param supplyPrivateKey: token supply private key
+     * @param file: image to mint
+     * @param metadata: NFT metadata
+     * @param storageConfig: IPFS provider config
+     * @param completion: callback function, with result of CreateTokenData or BladeJSError
+     */
+    fun nftMint(
+        tokenId: String,
+        supplyAccountId: String,
+        supplyPrivateKey: String,
+        file: String,
+        metadata: Map<String, Any>,
+        storageConfig: NFTStorageConfig,
+        completion: (TransactionReceiptData?, BladeJSError?) -> Unit
+    ) {
+        val completionKey = getCompletionKey("nftMint")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.nftMint('${esc(tokenId)}', '${esc(supplyAccountId)}', '${esc(supplyPrivateKey)}', '${esc(file)}', ${gson.toJson(metadata)}, ${gson.toJson(storageConfig)}, '$completionKey')")
     }
 
     /**
