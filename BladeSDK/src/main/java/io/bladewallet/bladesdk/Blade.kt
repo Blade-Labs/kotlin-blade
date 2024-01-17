@@ -531,7 +531,7 @@ object Blade {
      * @param tokenId: token id to mint NFT
      * @param supplyAccountId: token supply account id
      * @param supplyPrivateKey: token supply private key
-     * @param file: image to mint
+     * @param file: image to mint (base64 DataUrl image, eg.: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAA...)
      * @param metadata: NFT metadata
      * @param storageConfig: IPFS provider config
      * @param completion: callback function, with result of CreateTokenData or BladeJSError
