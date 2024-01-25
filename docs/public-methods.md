@@ -25,7 +25,7 @@ fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: Blad
 
     CoroutineScope(Dispatchers.Main).launch {
         try {
-            val sharedPreferences = context.getSharedPreferences(context.resources.getString(R.string.sharedPreferences), Context.MODE_PRIVATE);
+            val sharedPreferences = context.getSharedPreferences(context.resources.getString(R.string.sharedPreferences), Context.MODE_PRIVATE)
             visitorId = sharedPreferences.getString(context.resources.getString(R.string.visitorIdKey), "") ?: ""
 
             if (visitorId == "") {
@@ -45,7 +45,7 @@ fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: Blad
         if (webView != null) {
             webView?.clearCache(true)
             webView?.clearHistory()
-            webView?.destroy();
+            webView?.destroy()
             webView = null
         }
 
@@ -151,13 +151,13 @@ fun getCoinPrice(search: String, completion: (CoinInfoData?, BladeJSError?) -> U
  * `receiverId`: receiver
  * `amount`: amount
  * `memo`: memo (limited to 100 characters)
- * `completion`: callback function, with result of TransferData or BladeJSError
+ * `completion`: callback function, with result of TransactionReceiptData or BladeJSError
 
 ```kotlin
-fun transferHbars(accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, memo: String, completion: (TransferData?, BladeJSError?) -> Unit) {
+fun transferHbars(accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, memo: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
     val completionKey = getCompletionKey("transferHbars")
     deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-        typicalDeferredCallback<TransferData, TransferResponse>(data, error, completion)
+        typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
     }
     executeJS("bladeSdk.transferHbars('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverId)}', '$amount', '${esc(memo)}', '$completionKey')")
 }
@@ -171,16 +171,16 @@ fun transferHbars(accountId: String, accountPrivateKey: String, receiverId: Stri
  * `accountId`: sender account id
  * `accountPrivateKey`: sender's private key to sign transfer transaction
  * `receiverId`: receiver
- * `amount`: amount
+ * `amountOrSerial`: amount of fungible tokens to send (with token-decimals correction) on NFT serial number
  * `memo`: memo (limited to 100 characters)
  * `freeTransfer`: for tokens configured for this dAppCode on Blade backend
- * `completion`: callback function, with result of TransferData or BladeJSError
+ * `completion`: callback function, with result of TransactionReceiptData or BladeJSError
 
 ```kotlin
-fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, memo: String, freeTransfer: Boolean = true, completion: (TransferData?, BladeJSError?) -> Unit) {
+fun transferTokens(tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amountOrSerial: Double, memo: String, freeTransfer: Boolean = true, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
     val completionKey = getCompletionKey("transferTokens")
     deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-        typicalDeferredCallback<TransferData, TransferResponse>(data, error, completion)
+        typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
     }
     executeJS("bladeSdk.transferTokens('${esc(tokenId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverId)}', '$amount', '${esc(memo)}', $freeTransfer, '$completionKey')")
 }
@@ -518,6 +518,97 @@ fun swapTokens(accountId: String, accountPrivateKey: String, sourceCode: String,
         typicalDeferredCallback<ResultData, ResultResponse>(data, error, completion)
     }
     executeJS("bladeSdk.swapTokens('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '$completionKey')")
+}
+```
+
+## Create token (NFT or Fungible Token)
+
+### Parameters:
+
+ * `treasuryAccountId`: treasury account id
+ * `supplyPrivateKey`: supply account private key
+ * `tokenName`: token name (string up to 100 bytes)
+ * `tokenSymbol`: token symbol (string up to 100 bytes)
+ * `isNft`: set token type NFT
+ * `keys`: token keys
+ * `decimals`: token decimals (0 for nft)
+ * `initialSupply`: token initial supply (0 for nft)
+ * `maxSupply`: token max supply
+ * `completion`: callback function, with result of CreateTokenData or BladeJSError
+
+```kotlin
+fun createToken(
+    treasuryAccountId: String,
+    supplyPrivateKey: String,
+    tokenName: String,
+    tokenSymbol: String,
+    isNft: Boolean,
+    keys: List<KeyRecord>,
+    decimals: Int,
+    initialSupply: Int,
+    maxSupply: Int,
+    completion: (CreateTokenData?, BladeJSError?) -> Unit
+) {
+    val completionKey = getCompletionKey("createToken")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<CreateTokenData, CreateTokenResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.createToken('${esc(treasuryAccountId)}', '${esc(supplyPrivateKey)}', '${esc(tokenName)}', '${esc(tokenSymbol)}', ${isNft}, ${keys.joinToString(",", "[", "]") {gson.toJson(it)}}, ${decimals}, ${initialSupply}, ${maxSupply}, '$completionKey')")
+}
+```
+
+
+## Associate token to account
+
+### Parameters:
+
+ * `tokenId`: token id
+ * `accountId`: account id to associate token
+ * `accountPrivateKey`: account private key
+ * `completion`: callback function, with result of TransactionReceiptData or BladeJSError
+
+```kotlin
+fun associateToken(
+    tokenId: String,
+    accountId: String,
+    accountPrivateKey: String,
+    completion: (TransactionReceiptData?, BladeJSError?) -> Unit
+) {
+    val completionKey = getCompletionKey("associateToken")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.associateToken('${esc(tokenId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '$completionKey')")
+}
+```
+
+## Mint one NFT
+
+### Parameters:
+
+ * `tokenId`: token id to mint NFT
+ * `supplyAccountId`: token supply account id
+ * `supplyPrivateKey`: token supply private key
+ * `file`: image to mint
+ * `metadata`: NFT metadata
+ * `storageConfig`: IPFS provider config
+ * `completion`: callback function, with result of CreateTokenData or BladeJSError
+
+```kotlin
+fun nftMint(
+   tokenId: String,
+   supplyAccountId: String,
+   supplyPrivateKey: String,
+   file: String,
+   metadata: Map<String, Any>,
+   storageConfig: NFTStorageConfig,
+   completion: (TransactionReceiptData?, BladeJSError?) -> Unit
+) {
+   val completionKey = getCompletionKey("nftMint")
+   deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+       typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
+   }
+   executeJS("bladeSdk.nftMint('${esc(tokenId)}', '${esc(supplyAccountId)}', '${esc(supplyPrivateKey)}', '${esc(file)}', ${gson.toJson(metadata)}, ${gson.toJson(storageConfig)}, '$completionKey')")
 }
 ```
 

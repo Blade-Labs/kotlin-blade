@@ -47,19 +47,19 @@ class ExamplesFragment : Fragment() {
             binding.buttonContractQuery.isEnabled = enable
             binding.buttonTransferHbars.isEnabled = enable
             binding.buttonTransferTokens.isEnabled = enable
-            return enable;
+            return enable
         }
 
         @SuppressLint("SetTextI18n")
         fun output(text: String) {
             if (text == "") {
-                startOperation = System.currentTimeMillis();
-                binding.textTitleOutput.setText("Output:");
-                binding.progressBar.visibility = View.VISIBLE;
+                startOperation = System.currentTimeMillis()
+                binding.textTitleOutput.setText("Output:")
+                binding.progressBar.visibility = View.VISIBLE
             } else {
                 println(text)
-                binding.textTitleOutput.setText("Output (${System.currentTimeMillis() - startOperation}ms):");
-                binding.progressBar.visibility = View.GONE;
+                binding.textTitleOutput.setText("Output (${System.currentTimeMillis() - startOperation}ms):")
+                binding.progressBar.visibility = View.GONE
             }
             binding.outputTextView.setText(text)
         }
@@ -76,10 +76,10 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.editAccountId.setText(Config.accountId);
-        binding.editMnemonicMessageSignature.setText(Config.mnemonic);
-        binding.editTextReceiver.setText(Config.accountId2);
-        binding.editTextAmount.setText("1");
+        binding.editAccountId.setText(Config.accountId)
+        binding.editMnemonicMessageSignature.setText(Config.mnemonic)
+        binding.editTextReceiver.setText(Config.accountId2)
+        binding.editTextAmount.setText("1")
 
         binding.buttonBalance.setOnClickListener {
             output("")
@@ -87,7 +87,7 @@ class ExamplesFragment : Fragment() {
                 binding.editAccountId.text.toString()
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }
@@ -101,7 +101,7 @@ class ExamplesFragment : Fragment() {
                 transactionsLimit = 15
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }
@@ -110,7 +110,7 @@ class ExamplesFragment : Fragment() {
             output("")
             Blade.createHederaAccount(deviceId = "") { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                     if (result != null) {
                         temporaryAccount = result
                         binding.buttonDeleteAccount.isEnabled = true
@@ -129,7 +129,7 @@ class ExamplesFragment : Fragment() {
                 operatorPrivateKey = Config.privateKey,
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                     if (result != null) {
                         temporaryAccount = null
                         binding.buttonDeleteAccount.isEnabled = false
@@ -145,7 +145,7 @@ class ExamplesFragment : Fragment() {
                 lookupNames = true
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }
@@ -160,7 +160,7 @@ class ExamplesFragment : Fragment() {
                 privateKey = Config.privateKey
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }
@@ -177,7 +177,7 @@ class ExamplesFragment : Fragment() {
                 publicKey = Config.publicKey
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }
@@ -196,7 +196,7 @@ class ExamplesFragment : Fragment() {
                 bladePayFee = false
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }
@@ -216,7 +216,7 @@ class ExamplesFragment : Fragment() {
                 returnTypes = listOf("string", "int32")
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }
@@ -232,7 +232,7 @@ class ExamplesFragment : Fragment() {
                 memo = "Test HBar transfer from Kotlin-Blade SDK"
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }
@@ -244,11 +244,11 @@ class ExamplesFragment : Fragment() {
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
                 receiverId = binding.editTextReceiver.text.toString(),
-                amount = binding.editTextAmount.text.toString().toDouble(),
+                amountOrSerial = binding.editTextAmount.text.toString().toDouble(),
                 memo = "Test token transfer from Kotlin-Blade SDK"
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${ result ?: bladeJSError}");
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }

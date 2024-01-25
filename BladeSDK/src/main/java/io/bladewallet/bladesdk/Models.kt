@@ -61,17 +61,6 @@ data class AccountInfoData(
     var calculatedEvmAddress: String
 )
 
-data class TransferResponse(
-    override var completionKey: String,
-    override var data: TransferData
-): Result<TransferData>
-
-data class TransferData(
-    var nodeId: String,
-    var transactionHash: String,
-    var transactionId: String,
-)
-
 data class CreatedAccountResponse(
     override var completionKey: String,
     override var data: CreatedAccountData
@@ -97,7 +86,8 @@ data class TransactionReceiptData(
     var status: String,
     var contractId: String?,
     var topicSequenceNumber: String?,
-    var totalSupply: String?
+    var totalSupply: String?,
+    var serials: List<String>?
 )
 
 data class ContractQueryResponse(
@@ -167,7 +157,7 @@ data class TransactionsHistoryData(
 )
 
 data class TransactionHistoryDetail(
-    var fee: Int,
+    var fee: Double,
     var memo: String,
     var nftTransfers: List<TransactionHistoryNftTransfer>?,
     var time: String,
@@ -264,6 +254,15 @@ data class ResultData(
     var success: Boolean
 )
 
+data class CreateTokenResponse(
+    override var completionKey: String,
+    override var data: CreateTokenData
+) : Result<CreateTokenData>
+
+data class CreateTokenData(
+    var tokenId: String
+)
+
 data class RemoteConfig(
     var fpApiKey: String
 )
@@ -323,6 +322,40 @@ data class CoinDataImage(
 data class CoinDataMarket(
     val current_price: Map<String, Double>
 )
+
+data class KeyRecord(
+    val privateKey: String,
+    val type: KeyType
+)
+
+data class NFTStorageConfig(
+    val provider: NFTStorageProvider,
+    val apiKey: String
+)
+enum class NFTStorageProvider(val value: String) {
+    nftStorage("nftStorage");
+
+    companion object {
+        fun fromValue(value: String): NFTStorageProvider? {
+            return NFTStorageProvider.values().find { it.value == value }
+        }
+    }
+}
+
+enum class KeyType(val value: String) {
+    admin("admin"),
+    kyc("kyc"),
+    freeze("freeze"),
+    wipe("wipe"),
+    pause("pause"),
+    feeSchedule("feeSchedule");
+
+    companion object {
+        fun fromValue(value: String): KeyType? {
+            return KeyType.values().find { it.value == value }
+        }
+    }
+}
 
 enum class BladeEnv(val value: String) {
     Prod("Prod"),
