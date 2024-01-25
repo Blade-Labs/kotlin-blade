@@ -40,6 +40,8 @@
     <string name="button_associate_token">Associate token</string>
     <string name="button_send_token">Send token</string>
     <string name="button_pick_image">Select image</string>
+    <string name="nodePickerTitle">Select node</string>
+    <string name="accountStatusTitle">Staked? Loading…</string>
 
     <string name="button_get_mnemonic">from mnemonic</string>
     <string name="button_sign">sign</string>
@@ -59,4 +61,5 @@
     <string name="button_buy">buy</string>
     <string name="button_sell">sell</string>
     <string name="button_swap">swap</string>
+    <string name="buttonUpdateAccount">update staking</string>
 </resources>

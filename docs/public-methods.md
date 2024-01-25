@@ -259,6 +259,41 @@ fun getAccountInfo(accountId: String, completion: (AccountInfoData?, BladeJSErro
 }
 ```
 
+## Get Node list
+
+### Parameters:
+
+ * `completion`: callback function, with result of AccountInfoData or BladeJSError
+
+```kotlin
+fun getNodeList(completion: (NodesData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("getNodeList")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<NodesData, NodesResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.getNodeList('$completionKey')")
+}
+```
+
+## Stake/unstake account
+
+### Parameters:
+
+ * `accountId`: Hedera account id
+ * `accountPrivateKey`: account private key (DER encoded hex string)
+ * `nodeId`: node id to stake to. If negative or null, account will be unstaked
+ * `completion`: callback function, with result of TransactionReceiptData or BladeJSError
+
+```kotlin
+fun stakeToNode(accountId: String, accountPrivateKey: String, nodeId: Int, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("stakeToNode")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.stakeToNode('${esc(accountId)}', '${esc(accountPrivateKey)}', ${nodeId}, '$completionKey')")
+}
+```
+
 ## Restore public and private key by seed phrase
 
 ### Parameters:

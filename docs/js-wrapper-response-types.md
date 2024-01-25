@@ -75,7 +75,41 @@ data class BalanceDataToken(
 data class AccountInfoData(
     var accountId: String,
     var evmAddress: String,
-    var calculatedEvmAddress: String
+    var calculatedEvmAddress: String,
+    var publicKey: String,
+    var stakingInfo: StakingInfo
+)
+```
+
+```kotlin
+data class StakingInfo(
+    val pendingReward: Long,
+    val stakedNodeId: Int?,
+    val stakePeriodStart: String?
+)
+```
+
+```kotlin
+data class NodesResponse(
+    override var completionKey: String,
+    override var data: NodesData
+): Result<NodesData>
+```
+
+```kotlin
+data class NodesData(
+    var nodes: List<NodeInfo>,
+)
+
+data class NodeInfo(
+    var description: String,
+    var max_stake: Long,
+    var min_stake: Long,
+    var node_id: Int,
+    var node_account_id: String,
+    var stake: Long,
+    var stake_not_rewarded: Long,
+    var stake_rewarded: Long,
 )
 ```
 

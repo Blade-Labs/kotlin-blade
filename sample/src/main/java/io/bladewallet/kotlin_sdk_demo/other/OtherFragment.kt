@@ -63,6 +63,68 @@ class OtherFragment : Fragment() {
                 if (infoData != null) {
                     toggleElements(true)
                     output("$infoData")
+
+                    Blade.getAccountInfo(Config.accountId) { accountInfoData, bladeJSError ->
+                        lifecycleScope.launch {
+                            if (accountInfoData != null) {
+                                var res = "${accountInfoData.accountId}\nStaked? - ";
+                                if (accountInfoData.stakingInfo.stakedNodeId !== null) {
+                                    res += "YES"
+                                } else {
+                                    res += "NO"
+                                }
+                                binding.accountStatusTitle.setText(res);
+                                Config.stakedNodeId = accountInfoData.stakingInfo.stakedNodeId;
+
+                                Blade.getNodeList() { nodeListData, bladeJSError ->
+                                    lifecycleScope.launch {
+                                        if (nodeListData != null) {
+                                            binding.nodeSpinner.isEnabled = true
+                                            binding.buttonUpdateAccount.isEnabled = true
+
+                                            var nodes = arrayOf<String>()
+                                            nodes += "-1: UNSTAKE"
+                                            for (node in nodeListData.nodes) {
+                                                nodes += "${node.node_id}: ${node.description}"
+                                            }
+
+                                            var activeNode = 0;
+                                            var i = 0;
+                                            for (node in nodes) {
+                                                val nodeId = node.substringBefore(":").trim().toInt()
+                                                println("nodeId: ${nodeId}... Config.stakedNodeId: ${Config.stakedNodeId}")
+                                                if (nodeId == (Config.stakedNodeId ?: -1)) {
+                                                    println("activeNode: ${i}")
+                                                    activeNode = i;
+                                                }
+                                                i++;
+                                            }
+
+                                            object : ArrayAdapter<String>(
+                                                requireContext(),
+                                                android.R.layout.simple_spinner_item,
+                                                nodes
+                                            ) {
+                                            }.also {
+                                                it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+                                                binding.nodeSpinner.adapter = it
+                                                binding.nodeSpinner.setSelection(activeNode)
+
+                                                binding.nodeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                                                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                                                        Config.stakedNodeId = binding.nodeSpinner.selectedItem.toString().substringBefore(":").trim().toInt()
+                                                    }
+                                                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 } else {
                     toggleElements(false)
                     output("$bladeJSError")
@@ -116,6 +178,25 @@ class OtherFragment : Fragment() {
                 search = binding.coinSearchEditText.text.toString()
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
+                    output("${result ?: bladeJSError}")
+                }
+            }
+        }
+
+        binding.buttonUpdateAccount.setOnClickListener {
+            output("");
+
+            Blade.stakeToNode(Config.accountId, Config.privateKey, Config.stakedNodeId ?: -1) { result, bladeJSError ->
+                lifecycleScope.launch {
+                    if (result != null) {
+                        var res = "${Config.accountId}\nStaked? - ";
+                        if (Config.stakedNodeId === null || Config.stakedNodeId!!.toInt() < 0) {
+                            res += "NO"
+                        } else {
+                            res += "YES"
+                        }
+                        binding.accountStatusTitle.setText(res);
+                    }
                     output("${result ?: bladeJSError}")
                 }
             }
