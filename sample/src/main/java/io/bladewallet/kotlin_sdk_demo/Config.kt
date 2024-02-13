@@ -24,4 +24,5 @@ object Config {
     var tokenName = "Super NFT"
     var tokenSymbol = "B++"
     var tokenIdToMint = ""
+    var stakedNodeId: Int? = null
 }

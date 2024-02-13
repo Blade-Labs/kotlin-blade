@@ -13,7 +13,7 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.11"
+    private const val sdkVersion: String = "Kotlin@0.6.12"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -246,6 +246,35 @@ object Blade {
             typicalDeferredCallback<AccountInfoData, AccountInfoResponse>(data, error, completion)
         }
         executeJS("bladeSdk.getAccountInfo('${esc(accountId)}', '$completionKey')")
+    }
+
+    /**
+     * Get Node list
+     *
+     * @param completion callback function, with result of NodesData or BladeJSError
+     */
+    fun getNodeList(completion: (NodesData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getNodeList")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<NodesData, NodesResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getNodeList('$completionKey')")
+    }
+
+    /**
+     * Stake/unstake account
+     *
+     * @param accountId: Hedera account id
+     * @param accountPrivateKey account private key (DER encoded hex string)
+     * @param nodeId node id to stake to. If negative or null, account will be unstaked
+     * @param completion callback function, with result of TransactionReceiptData or BladeJSError
+     */
+    fun stakeToNode(accountId: String, accountPrivateKey: String, nodeId: Int, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("stakeToNode")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.stakeToNode('${esc(accountId)}', '${esc(accountPrivateKey)}', ${nodeId}, '$completionKey')")
     }
 
     /**
