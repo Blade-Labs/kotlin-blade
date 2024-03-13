@@ -190,15 +190,16 @@ object Blade {
     /**
      * Method to create Hedera account
      *
+     * @param privateKey: leave empty if you don't need to specify account key
      * @param deviceId: unique device id (advanced security feature, required only for some dApps)
      * @param completion callback function, with result of CreatedAccountData or BladeJSError
      */
-    fun createHederaAccount(deviceId: String, completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
+    fun createHederaAccount(privateKey: String, deviceId: String, completion: (CreatedAccountData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("createAccount")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<CreatedAccountData, CreatedAccountResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.createAccount('${esc(deviceId)}', '$completionKey')")
+        executeJS("bladeSdk.createAccount('${esc(privateKey)}', '${esc(deviceId)}', '$completionKey')")
     }
 
     /**
