@@ -13,7 +13,8 @@ interface Result<T>{
 data class BladeJSError(
     var name: String,
     var reason: String
-)
+) : Throwable()
+
 data class Response (
     override var completionKey: String,
     override var data: Any,

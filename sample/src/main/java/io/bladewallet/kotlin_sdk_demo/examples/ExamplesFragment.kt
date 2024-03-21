@@ -108,7 +108,7 @@ class ExamplesFragment : Fragment() {
 
         binding.buttonCreateAccount.setOnClickListener {
             output("")
-            Blade.createHederaAccount(deviceId = "") { result, bladeJSError ->
+            Blade.createHederaAccount(privateKey = "", deviceId = "") { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
                     if (result != null) {
