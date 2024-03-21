@@ -14,6 +14,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import com.google.gson.Gson
+import java.io.IOException
 
 
 internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersion: String, bladeEnv: BladeEnv): RemoteConfig = withContext(Dispatchers.IO) {
@@ -28,37 +29,40 @@ internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersi
         fallbackConfig.fpApiKey = "0fScXqpS7MzpCl9HgEsI"
     }
 
-    val connection = URL(url).openConnection() as HttpURLConnection
-    connection.requestMethod = "GET"
+    try {
+        val connection = URL(url).openConnection() as HttpURLConnection
+        connection.requestMethod = "GET"
 
-    connection.setRequestProperty("x-network", network.uppercase())
-    connection.setRequestProperty("x-dapp-code", dAppCode)
-    connection.setRequestProperty("x-sdk-version", sdkVersion)
-    connection.setRequestProperty("content-type", "application/json")
+        connection.setRequestProperty("x-network", network.uppercase())
+        connection.setRequestProperty("x-dapp-code", dAppCode)
+        connection.setRequestProperty("x-sdk-version", sdkVersion)
+        connection.setRequestProperty("content-type", "application/json")
 
-    val responseCode = connection.responseCode
-    val reader = if (responseCode == HttpURLConnection.HTTP_OK) {
-        BufferedReader(InputStreamReader(connection.inputStream))
-    } else {
-        BufferedReader(InputStreamReader(connection.errorStream))
-    }
-    val response = StringBuilder()
-    var line: String?
-    while (reader.readLine().also { line = it } != null) {
-        response.append(line)
-    }
-    reader.close()
-    if (responseCode == HttpURLConnection.HTTP_OK) {
-        val jsonString = response.toString()
-        try {
-            val remoteConfig = Gson().fromJson(jsonString, RemoteConfig::class.java)
-            return@withContext remoteConfig
-        } catch (error: Exception) {
-            // throw Exception("${error}. Data: `${jsonString}`")
+        val responseCode = connection.responseCode
+        val reader = if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader(InputStreamReader(connection.inputStream))
+        } else {
+            BufferedReader(InputStreamReader(connection.errorStream))
+        }
+        val response = StringBuilder()
+        var line: String?
+        while (reader.readLine().also { line = it } != null) {
+            response.append(line)
+        }
+        reader.close()
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            val jsonString = response.toString()
+            try {
+                val remoteConfig = Gson().fromJson(jsonString, RemoteConfig::class.java)
+                return@withContext remoteConfig
+            } catch (error: Exception) {
+                // throw Exception("${error}. Data: `${jsonString}`")
+                return@withContext fallbackConfig
+            }
+        } else {
             return@withContext fallbackConfig
         }
-    } else {
-        // throw Exception(response.toString())
+    } catch (e: IOException) {
         return@withContext fallbackConfig
     }
 }
