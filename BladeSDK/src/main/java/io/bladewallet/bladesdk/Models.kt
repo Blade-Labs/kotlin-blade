@@ -208,13 +208,14 @@ data class TransactionHistoryPlainData(
 data class TransactionHistoryTransfer(
     var account: String,
     var amount: Double,
-    var is_approval: Boolean
+    var is_approval: Boolean,
+    var token_id: String?
 )
 
 data class TransactionHistoryNftTransfer(
     var is_approval: Boolean,
     var receiver_account_id: String,
-    var sender_account_id: String,
+    var sender_account_id: String?,
     var serial_number: Int,
     var token_id: String
 )
