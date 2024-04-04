@@ -130,15 +130,16 @@ fun getCoinList(completion: (CoinListData?, BladeJSError?) -> Unit) {
 ### Parameters:
 
  * `search`: CoinGecko coinId, or address in one of the coin platforms or `hbar` (default, alias for `hedera-hashgraph`)
+ * `currency` result currency for price field
  * `completion`: callback function, with result of `BalanceData` or `BladeJSError`
 
 ```kotlin
-fun getCoinPrice(search: String, completion: (CoinInfoData?, BladeJSError?) -> Unit) {
+fun getCoinPrice(search: String, currency: String = "usd", completion: (CoinInfoData?, BladeJSError?) -> Unit) {
     val completionKey = getCompletionKey("getCoinPrice")
     deferCompletion(completionKey) { data: String, error: BladeJSError? ->
         typicalDeferredCallback<CoinInfoData, CoinInfoResponse>(data, error, completion)
     }
-    executeJS("bladeSdk.getCoinPrice('${esc(search)}', '$completionKey')")
+    executeJS("bladeSdk.getCoinPrice('${esc(search)}', '${esc(currency)}', '$completionKey')")
 }
 ```
 
@@ -259,6 +260,25 @@ fun getAccountInfo(accountId: String, completion: (AccountInfoData?, BladeJSErro
 }
 ```
 
+## Method to sign scheduled transaction
+
+### Parameters:
+
+ * `scheduleId`: scheduled transaction id (0.0.xxxxx)
+ * `accountId`: account id (0.0.xxxxx)
+ * `accountPrivateKey`: hex encoded privateKey with DER-prefix
+ * `completion`: callback function, with result of TransactionReceiptData or BladeJSError
+
+```kotlin
+fun signScheduleId(scheduleId: String, accountId: String, accountPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("signScheduleId")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.signScheduleId('${esc(scheduleId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '$completionKey')")
+}
+```
+
 ## Get Node list
 
 ### Parameters:
@@ -296,6 +316,8 @@ fun stakeToNode(accountId: String, accountPrivateKey: String, nodeId: Int, compl
 
 ## Restore public and private key by seed phrase
 
+*deprecated. Use [searchAccounts]*
+
 ### Parameters:
 
  * `mnemonic`: seed phrase
@@ -309,6 +331,23 @@ fun getKeysFromMnemonic (mnemonic: String, lookupNames: Boolean = false, complet
         typicalDeferredCallback<PrivateKeyData, PrivateKeyResponse>(data, error, completion)
     }
     executeJS("bladeSdk.getKeysFromMnemonic('${esc(mnemonic)}', $lookupNames, '$completionKey')")
+}
+```
+
+## Get accounts list and keys from private key or mnemonic. Returned keys with DER header.
+
+### Parameters:
+
+ * `keyOrMnemonic`: BIP39 mnemonic, private key with DER header
+ * `completion`: callback function, with result of AccountPrivateData or BladeJSError
+
+```kotlin
+fun searchAccounts (keyOrMnemonic: String, completion: (AccountPrivateData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("searchAccounts")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<AccountPrivateData, AccountPrivateResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.searchAccounts('${esc(keyOrMnemonic)}', '$completionKey')")
 }
 ```
 
@@ -513,7 +552,7 @@ fun exchangeGetQuotes(sourceCode: String, sourceAmount: Double, targetCode: Stri
 ## Method to get configured url to buy or sell tokens or fiat
 
 ### Parameters:
-     
+
  * `strategy`: Buy / Sell
  * `accountId`: account id
  * `sourceCode`: name (HBAR, KARATE, USDC, other token code)
@@ -522,7 +561,7 @@ fun exchangeGetQuotes(sourceCode: String, sourceAmount: Double, targetCode: Stri
  * `slippage`: slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage.
  * `serviceId`: service id to use for swap (saucerswap, onmeta, etc)
  * `completion`: callback function, with result of IntegrationUrlData or BladeJSError
-   
+
 ```kotlin
 fun getTradeUrl(strategy: CryptoFlowServiceStrategy, accountId: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
     val completionKey = getCompletionKey("getTradeUrl")
@@ -545,7 +584,7 @@ fun getTradeUrl(strategy: CryptoFlowServiceStrategy, accountId: String, sourceCo
  * `slippage`: slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage.
  * `serviceId`: service id to use for swap (saucerswap, etc)
  * `completion`: callback function, with result of ResultData or BladeJSError
- 
+
 ```kotlin
 fun swapTokens(accountId: String, accountPrivateKey: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (ResultData?, BladeJSError?) -> Unit) {
     val completionKey = getCompletionKey("swapTokens")

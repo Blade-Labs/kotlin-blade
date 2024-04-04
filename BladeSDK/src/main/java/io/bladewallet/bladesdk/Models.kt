@@ -146,6 +146,24 @@ data class PrivateKeyData(
     var evmAddress: String
 )
 
+data class AccountPrivateResponse(
+    override var completionKey: String,
+    override var data: AccountPrivateData
+): Result<AccountPrivateData>
+
+data class AccountPrivateData(
+    var accounts: List<AccountPrivateRecord>
+)
+
+data class AccountPrivateRecord(
+    var privateKey: String,
+    var publicKey: String,
+    var evmAddress: String,
+    var address: String,
+    var path: String,
+    val keyType: CryptoKeyType
+)
+
 data class SignMessageResponse(
     override var completionKey: String,
     override var data: SignMessageData
@@ -325,7 +343,9 @@ data class CoinInfoResponse(
 
 data class CoinInfoData(
     var coin: CoinData,
-    var priceUsd: Double
+    var priceUsd: Double,
+    var price: Double?,
+    var currency: String
 )
 
 data class CoinData(
@@ -400,6 +420,17 @@ enum class CryptoFlowServiceStrategy(val value: String) {
     companion object {
         fun fromValue(value: String): CryptoFlowServiceStrategy? {
             return values().find { it.value == value }
+        }
+    }
+}
+
+enum class CryptoKeyType(val value: String) {
+    ECDSA_SECP256K1("ECDSA_SECP256K1"),
+    ED25519("ED25519");
+
+    companion object {
+        fun fromValue(value: String): CryptoKeyType? {
+            return CryptoKeyType.values().find { it.value == value }
         }
     }
 }

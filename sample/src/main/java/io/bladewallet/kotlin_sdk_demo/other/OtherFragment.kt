@@ -39,6 +39,8 @@ class OtherFragment : Fragment() {
             binding.buttonGetCoinPrice.isEnabled = enable
             binding.coinIdSpinner.isEnabled = enable
             binding.coinSearchEditText.isEnabled = enable
+            binding.scheduleIdEditText.isEnabled = enable
+            binding.buttonSignScheduledTx.isEnabled = enable
             return enable;
         }
 
@@ -132,6 +134,20 @@ class OtherFragment : Fragment() {
             }
         }
 
+        binding.buttonSignScheduledTx.setOnClickListener {
+            output("")
+
+            Blade.signScheduleId(
+                scheduleId = binding.scheduleIdEditText.text.toString(),
+                accountId = Config.accountId,
+                accountPrivateKey = Config.privateKey
+            ) { result, bladeJSError ->
+                lifecycleScope.launch {
+                    output("${result ?: bladeJSError}");
+                }
+            }
+        }
+
         binding.buttonGetCoinList.setOnClickListener {
             output("")
 
@@ -175,7 +191,8 @@ class OtherFragment : Fragment() {
         binding.buttonGetCoinPrice.setOnClickListener {
             output("");
             Blade.getCoinPrice(
-                search = binding.coinSearchEditText.text.toString()
+                search = binding.coinSearchEditText.text.toString(),
+                currency = "uah"
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")

@@ -13,7 +13,7 @@ import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.19"
+    private const val sdkVersion: String = "Kotlin@0.6.20"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -139,14 +139,15 @@ object Blade {
      * Get coin price and coin info from CoinGecko. Search can be coin id or address in one of the coin platforms.
      *
      * @param search CoinGecko coinId, or address in one of the coin platforms or `hbar` (default, alias for `hedera-hashgraph`)
+     * @param currency result currency for price field
      * @param completion callback function, with result of CoinListData or BladeJSError
      */
-    fun getCoinPrice(search: String, completion: (CoinInfoData?, BladeJSError?) -> Unit) {
+    fun getCoinPrice(search: String, currency: String = "usd", completion: (CoinInfoData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getCoinPrice")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<CoinInfoData, CoinInfoResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getCoinPrice('${esc(search)}', '$completionKey')")
+        executeJS("bladeSdk.getCoinPrice('${esc(search)}', '${esc(currency)}', '$completionKey')")
     }
 
     /**
@@ -185,6 +186,22 @@ object Blade {
             typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
         executeJS("bladeSdk.transferTokens('${esc(tokenId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverId)}', '$amountOrSerial', '${esc(memo)}', $freeTransfer, '$completionKey')")
+    }
+
+    /**
+     * Method to sign scheduled transaction
+     *
+     * @param scheduleId scheduled transaction id (0.0.xxxxx)
+     * @param accountId account id (0.0.xxxxx)
+     * @param accountPrivateKey optional field if you need specify account key (hex encoded privateKey with DER-prefix)
+     * @param completion callback function, with result of TransactionReceiptData or BladeJSError
+     */
+    fun signScheduleId(scheduleId: String, accountId: String, accountPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("signScheduleId")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.signScheduleId('${esc(scheduleId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '$completionKey')")
     }
 
     /**
@@ -284,6 +301,7 @@ object Blade {
      * @param mnemonic: seed phrase
      * @param lookupNames: lookup for accounts
      * @param completion callback function, with result of PrivateKeyData or BladeJSError
+     * @deprecated("This method is deprecated. Please use [searchAccounts] instead. Will be removed in version 0.7")
      */
     fun getKeysFromMnemonic (mnemonic: String, lookupNames: Boolean = false, completion: (PrivateKeyData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getKeysFromMnemonic")
@@ -291,6 +309,20 @@ object Blade {
             typicalDeferredCallback<PrivateKeyData, PrivateKeyResponse>(data, error, completion)
         }
         executeJS("bladeSdk.getKeysFromMnemonic('${esc(mnemonic)}', $lookupNames, '$completionKey')")
+    }
+
+    /**
+     * Get accounts list and keys from private key or mnemonic. Returned keys with DER header.
+     *
+     * @param keyOrMnemonic BIP39 mnemonic, private key with DER header
+     * @param completion callback function, with result of AccountPrivateData or BladeJSError
+     */
+    fun searchAccounts (keyOrMnemonic: String, completion: (AccountPrivateData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("searchAccounts")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<AccountPrivateData, AccountPrivateResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.searchAccounts('${esc(keyOrMnemonic)}', '$completionKey')")
     }
 
     /**

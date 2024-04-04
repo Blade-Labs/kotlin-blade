@@ -140,9 +140,8 @@ class ExamplesFragment : Fragment() {
 
         binding.buttonGetFromMnemonic.setOnClickListener {
             output("")
-            Blade.getKeysFromMnemonic(
-                mnemonic = binding.editMnemonicMessageSignature.text.toString(),
-                lookupNames = true
+            Blade.searchAccounts(
+                keyOrMnemonic = binding.editMnemonicMessageSignature.text.toString(),
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
