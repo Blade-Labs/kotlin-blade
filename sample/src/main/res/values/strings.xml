@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">Blade-demo</string>
 
-    <string name="init_blade_section">Init Blade section</string>
-
     <string name="title_init">Init</string>
     <string name="title_examples">Examples</string>
     <string name="title_exchange">Exchange</string>
@@ -31,6 +29,7 @@
     <string name="button_balance">get balance</string>
     <string name="button_transactions">get transactions</string>
     <string name="button_create_account">create account</string>
+    <string name="button_drop_tokens">drop tokens</string>
     <string name="button_delete_account">delete account</string>
     <string name="title_mnemonic_message_signature">Mnemonic / Message / Signature</string>
     <string name="button_get_coin_list">Get coin list</string>
@@ -40,7 +39,6 @@
     <string name="button_associate_token">Associate token</string>
     <string name="button_send_token">Send token</string>
     <string name="button_pick_image">Select image</string>
-    <string name="nodePickerTitle">Select node</string>
     <string name="accountStatusTitle">Staked? Loading…</string>
     <string name="label_scheduleId">ScheduleID</string>
 

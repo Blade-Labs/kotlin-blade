@@ -143,7 +143,7 @@ fun getCoinPrice(search: String, currency: String = "usd", completion: (CoinInfo
 }
 ```
 
-##  Method to execure Hbar transfers from current account to receiver
+##  Method to execute Hbar transfers from current account to receiver
 
 ### Parameters:
 
@@ -348,6 +348,25 @@ fun searchAccounts (keyOrMnemonic: String, completion: (AccountPrivateData?, Bla
         typicalDeferredCallback<AccountPrivateData, AccountPrivateResponse>(data, error, completion)
     }
     executeJS("bladeSdk.searchAccounts('${esc(keyOrMnemonic)}', '$completionKey')")
+}
+```
+
+## Bladelink drop to account
+
+### Parameters:
+
+ * `accountId` Hedera account id (0.0.xxxxx)
+ * `accountPrivateKey` account private key (DER encoded hex string)
+ * `secretNonce` configured for dApp. Should be kept in secret
+ * `completion` callback function, with result of TokenDropData or BladeJSError
+
+```kotlin
+fun dropTokens (accountId: String, accountPrivateKey: String, secretNonce: String, completion: (TokenDropData?, BladeJSError?) -> Unit) {
+    val completionKey = getCompletionKey("dropTokens")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<TokenDropData, TokenDropResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.dropTokens('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(secretNonce)}', '$completionKey')")
 }
 ```
 

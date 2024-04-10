@@ -6,14 +6,12 @@ import android.view.ViewGroup.LayoutParams
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import com.fingerprintjs.android.fpjs_pro.*
 import com.google.gson.Gson
 import kotlinx.coroutines.*
-import java.util.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.20"
+    private const val sdkVersion: String = "Kotlin@0.6.21"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -40,11 +38,18 @@ object Blade {
         CoroutineScope(Dispatchers.Main).launch {
             try {
                 val sharedPreferences = context.getSharedPreferences(context.resources.getString(R.string.sharedPreferences), Context.MODE_PRIVATE)
-                visitorId = sharedPreferences.getString(context.resources.getString(R.string.visitorIdKey), "") ?: ""
+                if (
+                    sharedPreferences.getString(context.resources.getString(R.string.visitorIdEnvKey), "") == bladeEnv.toString() &&
+                    (System.currentTimeMillis() / 1000).toInt() - sharedPreferences.getInt(context.resources.getString(R.string.visitorIdTimestampKey), 0) < 3600 * 24 * 30
+                ) {
+                    // if visitorId was saved less than 30 days ago and in the same environment
+                    visitorId = sharedPreferences.getString(context.resources.getString(R.string.visitorIdKey), "") ?: ""
+                }
                 if (visitorId == "") {
                     remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
                     visitorId = getVisitorId(remoteConfig.fpApiKey, context)
                     sharedPreferences.edit()
+                        .putString(context.resources.getString(R.string.visitorIdEnvKey), bladeEnv.toString())
                         .putString(context.resources.getString(R.string.visitorIdKey), visitorId)
                         .putInt(context.resources.getString(R.string.visitorIdTimestampKey), (System.currentTimeMillis() / 1000).toInt())
                         .apply()
@@ -151,7 +156,7 @@ object Blade {
     }
 
     /**
-     * Method to execure Hbar transfers from current account to receiver
+     * Method to execute Hbar transfers from current account to receiver
      *
      * @param accountId: sender account id
      * @param accountPrivateKey: sender's private key to sign transfer transaction
@@ -323,6 +328,22 @@ object Blade {
             typicalDeferredCallback<AccountPrivateData, AccountPrivateResponse>(data, error, completion)
         }
         executeJS("bladeSdk.searchAccounts('${esc(keyOrMnemonic)}', '$completionKey')")
+    }
+
+    /**
+     * Bladelink drop to account
+     *
+     * @param accountId Hedera account id (0.0.xxxxx)
+     * @param accountPrivateKey account private key (DER encoded hex string)
+     * @param secretNonce configured for dApp. Should be kept in secret
+     * @param completion callback function, with result of TokenDropData or BladeJSError
+     */
+    fun dropTokens (accountId: String, accountPrivateKey: String, secretNonce: String, completion: (TokenDropData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("dropTokens")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<TokenDropData, TokenDropResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.dropTokens('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(secretNonce)}', '$completionKey')")
     }
 
     /**
@@ -629,6 +650,7 @@ object Blade {
 
         webViewInitialized = false
         deferCompletions.clear()
+        visitorId = ""
         apiKey = ""
         dAppCode = ""
     }

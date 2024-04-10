@@ -81,6 +81,15 @@
                 android:text="@string/button_create_account" />
 
             <Button
+                android:id="@+id/buttonDropTokens"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:text="@string/button_drop_tokens" />
+
+            <Button
                 android:id="@+id/buttonDeleteAccount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

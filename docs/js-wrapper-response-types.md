@@ -414,6 +414,18 @@ data class NFTStorageConfig(
 ```
 
 ```kotlin
+data class TokenDropData(
+    var status: String,
+    var statusCode: Int,
+    var timestamp: String,
+    var executionStatus: String,
+    var requestId: String,
+    var accountId: String,
+    var redirectUrl: String
+)
+```
+
+```kotlin
 enum class NFTStorageProvider(val value: String) {
     nftStorage("nftStorage");
 

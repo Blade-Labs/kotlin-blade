@@ -33,9 +33,9 @@ import java.io.ByteArrayOutputStream
 class TokenFragment : Fragment() {
 
     private var _binding: FragmentTokenBinding? = null
-    var startOperation: Long = System.currentTimeMillis()
+    private var startOperation: Long = System.currentTimeMillis()
     private val binding get() = _binding!!
-    lateinit var base64Image: String
+    private lateinit var base64Image: String
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,14 +65,14 @@ class TokenFragment : Fragment() {
         fun output(text: String) {
             if (text == "") {
                 startOperation = System.currentTimeMillis()
-                binding.textTitleOutput.setText("Output:")
+                binding.textTitleOutput.text = "Output:"
                 binding.progressBar.visibility = View.VISIBLE
             } else {
                 println(text)
-                binding.textTitleOutput.setText("Output (${System.currentTimeMillis() - startOperation}ms):")
+                binding.textTitleOutput.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
                 binding.progressBar.visibility = View.GONE
             }
-            binding.outputTextView.setText(text)
+            binding.outputTextView.text = text
         }
 
         Blade.getInfo { infoData, bladeJSError ->
@@ -126,7 +126,7 @@ class TokenFragment : Fragment() {
             ) {
                 // Permission is not granted, request it
                 requestPermissions(
-                    arrayOf<String>(Manifest.permission.READ_MEDIA_IMAGES),
+                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
                     1
                 )
             } else {

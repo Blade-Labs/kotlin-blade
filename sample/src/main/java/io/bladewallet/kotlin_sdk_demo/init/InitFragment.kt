@@ -26,7 +26,7 @@ class InitFragment : Fragment() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View {
-        var startOperation: Long = System.currentTimeMillis();
+        var startOperation: Long = System.currentTimeMillis()
 
         _binding = FragmentInitBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -42,23 +42,23 @@ class InitFragment : Fragment() {
             binding.contractIdEditText.isEnabled = enable
             binding.tokenIdEditText.isEnabled = enable
             binding.initButton.isEnabled = enable
-            return enable;
+            return enable
         }
 
         @SuppressLint("SetTextI18n")
         fun output(text: String) {
-            binding.textTitleOutput.setText("Output:");
+            binding.textTitleOutput.text = "Output:"
             if (text == "") {
-                startOperation = System.currentTimeMillis();
-                binding.progressBar.visibility = View.VISIBLE;
+                startOperation = System.currentTimeMillis()
+                binding.progressBar.visibility = View.VISIBLE
             } else {
                 println(text)
                 if (binding.outputTextView.text.toString() == "") {
-                    binding.textTitleOutput.setText("Output (${System.currentTimeMillis() - startOperation}ms):");
+                    binding.textTitleOutput.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
                 }
-                binding.progressBar.visibility = View.GONE;
+                binding.progressBar.visibility = View.GONE
             }
-            binding.outputTextView.setText(text)
+            binding.outputTextView.text = text
         }
 
         Blade.getInfo { infoData, bladeJSError ->
@@ -76,15 +76,15 @@ class InitFragment : Fragment() {
         }
 
         binding.initButton.setOnClickListener {
-            Config.dAppCode = binding.dAppCodeEditText.text.toString();
-            Config.apiKey = binding.apiTokenEditText.text.toString();
-            Config.accountId = binding.accountIdEditText.text.toString();
-            Config.privateKey = binding.privateKeyEditText.text.toString();
-            Config.publicKey = binding.publicKeyEditText.text.toString();
-            Config.contractId = binding.contractIdEditText.text.toString();
-            Config.tokenId = binding.tokenIdEditText.text.toString();
+            Config.dAppCode = binding.dAppCodeEditText.text.toString()
+            Config.apiKey = binding.apiTokenEditText.text.toString()
+            Config.accountId = binding.accountIdEditText.text.toString()
+            Config.privateKey = binding.privateKeyEditText.text.toString()
+            Config.publicKey = binding.publicKeyEditText.text.toString()
+            Config.contractId = binding.contractIdEditText.text.toString()
+            Config.tokenId = binding.tokenIdEditText.text.toString()
 
-            toggleElements(false);
+            toggleElements(false)
             output("")
 
             Blade.initialize(
@@ -176,13 +176,13 @@ class InitFragment : Fragment() {
             }
         }
 
-        binding.dAppCodeEditText.setText(Config.dAppCode);
-        binding.apiTokenEditText.setText(Config.apiKey);
-        binding.accountIdEditText.setText(Config.accountId);
-        binding.privateKeyEditText.setText(Config.privateKey);
-        binding.publicKeyEditText.setText(Config.publicKey);
-        binding.contractIdEditText.setText(Config.contractId);
-        binding.tokenIdEditText.setText(Config.tokenId);
+        binding.dAppCodeEditText.setText(Config.dAppCode)
+        binding.apiTokenEditText.setText(Config.apiKey)
+        binding.accountIdEditText.setText(Config.accountId)
+        binding.privateKeyEditText.setText(Config.privateKey)
+        binding.publicKeyEditText.setText(Config.publicKey)
+        binding.contractIdEditText.setText(Config.contractId)
+        binding.tokenIdEditText.setText(Config.tokenId)
         return root
     }
 
