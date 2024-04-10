@@ -53,8 +53,7 @@ internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersi
         if (responseCode == HttpURLConnection.HTTP_OK) {
             val jsonString = response.toString()
             try {
-                val remoteConfig = Gson().fromJson(jsonString, RemoteConfig::class.java)
-                return@withContext remoteConfig
+                return@withContext Gson().fromJson(jsonString, RemoteConfig::class.java)
             } catch (error: Exception) {
                 // throw Exception("${error}. Data: `${jsonString}`")
                 return@withContext fallbackConfig

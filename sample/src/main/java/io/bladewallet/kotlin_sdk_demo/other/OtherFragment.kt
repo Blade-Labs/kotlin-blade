@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 class OtherFragment : Fragment() {
 
     private var _binding: FragmentOtherBinding? = null
-    var startOperation: Long = System.currentTimeMillis()
+    private var startOperation: Long = System.currentTimeMillis()
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -41,7 +41,7 @@ class OtherFragment : Fragment() {
             binding.coinSearchEditText.isEnabled = enable
             binding.scheduleIdEditText.isEnabled = enable
             binding.buttonSignScheduledTx.isEnabled = enable
-            return enable;
+            return enable
         }
 
         binding.coinSearchEditText.setText(Config.coinSearch)
@@ -49,15 +49,15 @@ class OtherFragment : Fragment() {
         @SuppressLint("SetTextI18n")
         fun output(text: String) {
             if (text == "") {
-                startOperation = System.currentTimeMillis();
-                binding.textTitleOutput.setText("Output:");
-                binding.progressBar.visibility = View.VISIBLE;
+                startOperation = System.currentTimeMillis()
+                binding.textTitleOutput.text = "Output:"
+                binding.progressBar.visibility = View.VISIBLE
             } else {
                 println(text)
-                binding.textTitleOutput.setText("Output (${System.currentTimeMillis() - startOperation}ms):");
-                binding.progressBar.visibility = View.GONE;
+                binding.textTitleOutput.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
+                binding.progressBar.visibility = View.GONE
             }
-            binding.outputTextView.setText(text)
+            binding.outputTextView.text = text
         }
 
         Blade.getInfo { infoData, bladeJSError ->
@@ -69,16 +69,16 @@ class OtherFragment : Fragment() {
                     Blade.getAccountInfo(Config.accountId) { accountInfoData, bladeJSError ->
                         lifecycleScope.launch {
                             if (accountInfoData != null) {
-                                var res = "${accountInfoData.accountId}\nStaked? - ";
-                                if (accountInfoData.stakingInfo.stakedNodeId !== null) {
-                                    res += "YES"
+                                var res = "${accountInfoData.accountId}\nStaked? - "
+                                res += if (accountInfoData.stakingInfo.stakedNodeId !== null) {
+                                    "YES"
                                 } else {
-                                    res += "NO"
+                                    "NO"
                                 }
-                                binding.accountStatusTitle.setText(res);
-                                Config.stakedNodeId = accountInfoData.stakingInfo.stakedNodeId;
+                                binding.accountStatusTitle.text = res
+                                Config.stakedNodeId = accountInfoData.stakingInfo.stakedNodeId
 
-                                Blade.getNodeList() { nodeListData, bladeJSError ->
+                                Blade.getNodeList { nodeListData, bladeJSError ->
                                     lifecycleScope.launch {
                                         if (nodeListData != null) {
                                             binding.nodeSpinner.isEnabled = true
@@ -90,16 +90,14 @@ class OtherFragment : Fragment() {
                                                 nodes += "${node.node_id}: ${node.description}"
                                             }
 
-                                            var activeNode = 0;
-                                            var i = 0;
-                                            for (node in nodes) {
+                                            var activeNode = 0
+                                            for ((i, node) in nodes.withIndex()) {
                                                 val nodeId = node.substringBefore(":").trim().toInt()
                                                 println("nodeId: ${nodeId}... Config.stakedNodeId: ${Config.stakedNodeId}")
                                                 if (nodeId == (Config.stakedNodeId ?: -1)) {
-                                                    println("activeNode: ${i}")
-                                                    activeNode = i;
+                                                    println("activeNode: $i")
+                                                    activeNode = i
                                                 }
-                                                i++;
                                             }
 
                                             object : ArrayAdapter<String>(
@@ -143,7 +141,7 @@ class OtherFragment : Fragment() {
                 accountPrivateKey = Config.privateKey
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${result ?: bladeJSError}");
+                    output("${result ?: bladeJSError}")
                 }
             }
         }
@@ -151,14 +149,14 @@ class OtherFragment : Fragment() {
         binding.buttonGetCoinList.setOnClickListener {
             output("")
 
-            Blade.getCoinList() { result, bladeJSError ->
+            Blade.getCoinList { result, bladeJSError ->
                 lifecycleScope.launch {
-                    output("${result ?: bladeJSError}");
+                    output("${result ?: bladeJSError}")
 
                     if (result != null) {
                         var coinIds = arrayOf<String>()
                         for (coin in result.coins) {
-                            coinIds += coin.id;
+                            coinIds += coin.id
                         }
 
                         object : ArrayAdapter<String>(
@@ -186,10 +184,8 @@ class OtherFragment : Fragment() {
 
         }
 
-
-
         binding.buttonGetCoinPrice.setOnClickListener {
-            output("");
+            output("")
             Blade.getCoinPrice(
                 search = binding.coinSearchEditText.text.toString(),
                 currency = "uah"
@@ -201,18 +197,18 @@ class OtherFragment : Fragment() {
         }
 
         binding.buttonUpdateAccount.setOnClickListener {
-            output("");
+            output("")
 
             Blade.stakeToNode(Config.accountId, Config.privateKey, Config.stakedNodeId ?: -1) { result, bladeJSError ->
                 lifecycleScope.launch {
                     if (result != null) {
-                        var res = "${Config.accountId}\nStaked? - ";
-                        if (Config.stakedNodeId === null || Config.stakedNodeId!!.toInt() < 0) {
-                            res += "NO"
+                        var res = "${Config.accountId}\nStaked? - "
+                        res += if (Config.stakedNodeId === null || Config.stakedNodeId!!.toInt() < 0) {
+                            "NO"
                         } else {
-                            res += "YES"
+                            "YES"
                         }
-                        binding.accountStatusTitle.setText(res);
+                        binding.accountStatusTitle.text = res
                     }
                     output("${result ?: bladeJSError}")
                 }

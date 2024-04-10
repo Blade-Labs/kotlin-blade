@@ -22,7 +22,7 @@ class ContractFunctionParameters {
     fun addBytes32(value: List<UInt>): ContractFunctionParameters {
         try {
             val jsonEncoded = gson.toJson(value.map { it.toLong() } )
-            val jsonBase64 = Base64.getEncoder().encodeToString(jsonEncoded.toByteArray());
+            val jsonBase64 = Base64.getEncoder().encodeToString(jsonEncoded.toByteArray())
             params.add(ContractFunctionParameter("bytes32", listOf(jsonBase64)))
         } catch (error: Exception) {
             print(error)
@@ -46,22 +46,22 @@ class ContractFunctionParameters {
     }
 
     fun addInt64(value: Long): ContractFunctionParameters {
-        params.add(ContractFunctionParameter("int64", listOf(value.toString())));
+        params.add(ContractFunctionParameter("int64", listOf(value.toString())))
         return this
     }
 
     fun addUInt256(value: BigInteger): ContractFunctionParameters {
-        params.add(ContractFunctionParameter("uint256", listOf(value.toString())));
+        params.add(ContractFunctionParameter("uint256", listOf(value.toString())))
         return this
     }
 
     fun addUInt256Array(value: List<BigInteger>): ContractFunctionParameters {
-        params.add(ContractFunctionParameter("uint256[]", value.map { it.toString() }));
+        params.add(ContractFunctionParameter("uint256[]", value.map { it.toString() }))
         return this
     }
 
     fun addTuple(value: ContractFunctionParameters): ContractFunctionParameters {
-        params.add(ContractFunctionParameter("tuple", listOf( value.encode())));
+        params.add(ContractFunctionParameter("tuple", listOf( value.encode())))
         return this
     }
 
@@ -71,12 +71,12 @@ class ContractFunctionParameters {
     }
 
     fun addString(value: String): ContractFunctionParameters {
-        params.add(ContractFunctionParameter("string", listOf(value)));
+        params.add(ContractFunctionParameter("string", listOf(value)))
         return this
     }
 
     fun addStringArray(value: List<String>): ContractFunctionParameters {
-        params.add(ContractFunctionParameter("string[]", value));
+        params.add(ContractFunctionParameter("string[]", value))
         return this
     }
 
@@ -87,7 +87,7 @@ class ContractFunctionParameters {
         } catch (error: Exception) {
             println(error)
         }
-        return "";
+        return ""
     }
 
 }

@@ -41,7 +41,7 @@ As `Blade` object is singleton it may be initialized once and use in every other
 * Get balance - getting balance of account id from field (preset from init page)
 * Get transactions - getting transactions of account id
 * Create account - create new account through Blade API, using config of current dAppCode
-* Delete account - after creating account - new account data preseted and may be deleted
+* Delete account - after creating account - new account data temporary saved and may be deleted
 * From mnemonic - getting ECDSA keys from field `Mnemonic / Message / Signature`
 * Sign - getting signature from field `Mnemonic / Message / Signature`. Mind that on verification, message will be used from `Init` screen 
 * Verify - verifying signature using public key and message from `Init` screen from field `Mnemonic / Message / Signature`. 

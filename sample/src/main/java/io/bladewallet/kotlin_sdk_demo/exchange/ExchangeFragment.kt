@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 class ExchangeFragment : Fragment() {
 
     private var _binding: FragmentExchangeBinding? = null
-    var startOperation: Long = System.currentTimeMillis()
+    private var startOperation: Long = System.currentTimeMillis()
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -43,21 +43,21 @@ class ExchangeFragment : Fragment() {
             binding.editTextAmount.isEnabled = enable
             binding.editTextTarget.isEnabled = enable
             binding.strategySpinner.isEnabled = enable
-            return enable;
+            return enable
         }
 
         @SuppressLint("SetTextI18n")
         fun output(text: String) {
             if (text == "") {
-                startOperation = System.currentTimeMillis();
-                binding.textTitleOutput.setText("Output:");
-                binding.progressBar.visibility = View.VISIBLE;
+                startOperation = System.currentTimeMillis()
+                binding.textTitleOutput.text = "Output:"
+                binding.progressBar.visibility = View.VISIBLE
             } else {
                 println(text)
-                binding.textTitleOutput.setText("Output (${System.currentTimeMillis() - startOperation}ms):");
-                binding.progressBar.visibility = View.GONE;
+                binding.textTitleOutput.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
+                binding.progressBar.visibility = View.GONE
             }
-            binding.outputTextView.setText(text)
+            binding.outputTextView.text = text
         }
 
         Blade.getInfo { infoData, bladeJSError ->
@@ -86,18 +86,22 @@ class ExchangeFragment : Fragment() {
             binding.strategySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-                    if (position == 0) { // buy
-                        binding.editTextSource.setText("EUR");
-                        binding.editTextAmount.setText("50");
-                        binding.editTextTarget.setText("HBAR");
-                    } else if (position == 1) { // sell
-                        binding.editTextSource.setText("USDC");
-                        binding.editTextAmount.setText("30");
-                        binding.editTextTarget.setText("PHP");
-                    } else if (position == 2) { // swap
-                        binding.editTextSource.setText("HBAR");
-                        binding.editTextAmount.setText("2");
-                        binding.editTextTarget.setText("KARATE");
+                    when (position) {
+                        0 -> { // buy
+                            binding.editTextSource.setText("EUR")
+                            binding.editTextAmount.setText("50")
+                            binding.editTextTarget.setText("HBAR")
+                        }
+                        1 -> { // sell
+                            binding.editTextSource.setText("USDC")
+                            binding.editTextAmount.setText("30")
+                            binding.editTextTarget.setText("PHP")
+                        }
+                        2 -> { // swap
+                            binding.editTextSource.setText("HBAR")
+                            binding.editTextAmount.setText("2")
+                            binding.editTextTarget.setText("KARATE")
+                        }
                     }
 
                     binding.serviceSpinner.isEnabled = false
@@ -121,7 +125,7 @@ class ExchangeFragment : Fragment() {
                     strategy = strategy
                 ) { result, bladeJSError ->
                     lifecycleScope.launch {
-                        output("${result ?: bladeJSError}");
+                        output("${result ?: bladeJSError}")
 
                         binding.buttonBuy.isEnabled = false
                         binding.buttonSell.isEnabled = false
@@ -131,7 +135,7 @@ class ExchangeFragment : Fragment() {
                         if (result != null) {
                             var services = arrayOf<String>()
                             for (quote in result.quotes) {
-                                services += quote.service.id;
+                                services += quote.service.id
                             }
 
                             object : ArrayAdapter<String>(
@@ -146,13 +150,17 @@ class ExchangeFragment : Fragment() {
 
                                 binding.serviceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                                        val strategy = CryptoFlowServiceStrategy.fromValue(binding.strategySpinner.selectedItem as String)
-                                        if (strategy == CryptoFlowServiceStrategy.BUY) {
-                                            binding.buttonBuy.isEnabled = true
-                                        } else if (strategy == CryptoFlowServiceStrategy.SELL) {
-                                            binding.buttonSell.isEnabled = true
-                                        } else if (strategy == CryptoFlowServiceStrategy.SWAP) {
-                                            binding.buttonSwap.isEnabled = true
+                                        val strategy = CryptoFlowServiceStrategy.fromValue(binding.strategySpinner.selectedItem as String) ?: ""
+                                        when (strategy) {
+                                            CryptoFlowServiceStrategy.BUY -> {
+                                                binding.buttonBuy.isEnabled = true
+                                            }
+                                            CryptoFlowServiceStrategy.SELL -> {
+                                                binding.buttonSell.isEnabled = true
+                                            }
+                                            CryptoFlowServiceStrategy.SWAP -> {
+                                                binding.buttonSwap.isEnabled = true
+                                            }
                                         }
                                     }
                                     override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -165,7 +173,7 @@ class ExchangeFragment : Fragment() {
         }
 
         binding.buttonBuy.setOnClickListener {
-            output("");
+            output("")
             Blade.getTradeUrl(
                 strategy = CryptoFlowServiceStrategy.BUY,
                 accountId = Config.accountId,
@@ -187,7 +195,7 @@ class ExchangeFragment : Fragment() {
         }
 
         binding.buttonSell.setOnClickListener {
-            output("");
+            output("")
             Blade.getTradeUrl(
                 strategy = CryptoFlowServiceStrategy.SELL,
                 accountId = Config.accountId,
@@ -209,7 +217,7 @@ class ExchangeFragment : Fragment() {
         }
 
         binding.buttonSwap.setOnClickListener {
-            output("");
+            output("")
             Blade.swapTokens(
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,

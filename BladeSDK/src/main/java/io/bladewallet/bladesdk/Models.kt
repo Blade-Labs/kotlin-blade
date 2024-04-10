@@ -382,6 +382,21 @@ data class NFTStorageConfig(
     val provider: NFTStorageProvider,
     val apiKey: String
 )
+
+data class TokenDropResponse(
+    override var completionKey: String,
+    override var data: TokenDropData
+) : Result<TokenDropData>
+
+data class TokenDropData(
+    var status: String,
+    var statusCode: Int,
+    var timestamp: String,
+    var executionStatus: String,
+    var requestId: String,
+    var accountId: String,
+    var redirectUrl: String
+)
 enum class NFTStorageProvider(val value: String) {
     nftStorage("nftStorage");
 

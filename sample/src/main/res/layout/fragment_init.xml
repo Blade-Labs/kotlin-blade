@@ -15,246 +15,256 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Guideline to separate the two columns -->
-        <TableLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:shrinkColumns="*"
-            android:stretchColumns="*">
+            android:layout_height="match_parent"
+            android:divider="@color/black"
+            android:orientation="vertical"
+            android:showDividers="middle"
+            tools:layout_editor_absoluteX="20dp"
+            tools:layout_editor_absoluteY="1dp">
 
-            <TextView
-                android:id="@+id/textViewFirstSection"
-                android:layout_width="0dp"
+        <!-- Guideline to separate the two columns -->
+            <TableLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/section_init_data"
-                android:textAlignment="textStart"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0sp">
+                android:layout_margin="5dp"
+                android:shrinkColumns="*"
+                android:stretchColumns="*">
 
                 <TextView
+                    android:id="@+id/textViewFirstSection"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_dAppCode" />
+                    android:text="@string/section_init_data"
+                    android:textAlignment="textStart"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <EditText
-                    android:id="@+id/dAppCodeEditText"
-                    style="@style/Widget.AppCompat.AutoCompleteTextView"
-                    android:layout_width="0dp"
+                <TableRow
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="7"
-                    android:hint="@string/label_dAppCode"
-                    android:singleLine="true"
-                    android:textSize="14sp" />
-            </TableRow>
+                    android:layout_margin="0sp">
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0sp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@string/label_dAppCode" />
+
+                    <EditText
+                        android:id="@+id/dAppCodeEditText"
+                        style="@style/Widget.AppCompat.AutoCompleteTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:hint="@string/label_dAppCode"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0sp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@string/label_apiKey" />
+
+                    <EditText
+                        android:id="@+id/apiTokenEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:hint="@string/label_apiKey"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0sp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@string/label_network" />
+
+
+                    <Spinner
+                        android:id="@+id/networkSpinner"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        tools:layout_height="40sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="0sp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@string/label_bladeEnv" />
+
+
+                    <Spinner
+                        android:id="@+id/bladeEnvSpinner"
+                        style="@style/Widget.AppCompat.Spinner.Underlined"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        tools:layout_height="40sp" />
+                </TableRow>
 
                 <TextView
+                    android:id="@+id/textViewSecondSection"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_apiKey" />
+                    android:text="@string/section_demo_data"
+                    android:textAlignment="textStart"
+                    android:textStyle="bold" />
 
-                <EditText
-                    android:id="@+id/apiTokenEditText"
-                    android:layout_width="0dp"
+
+                <TableRow
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="7"
-                    android:hint="@string/label_apiKey"
-                    android:singleLine="true"
-                    android:textSize="14sp" />
-            </TableRow>
+                    android:layout_margin="0sp">
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0sp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@string/label_accountId" />
 
-                <TextView
-                    android:layout_width="0dp"
+                    <EditText
+                        android:id="@+id/accountIdEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:hint="@string/label_accountId"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_network" />
+                    android:layout_margin="0sp">
 
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@string/label_accountPrivateKey" />
 
-                <Spinner
-                    android:id="@+id/networkSpinner"
-                    style="@style/Widget.AppCompat.Spinner.Underlined"
-                    android:layout_width="0dp"
+                    <EditText
+                        android:id="@+id/privateKeyEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:hint="@string/label_accountPrivateKey"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="7"
-                    tools:layout_height="40sp" />
-            </TableRow>
+                    android:layout_margin="0sp">
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0sp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@string/label_accountPublicKey" />
 
-                <TextView
-                    android:layout_width="0dp"
+                    <EditText
+                        android:id="@+id/publicKeyEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:hint="@string/label_accountPublicKey"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_bladeEnv" />
+                    android:layout_margin="0sp">
 
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@string/label_contractId" />
 
-                <Spinner
-                    android:id="@+id/bladeEnvSpinner"
-                    style="@style/Widget.AppCompat.Spinner.Underlined"
-                    android:layout_width="0dp"
+                    <EditText
+                        android:id="@+id/contractIdEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:hint="@string/label_contractId"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="7"
-                    tools:layout_height="40sp" />
-            </TableRow>
+                    android:layout_margin="0sp">
 
-            <TextView
-                android:id="@+id/textViewSecondSection"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="@string/section_demo_data"
-                android:textAlignment="textStart"
-                android:textStyle="bold" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:text="@string/label_tokenId" />
 
+                    <EditText
+                        android:id="@+id/tokenIdEditText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="7"
+                        android:hint="@string/label_tokenId"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </TableRow>
 
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0sp">
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_accountId" />
+                    <Button
+                        android:id="@+id/initButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/button_init"
+                        android:layout_weight="5"
+                        android:layout_margin="5dp" />
 
-                <EditText
-                    android:id="@+id/accountIdEditText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="7"
-                    android:hint="@string/label_accountId"
-                    android:singleLine="true"
-                    android:textSize="14sp" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0sp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_accountPrivateKey" />
-
-                <EditText
-                    android:id="@+id/privateKeyEditText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="7"
-                    android:hint="@string/label_accountPrivateKey"
-                    android:singleLine="true"
-                    android:textSize="14sp" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0sp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_accountPublicKey" />
-
-                <EditText
-                    android:id="@+id/publicKeyEditText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="7"
-                    android:hint="@string/label_accountPublicKey"
-                    android:singleLine="true"
-                    android:textSize="14sp" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0sp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_contractId" />
-
-                <EditText
-                    android:id="@+id/contractIdEditText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="7"
-                    android:hint="@string/label_contractId"
-                    android:singleLine="true"
-                    android:textSize="14sp" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="0sp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/label_tokenId" />
-
-                <EditText
-                    android:id="@+id/tokenIdEditText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="7"
-                    android:hint="@string/label_tokenId"
-                    android:singleLine="true"
-                    android:textSize="14sp" />
-            </TableRow>
-
-            <TableRow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/initButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/button_init"
-                    android:layout_weight="5"
-                    android:layout_margin="5dp" />
-
-                <Button
-                    android:id="@+id/stopButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:layout_weight="5"
-                    android:enabled="false"
-                    android:text="@string/button_stop" />
-            </TableRow>
-        </TableLayout>
+                    <Button
+                        android:id="@+id/stopButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="5dp"
+                        android:layout_weight="5"
+                        android:enabled="false"
+                        android:text="@string/button_stop" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

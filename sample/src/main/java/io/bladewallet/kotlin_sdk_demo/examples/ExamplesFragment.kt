@@ -54,14 +54,14 @@ class ExamplesFragment : Fragment() {
         fun output(text: String) {
             if (text == "") {
                 startOperation = System.currentTimeMillis()
-                binding.textTitleOutput.setText("Output:")
+                binding.textTitleOutput.text = "Output:"
                 binding.progressBar.visibility = View.VISIBLE
             } else {
                 println(text)
-                binding.textTitleOutput.setText("Output (${System.currentTimeMillis() - startOperation}ms):")
+                binding.textTitleOutput.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
                 binding.progressBar.visibility = View.GONE
             }
-            binding.outputTextView.setText(text)
+            binding.outputTextView.text = text
         }
 
         Blade.getInfo { infoData, bladeJSError ->
@@ -114,7 +114,21 @@ class ExamplesFragment : Fragment() {
                     if (result != null) {
                         temporaryAccount = result
                         binding.buttonDeleteAccount.isEnabled = true
+                        binding.buttonDropTokens.isEnabled = true
                     }
+                }
+            }
+        }
+
+        binding.buttonDropTokens.setOnClickListener {
+            output("")
+            Blade.dropTokens(
+                accountId = temporaryAccount?.accountId.toString(),
+                accountPrivateKey = temporaryAccount?.privateKey.toString(),
+                secretNonce = Config.nonce,
+            ) { result, bladeJSError ->
+                lifecycleScope.launch {
+                    output("${ result ?: bladeJSError}")
                 }
             }
         }
@@ -133,6 +147,7 @@ class ExamplesFragment : Fragment() {
                     if (result != null) {
                         temporaryAccount = null
                         binding.buttonDeleteAccount.isEnabled = false
+                        binding.buttonDropTokens.isEnabled = false
                     }
                 }
             }
@@ -183,7 +198,7 @@ class ExamplesFragment : Fragment() {
 
         binding.buttonContractCall.setOnClickListener {
             output("")
-            val parameters = ContractFunctionParameters().addString("${binding.editMnemonicMessageSignature.text.toString()} ${System.currentTimeMillis()}")
+            val parameters = ContractFunctionParameters().addString("${binding.editMnemonicMessageSignature.text} ${System.currentTimeMillis()}")
 
             Blade.contractCallFunction(
                 contractId = Config.contractId,

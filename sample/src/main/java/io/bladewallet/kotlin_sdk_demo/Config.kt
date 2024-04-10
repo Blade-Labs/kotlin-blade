@@ -25,4 +25,5 @@ object Config {
     var tokenSymbol = "B++"
     var tokenIdToMint = ""
     var stakedNodeId: Int? = null
+    var nonce: String = "unity_test"
 }
