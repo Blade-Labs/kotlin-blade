@@ -10,6 +10,9 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.Blade
+import io.bladewallet.bladesdk.ScheduleTransactionTransferHbar
+import io.bladewallet.bladesdk.ScheduleTransactionTransferToken
+import io.bladewallet.bladesdk.ScheduleTransactionType
 import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentOtherBinding
 import kotlinx.coroutines.launch
@@ -41,6 +44,7 @@ class OtherFragment : Fragment() {
             binding.coinSearchEditText.isEnabled = enable
             binding.scheduleIdEditText.isEnabled = enable
             binding.buttonSignScheduledTx.isEnabled = enable
+            binding.buttonCreateScheduleTx.isEnabled = enable
             return enable
         }
 
@@ -132,13 +136,37 @@ class OtherFragment : Fragment() {
             }
         }
 
+        binding.buttonCreateScheduleTx.setOnClickListener {
+            output("")
+
+            Blade.createScheduleTransaction(
+                accountId = Config.privateKey2Account,
+                accountPrivateKey = Config.privateKey2,
+                type = ScheduleTransactionType.TRANSFER,
+                transfers = listOf(
+                    ScheduleTransactionTransferHbar(sender = Config.accountId, receiver = Config.privateKey2Account, 10000000),
+                    ScheduleTransactionTransferToken(sender = Config.accountId, receiver = Config.privateKey2Account, tokenId = Config.tokenId, value = 2)
+                ),
+                freeSchedule = false,
+            ) { result, bladeJSError ->
+                lifecycleScope.launch {
+                    output("${result ?: bladeJSError}")
+                    if (result != null) {
+                        binding.scheduleIdEditText.setText(result.scheduleId)
+                    }
+                }
+            }
+        }
+
         binding.buttonSignScheduledTx.setOnClickListener {
             output("")
 
             Blade.signScheduleId(
                 scheduleId = binding.scheduleIdEditText.text.toString(),
                 accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey
+                accountPrivateKey = Config.privateKey,
+                receiverAccountId = Config.privateKey2Account, // optional, only for freeSchedule = true
+                freeSchedule = false
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
