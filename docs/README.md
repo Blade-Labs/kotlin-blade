@@ -6,7 +6,7 @@
 
 ### Requirements
 
-* Android 10.0+ (API level 29, Sep 2019)
+* Android 9.0+ (API level 28, Sep 2018)
 
 ### Example app
 
@@ -31,7 +31,7 @@ dependencyResolutionManagement {
 // ./app/build.gradle
 dependencies {
     ...
-    implementation 'com.github.Blade-Labs:kotlin-blade:0.6.24'
+    implementation 'com.github.Blade-Labs:kotlin-blade:0.6.25'
 }
 ```
 
