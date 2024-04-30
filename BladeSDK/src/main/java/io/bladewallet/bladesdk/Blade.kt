@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.22"
+    private const val sdkVersion: String = "Kotlin@0.6.24"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -194,19 +194,53 @@ object Blade {
     }
 
     /**
+     * Create scheduled transaction
+     *
+     * @param accountId account id (0.0.xxxxx)
+     * @param accountPrivateKey optional field if you need specify account key (hex encoded privateKey with DER-prefix)
+     * @param type schedule transaction type (currently only TRANSFER supported)
+     * @param transfers array of transfers to schedule (HBAR, FT, NFT)
+     * @param freeSchedule if true, Blade will pay transaction fee (also dApp had to be configured for free schedules)
+     * @param completion callback function, with result of CreateScheduleData or BladeJSError
+     */
+    fun createScheduleTransaction(
+        accountId: String,
+        accountPrivateKey: String,
+        type: ScheduleTransactionType,
+        transfers: List<ScheduleTransactionTransfer>,
+        freeSchedule: Boolean = false,
+        completion: (CreateScheduleData?, BladeJSError?) -> Unit
+    ) {
+        val completionKey = getCompletionKey("createScheduleTransaction")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<CreateScheduleData, CreateScheduleResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.createScheduleTransaction('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(type.toString())}', ${transfers.joinToString(",", "[", "]") {gson.toJson(it)}}, $freeSchedule, '$completionKey')")
+    }
+
+    /**
      * Method to sign scheduled transaction
      *
      * @param scheduleId scheduled transaction id (0.0.xxxxx)
      * @param accountId account id (0.0.xxxxx)
      * @param accountPrivateKey optional field if you need specify account key (hex encoded privateKey with DER-prefix)
+     * @param receiverAccountId account id of receiver for additional validation in case of dApp freeSchedule transactions configured
+     * @param freeSchedule if true, Blade will pay transaction fee (also dApp had to be configured for free schedules)
      * @param completion callback function, with result of TransactionReceiptData or BladeJSError
      */
-    fun signScheduleId(scheduleId: String, accountId: String, accountPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
+    fun signScheduleId(
+        scheduleId: String,
+        accountId: String,
+        accountPrivateKey: String,
+        receiverAccountId: String = "",
+        freeSchedule: Boolean = false,
+        completion: (TransactionReceiptData?, BladeJSError?) -> Unit
+    ) {
         val completionKey = getCompletionKey("signScheduleId")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.signScheduleId('${esc(scheduleId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '$completionKey')")
+        executeJS("bladeSdk.signScheduleId('${esc(scheduleId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverAccountId)}', $freeSchedule, '$completionKey')")
     }
 
     /**

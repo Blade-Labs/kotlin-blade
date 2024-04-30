@@ -62,4 +62,5 @@
     <string name="button_swap">swap</string>
     <string name="buttonUpdateAccount">update staking</string>
     <string name="button_sign_scheduled_tx">Sign scheduled tx</string>
+    <string name="button_create_schedule_tx">Create schedule tx</string>
 </resources>

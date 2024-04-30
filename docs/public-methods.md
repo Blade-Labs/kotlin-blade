@@ -260,6 +260,35 @@ fun getAccountInfo(accountId: String, completion: (AccountInfoData?, BladeJSErro
 }
 ```
 
+## Create scheduled transaction
+
+### Parameters:
+
+ * `accountId`: account id (0.0.xxxxx)
+ * `accountPrivateKey`: hex encoded privateKey with DER-prefix
+ * `type`: schedule transaction type (currently only TRANSFER supported)
+ * `transfers`: array of transfers to schedule (HBAR, FT, NFT)
+ * `freeSchedule` if true, Blade will pay transaction fee (also dApp had to be configured for free schedules)
+ * `completion`: callback function, with result of CreateScheduleData or BladeJSError
+
+
+```kotlin
+fun createScheduleTransaction(
+    accountId: String,
+    accountPrivateKey: String,
+    type: ScheduleTransactionType,
+    transfers: List<ScheduleTransactionTransfer>,
+    freeSchedule: Boolean = false,
+    completion: (CreateScheduleData?, BladeJSError?) -> Unit
+) {
+    val completionKey = getCompletionKey("createScheduleTransaction")
+    deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+        typicalDeferredCallback<CreateScheduleData, CreateScheduleResponse>(data, error, completion)
+    }
+    executeJS("bladeSdk.createScheduleTransaction('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(type.toString())}', ${transfers.joinToString(",", "[", "]") {gson.toJson(it)}}, $freeSchedule, '$completionKey')")
+}
+```
+
 ## Method to sign scheduled transaction
 
 ### Parameters:
@@ -267,15 +296,25 @@ fun getAccountInfo(accountId: String, completion: (AccountInfoData?, BladeJSErro
  * `scheduleId`: scheduled transaction id (0.0.xxxxx)
  * `accountId`: account id (0.0.xxxxx)
  * `accountPrivateKey`: hex encoded privateKey with DER-prefix
+ * `receiverAccountId` account id of receiver for additional validation in case of dApp freeSchedule transactions configured
+ * `freeSchedule` if true, Blade will pay transaction fee (also dApp had to be configured for free schedules)
  * `completion`: callback function, with result of TransactionReceiptData or BladeJSError
+     
 
 ```kotlin
-fun signScheduleId(scheduleId: String, accountId: String, accountPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit) {
+fun signScheduleId(
+    scheduleId: String,
+    accountId: String,
+    accountPrivateKey: String,
+    receiverAccountId: String = "",
+    freeSchedule: Boolean = false,
+    completion: (TransactionReceiptData?, BladeJSError?) -> Unit
+) {
     val completionKey = getCompletionKey("signScheduleId")
     deferCompletion(completionKey) { data: String, error: BladeJSError? ->
         typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
     }
-    executeJS("bladeSdk.signScheduleId('${esc(scheduleId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '$completionKey')")
+    executeJS("bladeSdk.signScheduleId('${esc(scheduleId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(receiverAccountId)}', $freeSchedule, '$completionKey')")
 }
 ```
 

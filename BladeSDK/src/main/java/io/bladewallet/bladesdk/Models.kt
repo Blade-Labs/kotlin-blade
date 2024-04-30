@@ -397,6 +397,45 @@ data class TokenDropData(
     var accountId: String,
     var redirectUrl: String
 )
+
+abstract class ScheduleTransactionTransfer(
+    var type: ScheduleTransferType,
+    sender: String,
+    receiver: String,
+    value: Int,
+    tokenId: String = "",
+    serial: Int
+)
+
+data class ScheduleTransactionTransferHbar(
+    var sender: String,
+    var receiver: String,
+    var value: Int,
+) : ScheduleTransactionTransfer(ScheduleTransferType.HBAR, sender, receiver, value, "", 0)
+
+data class ScheduleTransactionTransferToken(
+    var sender: String,
+    var receiver: String,
+    var tokenId: String,
+    var value: Int,
+) : ScheduleTransactionTransfer(ScheduleTransferType.FT, sender, receiver, value, tokenId, 0)
+
+data class ScheduleTransactionTransferNFT(
+    var sender: String,
+    var receiver: String,
+    var tokenId: String,
+    var serial: Int
+) : ScheduleTransactionTransfer(ScheduleTransferType.NFT, sender, receiver, 0, tokenId, serial)
+
+data class CreateScheduleResponse(
+    override var completionKey: String,
+    override var data: CreateScheduleData
+) : Result<CreateScheduleData>
+
+data class CreateScheduleData(
+    var scheduleId: String
+)
+
 enum class NFTStorageProvider(val value: String) {
     nftStorage("nftStorage");
 
@@ -448,4 +487,18 @@ enum class CryptoKeyType(val value: String) {
             return CryptoKeyType.values().find { it.value == value }
         }
     }
+}
+
+enum class ScheduleTransactionType(val value: String) {
+    TRANSFER("TRANSFER");
+    // SUBMIT_MESSAGE("SUBMIT_MESSAGE"),
+    // APPROVE_ALLOWANCE("APPROVE_ALLOWANCE"),
+    // TOKEN_MINT("TOKEN_MINT"),
+    // TOKEN_BURN("TOKEN_BURN");
+}
+
+enum class ScheduleTransferType(val value: String) {
+    HBAR("HBAR"),
+    FT("FT"),
+    NFT("NFT")
 }
