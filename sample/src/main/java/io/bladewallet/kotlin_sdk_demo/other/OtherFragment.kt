@@ -144,7 +144,7 @@ class OtherFragment : Fragment() {
                 accountPrivateKey = Config.privateKey2,
                 type = ScheduleTransactionType.TRANSFER,
                 transfers = listOf(
-                    ScheduleTransactionTransferHbar(sender = Config.accountId, receiver = Config.privateKey2Account, 10000000),
+                    ScheduleTransactionTransferHbar(sender = Config.accountId, receiver = Config.privateKey2Account, (Math.random() * 10000000).toInt()),
                     ScheduleTransactionTransferToken(sender = Config.accountId, receiver = Config.privateKey2Account, tokenId = Config.tokenId, value = 2)
                 ),
                 freeSchedule = false,

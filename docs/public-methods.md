@@ -618,15 +618,16 @@ fun exchangeGetQuotes(sourceCode: String, sourceAmount: Double, targetCode: Stri
  * `targetCode`: name (HBAR, KARATE, USDC, other token code)
  * `slippage`: slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage.
  * `serviceId`: service id to use for swap (saucerswap, onmeta, etc)
+ * `redirectUrl`: url to redirect after final step
  * `completion`: callback function, with result of IntegrationUrlData or BladeJSError
 
 ```kotlin
-fun getTradeUrl(strategy: CryptoFlowServiceStrategy, accountId: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
+fun getTradeUrl(strategy: CryptoFlowServiceStrategy, accountId: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, redirectUrl: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
     val completionKey = getCompletionKey("getTradeUrl")
     deferCompletion(completionKey) { data: String, error: BladeJSError? ->
         typicalDeferredCallback<IntegrationUrlData, IntegrationUrlResponse>(data, error, completion)
     }
-    executeJS("bladeSdk.getTradeUrl('${esc(strategy.value)}', '${esc(accountId)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '$completionKey')")
+    executeJS("bladeSdk.getTradeUrl('${esc(strategy.value)}', '${esc(accountId)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '${esc(redirectUrl)}', '$completionKey')")
 }
 ```
 
