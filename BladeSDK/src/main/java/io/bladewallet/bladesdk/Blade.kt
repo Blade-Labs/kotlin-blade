@@ -24,8 +24,26 @@ object Blade {
     private var deferCompletions = mutableMapOf<String, (String, BladeJSError?) -> Unit>()
     private val gson = Gson()
 
+    /**
+     * Init instance of BladeSDK for correct work with Blade API and Hedera network.
+     *
+     * @param apiKey Unique key for API provided by Blade team.
+     * @param dAppCode your dAppCode - request specific one by contacting Bladelabs team
+     * @param network "Mainnet" or "Testnet" of Hedera network
+     * @param bladeEnv field to set BladeAPI environment (Prod, CI). Prod used by default.
+     * @param context android context
+     * @param force optional field to force init. Will not crash if already initialized
+     * @param completion: callback function, with result of InfoData or BladeJSError
+     * @returns {InfoData} with information about Blade instance, including visitorId
+     * @example
+     * Blade.initialize(
+     *     Config.apiKey, Config.dAppCode, Config.network, Config.bladeEnv, requireContext(), false
+     * ) { infoData, error ->
+     *     println(infoData ?: error)
+     * }
+     */
     @SuppressLint("SetJavaScriptEnabled")
-    fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit) {
+    fun initialize(apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv = BladeEnv.Prod, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit) {
         if (webViewInitialized && !force) {
             println("Error while doing double init of BladeSDK")
             throw Exception("Error while doing double init of BladeSDK")
@@ -340,8 +358,9 @@ object Blade {
      * @param mnemonic: seed phrase
      * @param lookupNames: lookup for accounts
      * @param completion callback function, with result of PrivateKeyData or BladeJSError
-     * @deprecated("This method is deprecated. Please use [searchAccounts] instead. Will be removed in version 0.7")
+     * @deprecated This method is deprecated. Please use [searchAccounts] instead. Will be removed in version 0.7
      */
+    @Deprecated("This method is deprecated. Please use [searchAccounts] instead. Will be removed in version 0.7")
     fun getKeysFromMnemonic (mnemonic: String, lookupNames: Boolean = false, completion: (PrivateKeyData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getKeysFromMnemonic")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
@@ -690,8 +709,9 @@ object Blade {
         dAppCode = ""
     }
 
-    ////////////////////////////////////////////////////////////////
-
+    /**
+     * Method to handle JS responses
+     */
     @JavascriptInterface
     fun postMessage(jsonString: String) {
         try {
