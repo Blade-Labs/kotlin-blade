@@ -326,7 +326,7 @@ object Blade {
      *
      * @param scheduleId scheduled transaction id (0.0.xxxxx)
      * @param accountId account id (0.0.xxxxx)
-     * @param accountPrivateKey optional field if you need specify account key (hex encoded privateKey with DER-prefix)
+     * @param accountPrivateKey account key (hex encoded privateKey with DER-prefix)
      * @param receiverAccountId account id of receiver for additional validation in case of dApp freeSchedule transactions configured
      * @param usePaymaster if true, Paymaster account will pay transaction fee (also dApp had to be configured for free schedules)
      * @param completion callback function, with result of TransactionReceiptData or BladeJSError
