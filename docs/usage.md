@@ -1,40 +1,40 @@
 # Contents
 
-* [initialize](#initialize)
-* [getInfo](#getInfo)
-* [getBalance](#getBalance)
-* [getCoinList](#getCoinList)
-* [getCoinPrice](#getCoinPrice)
-* [transferHbars](#transferHbars)
-* [transferTokens](#transferTokens)
-* [createScheduleTransaction](#createScheduleTransaction)
-* [signScheduleId](#signScheduleId)
-* [createHederaAccount](#createHederaAccount)
-* [getPendingAccount](#getPendingAccount)
-* [deleteHederaAccount](#deleteHederaAccount)
-* [getAccountInfo](#getAccountInfo)
-* [getNodeList](#getNodeList)
-* [stakeToNode](#stakeToNode)
-* [getKeysFromMnemonic](#getKeysFromMnemonic)
-* [searchAccounts](#searchAccounts)
-* [dropTokens](#dropTokens)
-* [sign](#sign)
-* [signVerify](#signVerify)
-* [contractCallFunction](#contractCallFunction)
-* [contractCallQueryFunction](#contractCallQueryFunction)
-* [ethersSign](#ethersSign)
-* [splitSignature](#splitSignature)
-* [getParamsSignature](#getParamsSignature)
-* [getTransactions](#getTransactions)
-* [getC14url](#getC14url)
-* [exchangeGetQuotes](#exchangeGetQuotes)
-* [getTradeUrl](#getTradeUrl)
-* [swapTokens](#swapTokens)
-* [createToken](#createToken)
-* [associateToken](#associateToken)
-* [nftMint](#nftMint)
-* [cleanup](#cleanup)
-* [postMessage](#postMessage)
+* [initialize](usage.md#initialize)
+* [getInfo](usage.md#getinfo)
+* [getBalance](usage.md#getbalance)
+* [getCoinList](usage.md#getcoinlist)
+* [getCoinPrice](usage.md#getcoinprice)
+* [transferHbars](usage.md#transferhbars)
+* [transferTokens](usage.md#transfertokens)
+* [createScheduleTransaction](usage.md#createscheduletransaction)
+* [signScheduleId](usage.md#signscheduleid)
+* [createHederaAccount](usage.md#createhederaaccount)
+* [getPendingAccount](usage.md#getpendingaccount)
+* [deleteHederaAccount](usage.md#deletehederaaccount)
+* [getAccountInfo](usage.md#getaccountinfo)
+* [getNodeList](usage.md#getnodelist)
+* [stakeToNode](usage.md#staketonode)
+* [getKeysFromMnemonic](usage.md#getkeysfrommnemonic)
+* [searchAccounts](usage.md#searchaccounts)
+* [dropTokens](usage.md#droptokens)
+* [sign](usage.md#sign)
+* [signVerify](usage.md#signverify)
+* [contractCallFunction](usage.md#contractcallfunction)
+* [contractCallQueryFunction](usage.md#contractcallqueryfunction)
+* [ethersSign](usage.md#etherssign)
+* [splitSignature](usage.md#splitsignature)
+* [getParamsSignature](usage.md#getparamssignature)
+* [getTransactions](usage.md#gettransactions)
+* [getC14url](usage.md#getc14url)
+* [exchangeGetQuotes](usage.md#exchangegetquotes)
+* [getTradeUrl](usage.md#gettradeurl)
+* [swapTokens](usage.md#swaptokens)
+* [createToken](usage.md#createtoken)
+* [associateToken](usage.md#associatetoken)
+* [nftMint](usage.md#nftmint)
+* [cleanup](usage.md#cleanup)
+* [postMessage](usage.md#postmessage)
 
 # Methods
 
@@ -55,6 +55,10 @@ Init instance of BladeSDK for correct work with Blade API and Hedera network.
 | `context` | `Context` | android context |
 | `force` | `Boolean` | optional field to force init. Will not crash if already initialized |
 | `completion` | `(InfoData?,BladeJSError?)->Unit` | callback function, with result of InfoData or BladeJSError |
+
+#### Returns
+
+`InfoData` - with information about Blade instance, including visitorId
 
 #### Example
 
@@ -78,6 +82,10 @@ Get SDK info and check if SDK initialized
 |------|------| ----------- |
 | `completion` | `(InfoData?,BladeJSError?)->Unit` | callback function, with result of InfoData or BladeJSError |
 
+#### Returns
+
+`InfoData` - with information about Blade instance, including visitorId
+
 #### Example
 
 ```kotlin
@@ -99,6 +107,10 @@ Get balances by account id.
 | `id` | `String` | Hedera account id |
 | `completion` | `(BalanceData?,BladeJSError?)->Unit` | callback function, with result of BalanceData or BladeJSError |
 
+#### Returns
+
+`BalanceData` - with information about Hedera account balances (hbar and list of token balances)
+
 #### Example
 
 ```kotlin
@@ -118,6 +130,10 @@ Get list of all available coins on CoinGecko.
 | Name | Type | Description |
 |------|------| ----------- |
 | `completion` | `(CoinListData?,BladeJSError?)->Unit` | callback function, with result of CoinListData or BladeJSError |
+
+#### Returns
+
+`CoinListData` - with list of coins described by name, alias, platforms
 
 #### Example
 
@@ -149,6 +165,10 @@ Get coin price and coin info from CoinGecko. Search can be coin id or address in
 | `currency` | `String` | result currency for price field |
 | `completion` | `(CoinInfoData?,BladeJSError?)->Unit` | callback function, with result of CoinListData or BladeJSError |
 
+#### Returns
+
+{CoinInfoData}
+
 #### Example
 
 ```kotlin
@@ -176,6 +196,10 @@ Method to execute Hbar transfers from current account to receiver
 | `amount` | `Double` | amount |
 | `memo` | `String` | memo (limited to 100 characters) |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
+
+#### Returns
+
+`TransactionReceiptData` - receipt
 
 #### Example
 
@@ -214,6 +238,10 @@ Method to execute token transfers from current account to receiver
 | `usePaymaster` | `Boolean` | if true, Paymaster account will pay fee transaction. Only for single dApp configured fungible-token. In that case tokenId not used |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
 
+#### Returns
+
+`TransactionReceiptData` - receipt
+
 #### Example
 
 ```kotlin
@@ -245,11 +273,15 @@ Create scheduled transaction
 | Name | Type | Description |
 |------|------| ----------- |
 | `accountId` | `String` | account id (0.0.xxxxx) |
-| `accountPrivateKey` | `String` | optional field if you need specify account key (hex encoded privateKey with DER-prefix) |
+| `accountPrivateKey` | `String` | account key (hex encoded privateKey with DER-prefix) |
 | `type` | `ScheduleTransactionType` | schedule transaction type (currently only TRANSFER supported) |
 | `transfers` | `List<ScheduleTransactionTransfer>` | array of transfers to schedule (HBAR, FT, NFT) |
 | `usePaymaster` | `Boolean` | if true, Paymaster account will pay transaction fee (also dApp had to be configured for free schedules) |
 | `completion` | `(CreateScheduleData?,BladeJSError?)->Unit` | callback function, with result of CreateScheduleData or BladeJSError |
+
+#### Returns
+
+`CreateScheduleData` - scheduleId
 
 #### Example
 
@@ -287,10 +319,14 @@ Method to sign scheduled transaction
 |------|------| ----------- |
 | `scheduleId` | `String` | scheduled transaction id (0.0.xxxxx) |
 | `accountId` | `String` | account id (0.0.xxxxx) |
-| `accountPrivateKey` | `String` | optional field if you need specify account key (hex encoded privateKey with DER-prefix) |
+| `accountPrivateKey` | `String` | account key (hex encoded privateKey with DER-prefix) |
 | `receiverAccountId` | `String` | account id of receiver for additional validation in case of dApp freeSchedule transactions configured |
 | `usePaymaster` | `Boolean` | if true, Paymaster account will pay transaction fee (also dApp had to be configured for free schedules) |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
+
+#### Returns
+
+`TransactionReceiptData` - receipt
 
 #### Example
 
@@ -328,6 +364,10 @@ Create new Hedera account (ECDSA). Only for configured dApps. Depending on dApp 
 | `deviceId` | `String` | optional field unique device id (advanced security feature, required only for some dApps) |
 | `completion` | `(CreatedAccountData?,BladeJSError?)->Unit` | callback function, with result of CreatedAccountData or BladeJSError |
 
+#### Returns
+
+`CreatedAccountData` - new account data, including private key and account id
+
 #### Example
 
 ```kotlin
@@ -354,6 +394,10 @@ Get account from queue (read more at `createAccount()`).
 | `seedPhrase` | `String` | returned from createHederaAccount method, required for updating keys and proper response |
 | `completion` | `(CreatedAccountData?,BladeJSError?)->Unit` | callback function, with result of CreatedAccountData or BladeJSError |
 
+#### Returns
+
+`CreatedAccountData` - new account data
+
 
 ## deleteHederaAccount
 
@@ -371,6 +415,10 @@ Delete Hedera account. This method requires account private key and operator pri
 | `operatorAccountId` | `String` | operator account id (0.0.xxxxx). Used for fee |
 | `operatorPrivateKey` | `String` | operator's account private key (DER encoded hex string) |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
+
+#### Returns
+
+`TransactionReceiptData` - receipt
 
 #### Example
 
@@ -408,6 +456,10 @@ Get account info.
 | `accountId` | `String` | Hedera account id (0.0.xxxxx) |
 | `completion` | `(AccountInfoData?,BladeJSError?)->Unit` | callback function, with result of AccountInfoData or BladeJSError |
 
+#### Returns
+
+{AccountInfoData}
+
 #### Example
 
 ```kotlin
@@ -427,6 +479,10 @@ Get Node list and use it for choosing account stacking node
 | Name | Type | Description |
 |------|------| ----------- |
 | `completion` | `(NodesData?,BladeJSError?)->Unit` | callback function, with result of NodesData or BladeJSError |
+
+#### Returns
+
+`NodesData` - node list
 
 #### Example
 
@@ -450,6 +506,10 @@ Stake/unstake account
 | `accountPrivateKey` | `String` | account private key (DER encoded hex string) |
 | `nodeId` | `Int` | node id to stake to. If negative or null, account will be unstaked |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
+
+#### Returns
+
+`TransactionReceiptData` - receipt
 
 #### Example
 
@@ -477,6 +537,10 @@ Get private key and accountId from mnemonic. Supported standard and legacy key d
 | `lookupNames` | `Boolean` | lookup for accounts (not used anymore, account search is mandatory) |
 | `completion` | `(PrivateKeyData?,BladeJSError?)->Unit` | callback function, with result of PrivateKeyData or BladeJSError |
 
+#### Returns
+
+`PrivateKeyData` - private key derived from mnemonic and account id
+
 #### Example
 
 ```kotlin
@@ -502,6 +566,10 @@ Get accounts list and keys from private key or mnemonic
 | `keyOrMnemonic` | `String` | BIP39 mnemonic, private key with DER header |
 | `completion` | `(AccountPrivateData?,BladeJSError?)->Unit` | callback function, with result of AccountPrivateData or BladeJSError |
 
+#### Returns
+
+`AccountPrivateData` - list of found accounts with private keys
+
 #### Example
 
 ```kotlin
@@ -524,6 +592,10 @@ Bladelink drop to account
 | `accountPrivateKey` | `String` | account private key (DER encoded hex string) |
 | `secretNonce` | `String` | configured for dApp. Should be kept in secret |
 | `completion` | `(TokenDropData?,BladeJSError?)->Unit` | callback function, with result of TokenDropData or BladeJSError |
+
+#### Returns
+
+`TokenDropData` - status
 
 #### Example
 
@@ -553,6 +625,10 @@ Sign base64-encoded message with private key. Returns hex-encoded signature.
 | `messageString` | `String` | base64-encoded message to sign |
 | `privateKey` | `String` | hex-encoded private key with DER header |
 | `completion` | `(SignMessageData?,BladeJSError?)->Unit` | callback function, with result of SignMessageData or BladeJSError |
+
+#### Returns
+
+`SignMessageData` - signature
 
 #### Example
 
@@ -584,6 +660,10 @@ Verify message signature with public key
 | `signature` | `String` | hex-encoded signature (result from `sign()` method) |
 | `publicKey` | `String` | hex-encoded public key with DER header |
 | `completion` | `(SignVerifyMessageData?,BladeJSError?)->Unit` | callback function, with result of SignVerifyMessageData or BladeJSError |
+
+#### Returns
+
+`SignVerifyMessageData` - verification result
 
 #### Example
 
@@ -621,6 +701,10 @@ Call contract function. Directly or via BladeAPI using paymaster account (fee wi
 | `gas` | `Int` | gas limit for the transaction |
 | `usePaymaster` | `Boolean` | if true, fee will be paid by Paymaster account (note: msg.sender inside the contract will be Paymaster account) |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
+
+#### Returns
+
+`TransactionReceiptData` - receipt
 
 #### Example
 
@@ -665,6 +749,10 @@ Call query on contract function. Similar to {@link contractCallFunction} can be 
 | `returnTypes` | `List<String>` | List of return types, e.g. listOf("string", "int32") |
 | `completion` | `(ContractQueryData?,BladeJSError?)->Unit` | callback function, with result of ContractQueryData or BladeJSError |
 
+#### Returns
+
+`ContractQueryData` - contract query call result
+
 #### Example
 
 ```kotlin
@@ -706,6 +794,10 @@ Sign base64-encoded message with private key using ethers lib. Returns hex-encod
 | `privateKey` | `String` | hex-encoded private key with DER header |
 | `completion` | `(SignMessageData?,BladeJSError?)->Unit` | callback function, with result of SignMessageData or BladeJSError |
 
+#### Returns
+
+`SignMessageData` - signature
+
 #### Example
 
 ```kotlin
@@ -735,6 +827,10 @@ Split signature to v-r-s format.
 | `signature` | `String` | hex-encoded signature |
 | `completion` | `(SplitSignatureData?,BladeJSError?)->Unit` | callback function, with result of SplitSignatureData or BladeJSError |
 
+#### Returns
+
+`SplitSignatureData` - v-r-s signature
+
 #### Example
 
 ```kotlin
@@ -758,6 +854,10 @@ Get v-r-s signature of contract function params
 | `params` | `ContractFunctionParameters` | data to sign. (instance of ContractFunctionParameters) |
 | `accountPrivateKey` | `String` | signer private key (hex-encoded with DER header) |
 | `completion` | `(SplitSignatureData?,BladeJSError?)->Unit` | callback function, with result of SplitSignatureData or BladeJSError |
+
+#### Returns
+
+`SplitSignatureData` - v-r-s signature
 
 #### Example
 
@@ -794,6 +894,10 @@ Get transactions history for account. Can be filtered by transaction type.
 | `transactionsLimit` | `Int` | number of transactions to return. Speed of request depends on this value if transactionType is set. |
 | `completion` | `(TransactionsHistoryData?,BladeJSError?)->Unit` | callback function, with result of TransactionsHistoryData or BladeJSError |
 
+#### Returns
+
+`TransactionsHistoryData` - transactions list
+
 #### Example
 
 ```kotlin
@@ -822,6 +926,10 @@ Get configured url for C14 integration (iframe or popup)
 | `amount` | `String` | preset amount. May be overwritten if out of range (min/max) |
 | `completion` | `(IntegrationUrlData?,BladeJSError?)->Unit` | callback function, with result of IntegrationUrlData or BladeJSError |
 
+#### Returns
+
+`IntegrationUrlData` - url to open
+
 #### Example
 
 ```kotlin
@@ -849,6 +957,10 @@ Get quotes from different services for buy, sell or swap
 | `targetCode` | `String` | name (HBAR, KARATE, USDC, other token code) |
 | `strategy` | `CryptoFlowServiceStrategy` | one of enum CryptoFlowServiceStrategy (Buy, Sell, Swap) |
 | `completion` | `(SwapQuotesData?,BladeJSError?)->Unit` | callback function, with result of SwapQuotesData or BladeJSError |
+
+#### Returns
+
+`SwapQuotesData` - quotes from different provider
 
 #### Example
 
@@ -882,6 +994,10 @@ Get configured url to buy or sell tokens or fiat
 | `serviceId` | `String` | service id to use for swap (saucerswap, onmeta, etc) |
 | `redirectUrl` | `String` | url to redirect after final step |
 | `completion` | `(IntegrationUrlData?,BladeJSError?)->Unit` | callback function, with result of IntegrationUrlData or BladeJSError |
+
+#### Returns
+
+`IntegrationUrlData` - url to open
 
 #### Example
 
@@ -917,6 +1033,10 @@ Swap tokens
 | `slippage` | `Double` | slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage. |
 | `serviceId` | `String` | service id to use for swap (saucerswap, etc) |
 | `completion` | `(ResultData?,BladeJSError?)->Unit` | callback function, with result of ResultData or BladeJSError |
+
+#### Returns
+
+`ResultData` - swap result
 
 #### Example
 
@@ -959,6 +1079,10 @@ Create token (NFT or Fungible Token)
 | `maxSupply` | `Int` | token max supply |
 | `completion` | `(CreateTokenData?,BladeJSError?)->Unit` | callback function, with result of CreateTokenData or BladeJSError |
 
+#### Returns
+
+`CreateTokenData` - token id
+
 #### Example
 
 ```kotlin
@@ -995,6 +1119,10 @@ Associate token to account. Association fee will be covered by PayMaster, if tok
 | `accountPrivateKey` | `String` | account private key |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
 
+#### Returns
+
+`TransactionReceiptData` - receipt
+
 #### Example
 
 ```kotlin
@@ -1024,6 +1152,10 @@ Mint one NFT
 | `metadata` | `Map<String,Any>` | NFT metadata |
 | `storageConfig` | `NFTStorageConfig` | IPFS provider config |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of CreateTokenData or BladeJSError |
+
+#### Returns
+
+`TransactionReceiptData` - receipt
 
 #### Example
 
@@ -1063,10 +1195,7 @@ Method to clean-up webView
 
 `cleanup ()`
 
-#### Parameters
 
-| Name | Type | Description |
-|------|------| ----------- |
 
 
 ## postMessage
@@ -1082,5 +1211,6 @@ Method to handle JS responses. By technical reasons, must be public, but you can
 | Name | Type | Description |
 |------|------| ----------- |
 | `jsonString` | `String` |  |
+
 
 

@@ -866,7 +866,7 @@ object Blade {
      * @param targetCode: name (HBAR, KARATE, USDC, other token code)
      * @param strategy: one of enum CryptoFlowServiceStrategy (Buy, Sell, Swap)
      * @param completion: callback function, with result of SwapQuotesData or BladeJSError
-     * @return {SwapQuotesData} quotes from different provider
+     * @return {SwapQuotesData} quotes from different providers
      * @sample
      * Blade.exchangeGetQuotes(
      *     sourceCode = "EUR",
