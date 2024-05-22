@@ -278,7 +278,7 @@ object Blade {
      * Create scheduled transaction
      *
      * @param accountId account id (0.0.xxxxx)
-     * @param accountPrivateKey optional field if you need specify account key (hex encoded privateKey with DER-prefix)
+     * @param accountPrivateKey account key (hex encoded privateKey with DER-prefix)
      * @param type schedule transaction type (currently only TRANSFER supported)
      * @param transfers array of transfers to schedule (HBAR, FT, NFT)
      * @param usePaymaster if true, Paymaster account will pay transaction fee (also dApp had to be configured for free schedules)
