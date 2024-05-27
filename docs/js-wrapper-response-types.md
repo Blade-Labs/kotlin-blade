@@ -1,4 +1,4 @@
-# JS wrapper response types
+# Response types
 
 The Result interface is a generic interface that defines two properties:
 

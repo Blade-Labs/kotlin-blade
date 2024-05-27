@@ -207,7 +207,7 @@ class ExamplesFragment : Fragment() {
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
                 gas = 155000,
-                bladePayFee = false
+                usePaymaster = false
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
@@ -226,7 +226,7 @@ class ExamplesFragment : Fragment() {
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
                 gas = 55000,
-                bladePayFee = false,
+                usePaymaster = false,
                 returnTypes = listOf("string", "int32")
             ) { result, bladeJSError ->
                 lifecycleScope.launch {

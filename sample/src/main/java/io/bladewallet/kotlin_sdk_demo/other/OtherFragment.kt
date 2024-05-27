@@ -147,7 +147,7 @@ class OtherFragment : Fragment() {
                     ScheduleTransactionTransferHbar(sender = Config.accountId, receiver = Config.privateKey2Account, (Math.random() * 10000000).toInt()),
                     ScheduleTransactionTransferToken(sender = Config.accountId, receiver = Config.privateKey2Account, tokenId = Config.tokenId, value = 2)
                 ),
-                freeSchedule = false,
+                usePaymaster = false,
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
@@ -166,7 +166,7 @@ class OtherFragment : Fragment() {
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
                 receiverAccountId = Config.privateKey2Account, // optional, only for freeSchedule = true
-                freeSchedule = false
+                usePaymaster = false
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")

@@ -49,6 +49,7 @@ As `Blade` object is singleton it may be initialized once and use in every other
 * Contact query - querying function `get_message` and get message that we set with timestamp, and it's length
 * Send HBARs - sending amount HBARs to receiver id  
 * Send tokens - sending amount tokens (from `Init` screen) to receiver id
+* Some other examples
 
 #### Exchange
 

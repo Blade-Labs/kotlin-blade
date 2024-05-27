@@ -1,9 +1,5 @@
 # 🚀 Getting Started
 
-### Kotlin Blade SDK
-
-[![](https://jitpack.io/v/Blade-Labs/kotlin-blade.svg)](https://jitpack.io/#Blade-Labs/kotlin-blade)
-
 ### Requirements
 
 * Android 9.0+ (API level 28, Sep 2018)
