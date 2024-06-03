@@ -96,8 +96,8 @@ class TokenFragment : Fragment() {
             Blade.createToken(
                     treasuryAccountId = Config.accountId,
                     supplyPrivateKey = Config.privateKey,
-                    tokenName = binding!!.tokenNameEditText.text.toString(),
-                    tokenSymbol = binding!!.tokenSymbolEditText.text.toString(),
+                    tokenName = binding?.tokenNameEditText?.text.toString(),
+                    tokenSymbol = binding?.tokenSymbolEditText?.text.toString(),
                     isNft = true,
                     keys,
                     decimals = 0,
@@ -179,7 +179,7 @@ class TokenFragment : Fragment() {
         binding!!.buttonAssociateToken.setOnClickListener {
             output("")
             Blade.associateToken(
-                tokenId = binding!!.tokenIdEditText.text.toString(),
+                tokenId = binding?.tokenIdEditText?.text.toString(),
                 accountId = Config.privateKey2Account,
                 accountPrivateKey = Config.privateKey2
             ) { result, bladeJSError ->
@@ -192,7 +192,7 @@ class TokenFragment : Fragment() {
         binding!!.buttonSendToken.setOnClickListener {
             output("")
             Blade.transferTokens(
-                tokenId = binding!!.tokenIdEditText.text.toString(),
+                tokenId = binding?.tokenIdEditText?.text.toString(),
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
                 receiverId = Config.privateKey2Account,

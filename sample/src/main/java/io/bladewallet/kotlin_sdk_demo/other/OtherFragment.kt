@@ -122,7 +122,6 @@ class OtherFragment : Fragment() {
                                                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                                                 }
                                             }
-
                                         }
                                     }
                                 }
@@ -152,7 +151,7 @@ class OtherFragment : Fragment() {
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
                     if (result != null) {
-                        binding!!.scheduleIdEditText.setText(result.scheduleId)
+                        binding?.scheduleIdEditText?.setText(result.scheduleId)
                     }
                 }
             }
@@ -162,7 +161,7 @@ class OtherFragment : Fragment() {
             output("")
 
             Blade.signScheduleId(
-                scheduleId = binding!!.scheduleIdEditText.text.toString(),
+                scheduleId = binding?.scheduleIdEditText?.text.toString(),
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
                 receiverAccountId = Config.privateKey2Account, // optional, only for freeSchedule = true
@@ -215,7 +214,7 @@ class OtherFragment : Fragment() {
         binding!!.buttonGetCoinPrice.setOnClickListener {
             output("")
             Blade.getCoinPrice(
-                search = binding!!.coinSearchEditText.text.toString(),
+                search = binding?.coinSearchEditText?.text.toString(),
                 currency = "uah"
             ) { result, bladeJSError ->
                 lifecycleScope.launch {

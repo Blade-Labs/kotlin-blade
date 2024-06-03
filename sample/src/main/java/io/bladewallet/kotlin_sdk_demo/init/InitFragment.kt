@@ -76,13 +76,13 @@ class InitFragment : Fragment() {
         }
 
         binding!!.initButton.setOnClickListener {
-            Config.dAppCode = binding!!.dAppCodeEditText.text.toString()
-            Config.apiKey = binding!!.apiTokenEditText.text.toString()
-            Config.accountId = binding!!.accountIdEditText.text.toString()
-            Config.privateKey = binding!!.privateKeyEditText.text.toString()
-            Config.publicKey = binding!!.publicKeyEditText.text.toString()
-            Config.contractId = binding!!.contractIdEditText.text.toString()
-            Config.tokenId = binding!!.tokenIdEditText.text.toString()
+            Config.dAppCode = binding?.dAppCodeEditText?.text.toString()
+            Config.apiKey = binding?.apiTokenEditText?.text.toString()
+            Config.accountId = binding?.accountIdEditText?.text.toString()
+            Config.privateKey = binding?.privateKeyEditText?.text.toString()
+            Config.publicKey = binding?.publicKeyEditText?.text.toString()
+            Config.contractId = binding?.contractIdEditText?.text.toString()
+            Config.tokenId = binding?.tokenIdEditText?.text.toString()
 
             toggleElements(false)
             output("")

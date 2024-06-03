@@ -89,19 +89,19 @@ class ExchangeFragment : Fragment() {
 
                         when (position) {
                             0 -> { // buy
-                                binding!!.editTextSource.setText("EUR")
-                                binding!!.editTextAmount.setText("50")
-                                binding!!.editTextTarget.setText("HBAR")
+                                binding?.editTextSource?.setText("EUR")
+                                binding?.editTextAmount?.setText("50")
+                                binding?.editTextTarget?.setText("HBAR")
                             }
                             1 -> { // sell
-                                binding!!.editTextSource.setText("USDC")
-                                binding!!.editTextAmount.setText("30")
-                                binding!!.editTextTarget.setText("PHP")
+                                binding?.editTextSource?.setText("USDC")
+                                binding?.editTextAmount?.setText("30")
+                                binding?.editTextTarget?.setText("PHP")
                             }
                             2 -> { // swap
-                                binding!!.editTextSource.setText("HBAR")
-                                binding!!.editTextAmount.setText("2")
-                                binding!!.editTextTarget.setText("KARATE")
+                                binding?.editTextSource?.setText("HBAR")
+                                binding?.editTextAmount?.setText("2")
+                                binding?.editTextTarget?.setText("KARATE")
                             }
                         }
 
@@ -118,12 +118,12 @@ class ExchangeFragment : Fragment() {
         binding!!.buttonQuotes.setOnClickListener {
             output("")
 
-            val strategy = CryptoFlowServiceStrategy.fromValue(binding!!.strategySpinner.selectedItem as String)
+            val strategy = CryptoFlowServiceStrategy.fromValue(binding?.strategySpinner?.selectedItem as String)
             if (strategy != null) {
                 Blade.exchangeGetQuotes(
-                    sourceCode = binding!!.editTextSource.text.toString(),
-                    sourceAmount = binding!!.editTextAmount.text.toString().toDouble(),
-                    targetCode = binding!!.editTextTarget.text.toString(),
+                    sourceCode = binding?.editTextSource?.text.toString(),
+                    sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
+                    targetCode = binding?.editTextTarget?.text.toString(),
                     strategy = strategy
                 ) { result, bladeJSError ->
                     lifecycleScope.launch {
@@ -179,9 +179,9 @@ class ExchangeFragment : Fragment() {
             Blade.getTradeUrl(
                 strategy = CryptoFlowServiceStrategy.BUY,
                 accountId = Config.accountId,
-                sourceCode = binding!!.editTextSource.text.toString(),
-                sourceAmount = binding!!.editTextAmount.text.toString().toDouble(),
-                targetCode = binding!!.editTextTarget.text.toString(),
+                sourceCode = binding?.editTextSource?.text.toString(),
+                sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
+                targetCode = binding?.editTextTarget?.text.toString(),
                 slippage = 0.5,
                 serviceId = binding!!.serviceSpinner.selectedItem as String
             ) { result, bladeJSError ->
@@ -201,9 +201,9 @@ class ExchangeFragment : Fragment() {
             Blade.getTradeUrl(
                 strategy = CryptoFlowServiceStrategy.SELL,
                 accountId = Config.accountId,
-                sourceCode = binding!!.editTextSource.text.toString(),
-                sourceAmount = binding!!.editTextAmount.text.toString().toDouble(),
-                targetCode = binding!!.editTextTarget.text.toString(),
+                sourceCode = binding?.editTextSource?.text.toString(),
+                sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
+                targetCode = binding?.editTextTarget?.text.toString(),
                 slippage = 0.5,
                 serviceId = binding!!.serviceSpinner.selectedItem as String
             ) { result, bladeJSError ->
@@ -223,11 +223,11 @@ class ExchangeFragment : Fragment() {
             Blade.swapTokens(
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
-                sourceCode = binding!!.editTextSource.text.toString(),
-                sourceAmount = binding!!.editTextAmount.text.toString().toDouble(),
-                targetCode = binding!!.editTextTarget.text.toString(),
+                sourceCode = binding?.editTextSource?.text.toString(),
+                sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
+                targetCode = binding?.editTextTarget?.text.toString(),
                 slippage = 0.5,
-                serviceId = binding!!.serviceSpinner.selectedItem as String
+                serviceId = binding?.serviceSpinner?.selectedItem as String
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
