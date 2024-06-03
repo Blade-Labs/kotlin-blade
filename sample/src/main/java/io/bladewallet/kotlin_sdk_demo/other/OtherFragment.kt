@@ -21,7 +21,7 @@ class OtherFragment : Fragment() {
 
     private var _binding: FragmentOtherBinding? = null
     private var startOperation: Long = System.currentTimeMillis()
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -30,7 +30,7 @@ class OtherFragment : Fragment() {
     ): View {
 
         _binding = FragmentOtherBinding.inflate(inflater, container, false)
-        return binding.root
+        return binding!!.root
 
     }
 
@@ -38,30 +38,30 @@ class OtherFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         fun toggleElements(enable: Boolean): Boolean {
-            binding.buttonGetCoinList.isEnabled = enable
-            binding.buttonGetCoinPrice.isEnabled = enable
-            binding.coinIdSpinner.isEnabled = enable
-            binding.coinSearchEditText.isEnabled = enable
-            binding.scheduleIdEditText.isEnabled = enable
-            binding.buttonSignScheduledTx.isEnabled = enable
-            binding.buttonCreateScheduleTx.isEnabled = enable
+            binding!!.buttonGetCoinList.isEnabled = enable
+            binding!!.buttonGetCoinPrice.isEnabled = enable
+            binding!!.coinIdSpinner.isEnabled = enable
+            binding!!.coinSearchEditText.isEnabled = enable
+            binding!!.scheduleIdEditText.isEnabled = enable
+            binding!!.buttonSignScheduledTx.isEnabled = enable
+            binding!!.buttonCreateScheduleTx.isEnabled = enable
             return enable
         }
 
-        binding.coinSearchEditText.setText(Config.coinSearch)
+        binding!!.coinSearchEditText.setText(Config.coinSearch)
 
         @SuppressLint("SetTextI18n")
         fun output(text: String) {
             if (text == "") {
                 startOperation = System.currentTimeMillis()
-                binding.textTitleOutput.text = "Output:"
-                binding.progressBar.visibility = View.VISIBLE
+                binding?.textTitleOutput?.text = "Output:"
+                binding?.progressBar?.visibility = View.VISIBLE
             } else {
                 println(text)
-                binding.textTitleOutput.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
-                binding.progressBar.visibility = View.GONE
+                binding?.textTitleOutput?.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
+                binding?.progressBar?.visibility = View.GONE
             }
-            binding.outputTextView.text = text
+            binding?.outputTextView?.text = text
         }
 
         Blade.getInfo { infoData, bladeJSError ->
@@ -79,14 +79,14 @@ class OtherFragment : Fragment() {
                                 } else {
                                     "NO"
                                 }
-                                binding.accountStatusTitle.text = res
+                                binding?.accountStatusTitle?.text = res
                                 Config.stakedNodeId = accountInfoData.stakingInfo.stakedNodeId
 
                                 Blade.getNodeList { nodeListData, bladeJSError ->
                                     lifecycleScope.launch {
-                                        if (nodeListData != null) {
-                                            binding.nodeSpinner.isEnabled = true
-                                            binding.buttonUpdateAccount.isEnabled = true
+                                        if (nodeListData != null && binding != null) {
+                                            binding?.nodeSpinner?.isEnabled = true
+                                            binding?.buttonUpdateAccount?.isEnabled = true
 
                                             var nodes = arrayOf<String>()
                                             nodes += "-1: UNSTAKE"
@@ -112,12 +112,12 @@ class OtherFragment : Fragment() {
                                             }.also {
                                                 it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-                                                binding.nodeSpinner.adapter = it
-                                                binding.nodeSpinner.setSelection(activeNode)
+                                                binding!!.nodeSpinner.adapter = it
+                                                binding!!.nodeSpinner.setSelection(activeNode)
 
-                                                binding.nodeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                                                binding!!.nodeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                                                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                                                        Config.stakedNodeId = binding.nodeSpinner.selectedItem.toString().substringBefore(":").trim().toInt()
+                                                        Config.stakedNodeId = binding!!.nodeSpinner.selectedItem.toString().substringBefore(":").trim().toInt()
                                                     }
                                                     override fun onNothingSelected(parent: AdapterView<*>?) {}
                                                 }
@@ -136,7 +136,7 @@ class OtherFragment : Fragment() {
             }
         }
 
-        binding.buttonCreateScheduleTx.setOnClickListener {
+        binding!!.buttonCreateScheduleTx.setOnClickListener {
             output("")
 
             Blade.createScheduleTransaction(
@@ -152,17 +152,17 @@ class OtherFragment : Fragment() {
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
                     if (result != null) {
-                        binding.scheduleIdEditText.setText(result.scheduleId)
+                        binding!!.scheduleIdEditText.setText(result.scheduleId)
                     }
                 }
             }
         }
 
-        binding.buttonSignScheduledTx.setOnClickListener {
+        binding!!.buttonSignScheduledTx.setOnClickListener {
             output("")
 
             Blade.signScheduleId(
-                scheduleId = binding.scheduleIdEditText.text.toString(),
+                scheduleId = binding!!.scheduleIdEditText.text.toString(),
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
                 receiverAccountId = Config.privateKey2Account, // optional, only for freeSchedule = true
@@ -174,14 +174,14 @@ class OtherFragment : Fragment() {
             }
         }
 
-        binding.buttonGetCoinList.setOnClickListener {
+        binding!!.buttonGetCoinList.setOnClickListener {
             output("")
 
             Blade.getCoinList { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
 
-                    if (result != null) {
+                    if (result != null && binding != null) {
                         var coinIds = arrayOf<String>()
                         for (coin in result.coins) {
                             coinIds += coin.id
@@ -194,13 +194,13 @@ class OtherFragment : Fragment() {
                         ) {
                         }.also {
                             it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                            binding.coinIdSpinner.adapter = it
-                            binding.coinIdSpinner.setSelection(0)
+                            binding!!.coinIdSpinner.adapter = it
+                            binding!!.coinIdSpinner.setSelection(0)
 
-                            binding.coinIdSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                            binding!!.coinIdSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                                    val coinId = binding.coinIdSpinner.selectedItem as String
-                                    binding.coinSearchEditText.setText(coinId)
+                                    val coinId = binding!!.coinIdSpinner.selectedItem as String
+                                    binding!!.coinSearchEditText.setText(coinId)
                                     Config.coinSearch = coinId
                                 }
                                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -212,10 +212,10 @@ class OtherFragment : Fragment() {
 
         }
 
-        binding.buttonGetCoinPrice.setOnClickListener {
+        binding!!.buttonGetCoinPrice.setOnClickListener {
             output("")
             Blade.getCoinPrice(
-                search = binding.coinSearchEditText.text.toString(),
+                search = binding!!.coinSearchEditText.text.toString(),
                 currency = "uah"
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
@@ -224,7 +224,7 @@ class OtherFragment : Fragment() {
             }
         }
 
-        binding.buttonUpdateAccount.setOnClickListener {
+        binding!!.buttonUpdateAccount.setOnClickListener {
             output("")
 
             Blade.stakeToNode(Config.accountId, Config.privateKey, Config.stakedNodeId ?: -1) { result, bladeJSError ->
@@ -236,7 +236,7 @@ class OtherFragment : Fragment() {
                         } else {
                             "YES"
                         }
-                        binding.accountStatusTitle.text = res
+                        binding!!.accountStatusTitle.text = res
                     }
                     output("${result ?: bladeJSError}")
                 }

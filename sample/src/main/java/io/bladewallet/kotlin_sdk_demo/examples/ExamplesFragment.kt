@@ -21,7 +21,7 @@ class ExamplesFragment : Fragment() {
 
     // This property is only valid between onCreateView and
     // onDestroyView.
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -32,21 +32,22 @@ class ExamplesFragment : Fragment() {
         var temporaryAccount: CreatedAccountData? = null
 
         _binding = FragmentExamplesBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        
+        val root: View = binding!!.root 
 
         fun toggleElements(enable: Boolean): Boolean {
-            binding.editAccountId.isEnabled = enable
-            binding.buttonBalance.isEnabled = enable
-            binding.buttonTransactions.isEnabled = enable
-            binding.buttonCreateAccount.isEnabled = enable
-            binding.editMnemonicMessageSignature.isEnabled = enable
-            binding.buttonGetFromMnemonic.isEnabled = enable
-            binding.buttonSign.isEnabled = enable
-            binding.buttonVerify.isEnabled = enable
-            binding.buttonContractCall.isEnabled = enable
-            binding.buttonContractQuery.isEnabled = enable
-            binding.buttonTransferHbars.isEnabled = enable
-            binding.buttonTransferTokens.isEnabled = enable
+            binding!!.editAccountId.isEnabled = enable
+            binding!!.buttonBalance.isEnabled = enable
+            binding!!.buttonTransactions.isEnabled = enable
+            binding!!.buttonCreateAccount.isEnabled = enable
+            binding!!.editMnemonicMessageSignature.isEnabled = enable
+            binding!!.buttonGetFromMnemonic.isEnabled = enable
+            binding!!.buttonSign.isEnabled = enable
+            binding!!.buttonVerify.isEnabled = enable
+            binding!!.buttonContractCall.isEnabled = enable
+            binding!!.buttonContractQuery.isEnabled = enable
+            binding!!.buttonTransferHbars.isEnabled = enable
+            binding!!.buttonTransferTokens.isEnabled = enable
             return enable
         }
 
@@ -54,14 +55,14 @@ class ExamplesFragment : Fragment() {
         fun output(text: String) {
             if (text == "") {
                 startOperation = System.currentTimeMillis()
-                binding.textTitleOutput.text = "Output:"
-                binding.progressBar.visibility = View.VISIBLE
+                binding?.textTitleOutput?.text = "Output:"
+                binding?.progressBar?.visibility = View.VISIBLE
             } else {
                 println(text)
-                binding.textTitleOutput.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
-                binding.progressBar.visibility = View.GONE
+                binding?.textTitleOutput?.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
+                binding?.progressBar?.visibility = View.GONE
             }
-            binding.outputTextView.text = text
+            binding?.outputTextView?.text = text
         }
 
         Blade.getInfo { infoData, bladeJSError ->
@@ -76,15 +77,15 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.editAccountId.setText(Config.accountId)
-        binding.editMnemonicMessageSignature.setText(Config.mnemonic)
-        binding.editTextReceiver.setText(Config.accountId2)
-        binding.editTextAmount.setText("1")
+        binding!!.editAccountId.setText(Config.accountId)
+        binding!!.editMnemonicMessageSignature.setText(Config.mnemonic)
+        binding!!.editTextReceiver.setText(Config.accountId2)
+        binding!!.editTextAmount.setText("1")
 
-        binding.buttonBalance.setOnClickListener {
+        binding!!.buttonBalance.setOnClickListener {
             output("")
             Blade.getBalance(
-                binding.editAccountId.text.toString()
+                binding!!.editAccountId.text.toString()
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
@@ -92,10 +93,10 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.buttonTransactions.setOnClickListener {
+        binding!!.buttonTransactions.setOnClickListener {
             output("")
             Blade.getTransactions(
-                accountId = binding.editAccountId.text.toString(),
+                accountId = binding!!.editAccountId.text.toString(),
                 transactionType = "",
                 nextPage = "",
                 transactionsLimit = 15
@@ -106,21 +107,21 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.buttonCreateAccount.setOnClickListener {
+        binding!!.buttonCreateAccount.setOnClickListener {
             output("")
             Blade.createHederaAccount(privateKey = "", deviceId = "") { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
                     if (result != null) {
                         temporaryAccount = result
-                        binding.buttonDeleteAccount.isEnabled = true
-                        binding.buttonDropTokens.isEnabled = true
+                        binding?.buttonDeleteAccount?.isEnabled = true
+                        binding?.buttonDropTokens?.isEnabled = true
                     }
                 }
             }
         }
 
-        binding.buttonDropTokens.setOnClickListener {
+        binding!!.buttonDropTokens.setOnClickListener {
             output("")
             Blade.dropTokens(
                 accountId = temporaryAccount?.accountId.toString(),
@@ -133,30 +134,30 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.buttonDeleteAccount.setOnClickListener {
+        binding!!.buttonDeleteAccount.setOnClickListener {
             output("")
             Blade.deleteHederaAccount(
                 deleteAccountId = temporaryAccount?.accountId.toString(),
                 deletePrivateKey = temporaryAccount?.privateKey.toString(),
-                transferAccountId = binding.editAccountId.text.toString(),
-                operatorAccountId = binding.editAccountId.text.toString(),
+                transferAccountId = binding!!.editAccountId.text.toString(),
+                operatorAccountId = binding!!.editAccountId.text.toString(),
                 operatorPrivateKey = Config.privateKey,
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
                     if (result != null) {
                         temporaryAccount = null
-                        binding.buttonDeleteAccount.isEnabled = false
-                        binding.buttonDropTokens.isEnabled = false
+                        binding!!.buttonDeleteAccount.isEnabled = false
+                        binding!!.buttonDropTokens.isEnabled = false
                     }
                 }
             }
         }
 
-        binding.buttonGetFromMnemonic.setOnClickListener {
+        binding!!.buttonGetFromMnemonic.setOnClickListener {
             output("")
             Blade.searchAccounts(
-                keyOrMnemonic = binding.editMnemonicMessageSignature.text.toString(),
+                keyOrMnemonic = binding!!.editMnemonicMessageSignature.text.toString(),
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
@@ -164,9 +165,9 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.buttonSign.setOnClickListener {
+        binding!!.buttonSign.setOnClickListener {
             output("")
-            val originalString = binding.editMnemonicMessageSignature.text.toString()
+            val originalString = binding!!.editMnemonicMessageSignature.text.toString()
             val encodedString: String = Base64.getEncoder().encodeToString(originalString.toByteArray())
 
             Blade.sign(
@@ -179,14 +180,14 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.buttonVerify.setOnClickListener {
+        binding!!.buttonVerify.setOnClickListener {
             output("")
             val originalString = Config.message // hello
             val encodedString: String = Base64.getEncoder().encodeToString(originalString.toByteArray())
 
             Blade.signVerify(
                 messageString = encodedString,
-                signature = binding.editMnemonicMessageSignature.text.toString(),
+                signature = binding!!.editMnemonicMessageSignature.text.toString(),
                 // signature = "27cb9d51434cf1e76d7ac515b19442c619f641e6fccddbf4a3756b14466becb6992dc1d2a82268018147141fc8d66ff9ade43b7f78c176d070a66372d655f942",
                 publicKey = Config.publicKey
             ) { result, bladeJSError ->
@@ -196,9 +197,9 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.buttonContractCall.setOnClickListener {
+        binding!!.buttonContractCall.setOnClickListener {
             output("")
-            val parameters = ContractFunctionParameters().addString("${binding.editMnemonicMessageSignature.text} ${System.currentTimeMillis()}")
+            val parameters = ContractFunctionParameters().addString("${binding!!.editMnemonicMessageSignature.text} ${System.currentTimeMillis()}")
 
             Blade.contractCallFunction(
                 contractId = Config.contractId,
@@ -215,7 +216,7 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.buttonContractQuery.setOnClickListener {
+        binding!!.buttonContractQuery.setOnClickListener {
             output("")
             val parameters = ContractFunctionParameters()
 
@@ -236,13 +237,13 @@ class ExamplesFragment : Fragment() {
         }
 
 
-        binding.buttonTransferHbars.setOnClickListener {
+        binding!!.buttonTransferHbars.setOnClickListener {
             output("")
             Blade.transferHbars(
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
-                receiverId = binding.editTextReceiver.text.toString(),
-                amount = binding.editTextAmount.text.toString().toDouble(),
+                receiverId = binding!!.editTextReceiver.text.toString(),
+                amount = binding!!.editTextAmount.text.toString().toDouble(),
                 memo = "Test HBar transfer from Kotlin-Blade SDK"
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
@@ -251,14 +252,14 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding.buttonTransferTokens.setOnClickListener {
+        binding!!.buttonTransferTokens.setOnClickListener {
             output("")
             Blade.transferTokens(
                 tokenId = Config.tokenId,
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
-                receiverId = binding.editTextReceiver.text.toString(),
-                amountOrSerial = binding.editTextAmount.text.toString().toDouble(),
+                receiverId = binding!!.editTextReceiver.text.toString(),
+                amountOrSerial = binding!!.editTextAmount.text.toString().toDouble(),
                 memo = "Test token transfer from Kotlin-Blade SDK"
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
