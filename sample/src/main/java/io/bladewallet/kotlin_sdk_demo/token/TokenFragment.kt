@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.Blade
@@ -29,6 +30,8 @@ import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentTokenBinding
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+
+private const val REQUEST_CODE_IMAGE_PERMISSION = 101
 
 class TokenFragment : Fragment() {
 
@@ -119,19 +122,27 @@ class TokenFragment : Fragment() {
         binding!!.buttonPickImage.setOnClickListener {
             if (binding != null) {
                 if (ContextCompat.checkSelfPermission(
-                        requireContext(),
+                    requireContext(),
+                    Manifest.permission.READ_MEDIA_IMAGES
+                ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        requireActivity(),
                         Manifest.permission.READ_MEDIA_IMAGES
                     )
-                    != PackageManager.PERMISSION_GRANTED
-                ) {
-                    // Permission is not granted, request it
-                    requestPermissions(
-                        arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
-                        1
-                    )
+                    ) {
+                        requestPermissions(
+                            arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                            REQUEST_CODE_IMAGE_PERMISSION
+                        )
+                    } else {
+                        requestPermissions(
+                            arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                            REQUEST_CODE_IMAGE_PERMISSION
+                        )
+                    }
                 } else {
                     // Permission already granted, start image picker
-
                     val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
                     try {
                         i.putExtra("return-data", true)
