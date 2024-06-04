@@ -18,7 +18,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.Blade
@@ -121,37 +120,41 @@ class TokenFragment : Fragment() {
 
         binding!!.buttonPickImage.setOnClickListener {
             if (binding != null) {
-                if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.READ_MEDIA_IMAGES
-                ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        requireActivity(),
-                        Manifest.permission.READ_MEDIA_IMAGES
-                    )
+                if (Build.VERSION.SDK_INT >= 33) {
+                    if (ContextCompat.checkSelfPermission(
+                            requireContext(),
+                            Manifest.permission.READ_MEDIA_IMAGES
+                        ) != PackageManager.PERMISSION_GRANTED
                     ) {
-                        requestPermissions(
-                            arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
-                            REQUEST_CODE_IMAGE_PERMISSION
-                        )
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                                requireActivity(),
+                                Manifest.permission.READ_MEDIA_IMAGES
+                            )
+                        ) {
+                            requestPermissions(
+                                arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                                REQUEST_CODE_IMAGE_PERMISSION
+                            )
+                        } else {
+                            requestPermissions(
+                                arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                                REQUEST_CODE_IMAGE_PERMISSION
+                            )
+                        }
                     } else {
-                        requestPermissions(
-                            arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
-                            REQUEST_CODE_IMAGE_PERMISSION
-                        )
+                        // Permission already granted, start image picker
+                        val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                        try {
+                            i.putExtra("return-data", true)
+                            startActivityForResult(
+                                Intent.createChooser(i, "Select Picture"), 0
+                            )
+                        } catch (ex: ActivityNotFoundException) {
+                            ex.printStackTrace()
+                        }
                     }
                 } else {
-                    // Permission already granted, start image picker
-                    val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-                    try {
-                        i.putExtra("return-data", true)
-                        startActivityForResult(
-                            Intent.createChooser(i, "Select Picture"), 0
-                        )
-                    } catch (ex: ActivityNotFoundException) {
-                        ex.printStackTrace()
-                    }
+                    output("You need to have SDK VERSION at least 33")
                 }
             }
         }
