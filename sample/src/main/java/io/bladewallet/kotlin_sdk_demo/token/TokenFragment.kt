@@ -17,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -154,7 +155,7 @@ class TokenFragment : Fragment() {
                         }
                     }
                 } else {
-                    output("You need to have SDK VERSION at least 33")
+                    output("You need to have Android API version at least 33")
                 }
             }
         }
