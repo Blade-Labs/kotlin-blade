@@ -27,7 +27,7 @@ dependencyResolutionManagement {
 // ./app/build.gradle
 dependencies {
     ...
-    implementation 'com.github.Blade-Labs:kotlin-blade:0.6.25'
+    implementation 'com.github.Blade-Labs:kotlin-blade:0.6.27'
 }
 ```
 

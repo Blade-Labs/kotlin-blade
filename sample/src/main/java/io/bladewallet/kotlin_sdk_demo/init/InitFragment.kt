@@ -19,7 +19,7 @@ class InitFragment : Fragment() {
 
     private var _binding: FragmentInitBinding? = null
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -29,60 +29,60 @@ class InitFragment : Fragment() {
         var startOperation: Long = System.currentTimeMillis()
 
         _binding = FragmentInitBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        val root: View = binding!!.root
 
         fun toggleElements(enable: Boolean): Boolean {
-            binding.dAppCodeEditText.isEnabled = enable
-            binding.apiTokenEditText.isEnabled = enable
-            binding.networkSpinner.isEnabled = enable
-            binding.bladeEnvSpinner.isEnabled = enable
-            binding.accountIdEditText.isEnabled = enable
-            binding.privateKeyEditText.isEnabled = enable
-            binding.publicKeyEditText.isEnabled = enable
-            binding.contractIdEditText.isEnabled = enable
-            binding.tokenIdEditText.isEnabled = enable
-            binding.initButton.isEnabled = enable
+            binding!!.dAppCodeEditText.isEnabled = enable
+            binding!!.apiTokenEditText.isEnabled = enable
+            binding!!.networkSpinner.isEnabled = enable
+            binding!!.bladeEnvSpinner.isEnabled = enable
+            binding!!.accountIdEditText.isEnabled = enable
+            binding!!.privateKeyEditText.isEnabled = enable
+            binding!!.publicKeyEditText.isEnabled = enable
+            binding!!.contractIdEditText.isEnabled = enable
+            binding!!.tokenIdEditText.isEnabled = enable
+            binding!!.initButton.isEnabled = enable
             return enable
         }
 
         @SuppressLint("SetTextI18n")
         fun output(text: String) {
-            binding.textTitleOutput.text = "Output:"
+            binding?.textTitleOutput?.text = "Output:"
             if (text == "") {
                 startOperation = System.currentTimeMillis()
-                binding.progressBar.visibility = View.VISIBLE
+                binding?.progressBar?.visibility = View.VISIBLE
             } else {
                 println(text)
-                if (binding.outputTextView.text.toString() == "") {
-                    binding.textTitleOutput.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
+                if (binding?.outputTextView?.text.toString() == "") {
+                    binding?.textTitleOutput?.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
                 }
-                binding.progressBar.visibility = View.GONE
+                binding?.progressBar?.visibility = View.GONE
             }
-            binding.outputTextView.text = text
+            binding?.outputTextView?.text = text
         }
 
         Blade.getInfo { infoData, bladeJSError ->
             lifecycleScope.launch {
                 if (infoData != null) {
-                    binding.stopButton.isEnabled = true
+                    binding?.stopButton?.isEnabled = true
                     toggleElements(false)
                     output("$infoData")
                 } else {
                     toggleElements(true)
-                    binding.stopButton.isEnabled = false
+                    binding?.stopButton?.isEnabled = false
                     output("$bladeJSError")
                 }
             }
         }
 
-        binding.initButton.setOnClickListener {
-            Config.dAppCode = binding.dAppCodeEditText.text.toString()
-            Config.apiKey = binding.apiTokenEditText.text.toString()
-            Config.accountId = binding.accountIdEditText.text.toString()
-            Config.privateKey = binding.privateKeyEditText.text.toString()
-            Config.publicKey = binding.publicKeyEditText.text.toString()
-            Config.contractId = binding.contractIdEditText.text.toString()
-            Config.tokenId = binding.tokenIdEditText.text.toString()
+        binding!!.initButton.setOnClickListener {
+            Config.dAppCode = binding?.dAppCodeEditText?.text.toString()
+            Config.apiKey = binding?.apiTokenEditText?.text.toString()
+            Config.accountId = binding?.accountIdEditText?.text.toString()
+            Config.privateKey = binding?.privateKeyEditText?.text.toString()
+            Config.publicKey = binding?.publicKeyEditText?.text.toString()
+            Config.contractId = binding?.contractIdEditText?.text.toString()
+            Config.tokenId = binding?.tokenIdEditText?.text.toString()
 
             toggleElements(false)
             output("")
@@ -97,7 +97,7 @@ class InitFragment : Fragment() {
             ) { infoData, bladeJSError ->
                 lifecycleScope.launch {
                     if (infoData != null) {
-                        binding.stopButton.isEnabled = true
+                        binding?.stopButton?.isEnabled = true
                         output("$infoData")
                     } else {
                         toggleElements(true)
@@ -107,82 +107,82 @@ class InitFragment : Fragment() {
             }
         }
 
-        binding.stopButton.setOnClickListener {
+        binding!!.stopButton.setOnClickListener {
             Blade.cleanup()
             output("Blade stopped")
-            binding.stopButton.isEnabled = !toggleElements(true)
+            binding?.stopButton?.isEnabled = !toggleElements(true)
         }
 
-        val items = arrayOf("Select Network", "Mainnet", "Testnet")
-        object : ArrayAdapter<String>(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            items
-        ) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0
+        if (binding != null) {
+            val items = arrayOf("Select Network", "Mainnet", "Testnet")
+            object : ArrayAdapter<String>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                items
+            ) {
+                override fun isEnabled(position: Int): Boolean {
+                    return position != 0
+                }
+
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent)
+                    if (position == 0) {
+                        view.alpha = 0.5f
+                    }
+                    return view
+                }
+            }.also {
+                it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding!!.networkSpinner.adapter = it
+                binding!!.networkSpinner.setSelection(items.indexOf(Config.network).coerceAtLeast(0))
+
+                binding!!.networkSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        Config.network = items[position]
+                    }
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
             }
 
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = super.getView(position, convertView, parent)
-                if (position == 0) {
-                    view.alpha = 0.5f
+            val bladeEnvs = arrayOf("Select BladeEnv", "Prod", "CI")
+            object : ArrayAdapter<String>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                bladeEnvs
+            ) {
+                override fun isEnabled(position: Int): Boolean {
+                    return position != 0
                 }
-                return view
-            }
-        }.also {
-            it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.networkSpinner.adapter = it
-            binding.networkSpinner.setSelection(items.indexOf(Config.network).coerceAtLeast(0))
 
-            binding.networkSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    Config.network = items[position]
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent)
+                    if (position == 0) {
+                        view.alpha = 0.5f
+                    }
+                    return view
                 }
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }.also {
+                it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding!!.bladeEnvSpinner.adapter = it
+                binding!!.bladeEnvSpinner.setSelection(bladeEnvs.indexOf(Config.bladeEnv.value).coerceAtLeast(0))
+
+                binding!!.bladeEnvSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        Config.bladeEnv = if (bladeEnvs[position] === BladeEnv.Prod.toString()) BladeEnv.Prod else BladeEnv.CI
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
+                }
             }
         }
 
-
-
-        val bladeEnvs = arrayOf("Select BladeEnv", "Prod", "CI")
-        object : ArrayAdapter<String>(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            bladeEnvs
-        ) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0
-            }
-
-            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-                val view = super.getView(position, convertView, parent)
-                if (position == 0) {
-                    view.alpha = 0.5f
-                }
-                return view
-            }
-        }.also {
-            it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.bladeEnvSpinner.adapter = it
-            binding.bladeEnvSpinner.setSelection(bladeEnvs.indexOf(Config.bladeEnv.value).coerceAtLeast(0))
-
-            binding.bladeEnvSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    Config.bladeEnv = if (bladeEnvs[position] === BladeEnv.Prod.toString()) BladeEnv.Prod else BladeEnv.CI
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
-        }
-
-        binding.dAppCodeEditText.setText(Config.dAppCode)
-        binding.apiTokenEditText.setText(Config.apiKey)
-        binding.accountIdEditText.setText(Config.accountId)
-        binding.privateKeyEditText.setText(Config.privateKey)
-        binding.publicKeyEditText.setText(Config.publicKey)
-        binding.contractIdEditText.setText(Config.contractId)
-        binding.tokenIdEditText.setText(Config.tokenId)
+        binding!!.dAppCodeEditText.setText(Config.dAppCode)
+        binding!!.apiTokenEditText.setText(Config.apiKey)
+        binding!!.accountIdEditText.setText(Config.accountId)
+        binding!!.privateKeyEditText.setText(Config.privateKey)
+        binding!!.publicKeyEditText.setText(Config.publicKey)
+        binding!!.contractIdEditText.setText(Config.contractId)
+        binding!!.tokenIdEditText.setText(Config.tokenId)
         return root
     }
 

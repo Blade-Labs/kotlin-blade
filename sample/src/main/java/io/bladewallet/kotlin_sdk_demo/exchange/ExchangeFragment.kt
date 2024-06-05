@@ -21,7 +21,7 @@ class ExchangeFragment : Fragment() {
 
     private var _binding: FragmentExchangeBinding? = null
     private var startOperation: Long = System.currentTimeMillis()
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -30,7 +30,7 @@ class ExchangeFragment : Fragment() {
     ): View {
 
         _binding = FragmentExchangeBinding.inflate(inflater, container, false)
-        return binding.root
+        return binding!!.root
 
     }
 
@@ -38,11 +38,11 @@ class ExchangeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         fun toggleElements(enable: Boolean): Boolean {
-            binding.buttonQuotes.isEnabled = enable
-            binding.editTextSource.isEnabled = enable
-            binding.editTextAmount.isEnabled = enable
-            binding.editTextTarget.isEnabled = enable
-            binding.strategySpinner.isEnabled = enable
+            binding!!.buttonQuotes.isEnabled = enable
+            binding!!.editTextSource.isEnabled = enable
+            binding!!.editTextAmount.isEnabled = enable
+            binding!!.editTextTarget.isEnabled = enable
+            binding!!.strategySpinner.isEnabled = enable
             return enable
         }
 
@@ -50,14 +50,14 @@ class ExchangeFragment : Fragment() {
         fun output(text: String) {
             if (text == "") {
                 startOperation = System.currentTimeMillis()
-                binding.textTitleOutput.text = "Output:"
-                binding.progressBar.visibility = View.VISIBLE
+                binding?.textTitleOutput?.text = "Output:"
+                binding?.progressBar?.visibility = View.VISIBLE
             } else {
                 println(text)
-                binding.textTitleOutput.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
-                binding.progressBar.visibility = View.GONE
+                binding?.textTitleOutput?.text = "Output (${System.currentTimeMillis() - startOperation}ms):"
+                binding?.progressBar?.visibility = View.GONE
             }
-            binding.outputTextView.text = text
+            binding?.outputTextView?.text = text
         }
 
         Blade.getInfo { infoData, bladeJSError ->
@@ -72,67 +72,69 @@ class ExchangeFragment : Fragment() {
             }
         }
 
-        val strategies = arrayOf("Buy", "Sell", "Swap")
-        object : ArrayAdapter<String>(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            strategies
-        ) {
-        }.also {
-            it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            binding.strategySpinner.adapter = it
-            binding.strategySpinner.setSelection(0)
+        if (binding != null) {
+            val strategies = arrayOf("Buy", "Sell", "Swap")
+            object : ArrayAdapter<String>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                strategies
+            ) {
+            }.also {
+                it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                binding!!.strategySpinner.adapter = it
+                binding!!.strategySpinner.setSelection(0)
 
-            binding.strategySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                binding!!.strategySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-                    when (position) {
-                        0 -> { // buy
-                            binding.editTextSource.setText("EUR")
-                            binding.editTextAmount.setText("50")
-                            binding.editTextTarget.setText("HBAR")
+                        when (position) {
+                            0 -> { // buy
+                                binding?.editTextSource?.setText("EUR")
+                                binding?.editTextAmount?.setText("50")
+                                binding?.editTextTarget?.setText("HBAR")
+                            }
+                            1 -> { // sell
+                                binding?.editTextSource?.setText("USDC")
+                                binding?.editTextAmount?.setText("30")
+                                binding?.editTextTarget?.setText("PHP")
+                            }
+                            2 -> { // swap
+                                binding?.editTextSource?.setText("HBAR")
+                                binding?.editTextAmount?.setText("2")
+                                binding?.editTextTarget?.setText("KARATE")
+                            }
                         }
-                        1 -> { // sell
-                            binding.editTextSource.setText("USDC")
-                            binding.editTextAmount.setText("30")
-                            binding.editTextTarget.setText("PHP")
-                        }
-                        2 -> { // swap
-                            binding.editTextSource.setText("HBAR")
-                            binding.editTextAmount.setText("2")
-                            binding.editTextTarget.setText("KARATE")
-                        }
+
+                        binding?.serviceSpinner?.isEnabled = false
+                        binding?.buttonBuy?.isEnabled = false
+                        binding?.buttonSell?.isEnabled = false
+                        binding?.buttonSwap?.isEnabled = false
                     }
-
-                    binding.serviceSpinner.isEnabled = false
-                    binding.buttonBuy.isEnabled = false
-                    binding.buttonSell.isEnabled = false
-                    binding.buttonSwap.isEnabled = false
+                    override fun onNothingSelected(parent: AdapterView<*>?) {}
                 }
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
         }
 
-        binding.buttonQuotes.setOnClickListener {
+        binding!!.buttonQuotes.setOnClickListener {
             output("")
 
-            val strategy = CryptoFlowServiceStrategy.fromValue(binding.strategySpinner.selectedItem as String)
+            val strategy = CryptoFlowServiceStrategy.fromValue(binding?.strategySpinner?.selectedItem as String)
             if (strategy != null) {
                 Blade.exchangeGetQuotes(
-                    sourceCode = binding.editTextSource.text.toString(),
-                    sourceAmount = binding.editTextAmount.text.toString().toDouble(),
-                    targetCode = binding.editTextTarget.text.toString(),
+                    sourceCode = binding?.editTextSource?.text.toString(),
+                    sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
+                    targetCode = binding?.editTextTarget?.text.toString(),
                     strategy = strategy
                 ) { result, bladeJSError ->
                     lifecycleScope.launch {
                         output("${result ?: bladeJSError}")
 
-                        binding.buttonBuy.isEnabled = false
-                        binding.buttonSell.isEnabled = false
-                        binding.buttonSwap.isEnabled = false
-                        binding.serviceSpinner.isEnabled = true
+                        binding?.buttonBuy?.isEnabled = false
+                        binding?.buttonSell?.isEnabled = false
+                        binding?.buttonSwap?.isEnabled = false
+                        binding?.serviceSpinner?.isEnabled = true
 
-                        if (result != null) {
+                        if (result != null && binding != null) {
                             var services = arrayOf<String>()
                             for (quote in result.quotes) {
                                 services += quote.service.id
@@ -145,21 +147,21 @@ class ExchangeFragment : Fragment() {
                             ) {
                             }.also {
                                 it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                                binding.serviceSpinner.adapter = it
-                                binding.serviceSpinner.setSelection(0)
+                                binding!!.serviceSpinner.adapter = it
+                                binding!!.serviceSpinner.setSelection(0)
 
-                                binding.serviceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                                binding!!.serviceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                                        val strategy = CryptoFlowServiceStrategy.fromValue(binding.strategySpinner.selectedItem as String) ?: ""
+                                        val strategy = CryptoFlowServiceStrategy.fromValue(binding!!.strategySpinner.selectedItem as String) ?: ""
                                         when (strategy) {
                                             CryptoFlowServiceStrategy.BUY -> {
-                                                binding.buttonBuy.isEnabled = true
+                                                binding?.buttonBuy?.isEnabled = true
                                             }
                                             CryptoFlowServiceStrategy.SELL -> {
-                                                binding.buttonSell.isEnabled = true
+                                                binding?.buttonSell?.isEnabled = true
                                             }
                                             CryptoFlowServiceStrategy.SWAP -> {
-                                                binding.buttonSwap.isEnabled = true
+                                                binding?.buttonSwap?.isEnabled = true
                                             }
                                         }
                                     }
@@ -172,16 +174,16 @@ class ExchangeFragment : Fragment() {
             }
         }
 
-        binding.buttonBuy.setOnClickListener {
+        binding!!.buttonBuy.setOnClickListener {
             output("")
             Blade.getTradeUrl(
                 strategy = CryptoFlowServiceStrategy.BUY,
                 accountId = Config.accountId,
-                sourceCode = binding.editTextSource.text.toString(),
-                sourceAmount = binding.editTextAmount.text.toString().toDouble(),
-                targetCode = binding.editTextTarget.text.toString(),
+                sourceCode = binding?.editTextSource?.text.toString(),
+                sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
+                targetCode = binding?.editTextTarget?.text.toString(),
                 slippage = 0.5,
-                serviceId = binding.serviceSpinner.selectedItem as String
+                serviceId = binding!!.serviceSpinner.selectedItem as String
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
@@ -194,16 +196,16 @@ class ExchangeFragment : Fragment() {
             }
         }
 
-        binding.buttonSell.setOnClickListener {
+        binding!!.buttonSell.setOnClickListener {
             output("")
             Blade.getTradeUrl(
                 strategy = CryptoFlowServiceStrategy.SELL,
                 accountId = Config.accountId,
-                sourceCode = binding.editTextSource.text.toString(),
-                sourceAmount = binding.editTextAmount.text.toString().toDouble(),
-                targetCode = binding.editTextTarget.text.toString(),
+                sourceCode = binding?.editTextSource?.text.toString(),
+                sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
+                targetCode = binding?.editTextTarget?.text.toString(),
                 slippage = 0.5,
-                serviceId = binding.serviceSpinner.selectedItem as String
+                serviceId = binding!!.serviceSpinner.selectedItem as String
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
@@ -216,16 +218,16 @@ class ExchangeFragment : Fragment() {
             }
         }
 
-        binding.buttonSwap.setOnClickListener {
+        binding!!.buttonSwap.setOnClickListener {
             output("")
             Blade.swapTokens(
                 accountId = Config.accountId,
                 accountPrivateKey = Config.privateKey,
-                sourceCode = binding.editTextSource.text.toString(),
-                sourceAmount = binding.editTextAmount.text.toString().toDouble(),
-                targetCode = binding.editTextTarget.text.toString(),
+                sourceCode = binding?.editTextSource?.text.toString(),
+                sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
+                targetCode = binding?.editTextTarget?.text.toString(),
                 slippage = 0.5,
-                serviceId = binding.serviceSpinner.selectedItem as String
+                serviceId = binding?.serviceSpinner?.selectedItem as String
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
