@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.27"
+    private const val sdkVersion: String = "Kotlin@0.6.28"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -1011,14 +1011,14 @@ object Blade {
     /**
      * Associate token to account. Association fee will be covered by PayMaster, if tokenId configured in dApp
      *
-     * @param tokenId: token id to associate. Empty to associate all tokens configured in dApp
+     * @param tokenIdOrCampaign: token id to associate. Empty to associate all tokens configured in dApp.  Campaign name to associate on demand
      * @param accountId: account id to associate token
      * @param accountPrivateKey: account private key
      * @param completion: callback function, with result of TransactionReceiptData or BladeJSError
      * @return {TransactionReceiptData} receipt
      * @sample
      * Blade.associateToken(
-     *     tokenId = "0.0.1337",
+     *     tokenIdOrCampaign = "0.0.1337",
      *     accountId = "0.0.10001",
      *     accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
      * ) { result, error ->
@@ -1026,7 +1026,7 @@ object Blade {
      * }
      */
     fun associateToken(
-        tokenId: String,
+        tokenIdOrCampaign: String,
         accountId: String,
         accountPrivateKey: String,
         completion: (TransactionReceiptData?, BladeJSError?) -> Unit
@@ -1035,7 +1035,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.associateToken('${esc(tokenId)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '$completionKey')")
+        executeJS("bladeSdk.associateToken('${esc(tokenIdOrCampaign)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '$completionKey')")
     }
 
     /**

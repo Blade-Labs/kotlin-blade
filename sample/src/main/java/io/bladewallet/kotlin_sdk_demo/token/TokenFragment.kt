@@ -194,7 +194,7 @@ class TokenFragment : Fragment() {
         binding!!.buttonAssociateToken.setOnClickListener {
             output("")
             Blade.associateToken(
-                tokenId = binding?.tokenIdEditText?.text.toString(),
+                tokenIdOrCampaign = binding?.tokenIdEditText?.text.toString(),
                 accountId = Config.privateKey2Account,
                 accountPrivateKey = Config.privateKey2
             ) { result, bladeJSError ->
