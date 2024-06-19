@@ -312,7 +312,8 @@ data class CreateTokenData(
 )
 
 data class RemoteConfig(
-    var fpApiKey: String
+    var fpApiKey: String,
+    var fpSubdomain: String
 )
 
 data class CoinListResponse(

@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.28"
+    private const val sdkVersion: String = "Kotlin@0.6.29"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -65,7 +65,7 @@ object Blade {
                 }
                 if (visitorId == "") {
                     remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
-                    visitorId = getVisitorId(remoteConfig.fpApiKey, context)
+                    visitorId = getVisitorId(remoteConfig, context)
                     sharedPreferences.edit()
                         .putString(context.resources.getString(R.string.visitorIdEnvKey), bladeEnv.toString())
                         .putString(context.resources.getString(R.string.visitorIdKey), visitorId)
