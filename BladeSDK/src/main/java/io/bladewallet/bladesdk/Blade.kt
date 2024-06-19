@@ -65,7 +65,7 @@ object Blade {
                 }
                 if (visitorId == "") {
                     remoteConfig = getRemoteConfig(network, dAppCode, sdkVersion, bladeEnv)
-                    visitorId = getVisitorId(remoteConfig.fpApiKey, context)
+                    visitorId = getVisitorId(remoteConfig, context)
                     sharedPreferences.edit()
                         .putString(context.resources.getString(R.string.visitorIdEnvKey), bladeEnv.toString())
                         .putString(context.resources.getString(R.string.visitorIdKey), visitorId)

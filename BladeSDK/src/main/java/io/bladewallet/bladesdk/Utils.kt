@@ -19,7 +19,9 @@ import java.io.IOException
 
 internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersion: String, bladeEnv: BladeEnv): RemoteConfig = withContext(Dispatchers.IO) {
     val url: String
-    val fallbackConfig = RemoteConfig(fpApiKey = "")
+    val fallbackConfig = RemoteConfig(
+        fpApiKey = "",
+        fpSubdomain = "https://identity.bladewallet.io")
 
     if (bladeEnv === BladeEnv.Prod) {
         url = "https://rest.prod.bladewallet.io/openapi/v7/sdk/config"
@@ -66,18 +68,28 @@ internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersi
     }
 }
 
-internal suspend fun getVisitorId(apiKey: String, context: Context): String = suspendCoroutine { continuation ->
+internal suspend fun getVisitorId(config: RemoteConfig, context: Context): String = suspendCoroutine { continuation ->
     val factory = FingerprintJSFactory(context)
-    val configuration = Configuration(
-        apiKey= apiKey,
-        region = Configuration.Region.EU,
-        endpointUrl = "https://identity.bladewallet.io"
+
+    // try once with remote config subdomain, otherwise try on default region
+    var configuration = Configuration(
+        apiKey= config.fpApiKey,
+        endpointUrl = config.fpSubdomain
     )
 
-    val fingerprintClient = factory.createInstance(configuration)
+    var fingerprintClient = factory.createInstance(configuration)
     fingerprintClient.getVisitorId(fun(result: FingerprintJSProResponse) {
         continuation.resume(result.visitorId)
-    }, fun(error: Error) {
-        continuation.resumeWithException(java.lang.Exception("$error"))
+    }, fun(_: Error) {
+        configuration = Configuration(
+            apiKey= config.fpApiKey,
+        )
+
+        fingerprintClient = factory.createInstance(configuration)
+        fingerprintClient.getVisitorId(fun(result: FingerprintJSProResponse) {
+            continuation.resume(result.visitorId)
+        }, fun(error: Error) {
+            continuation.resumeWithException(java.lang.Exception("$error"))
+        })
     })
 }
