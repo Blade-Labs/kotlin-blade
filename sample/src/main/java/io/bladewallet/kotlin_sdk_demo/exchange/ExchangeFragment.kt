@@ -12,7 +12,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.Blade
-import io.bladewallet.bladesdk.CryptoFlowServiceStrategy
+import io.bladewallet.bladesdk.models.CryptoFlowServiceStrategy
 import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentExchangeBinding
 import kotlinx.coroutines.launch
@@ -221,8 +221,6 @@ class ExchangeFragment : Fragment() {
         binding!!.buttonSwap.setOnClickListener {
             output("")
             Blade.swapTokens(
-                accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey,
                 sourceCode = binding?.editTextSource?.text.toString(),
                 sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
                 targetCode = binding?.editTextTarget?.text.toString(),

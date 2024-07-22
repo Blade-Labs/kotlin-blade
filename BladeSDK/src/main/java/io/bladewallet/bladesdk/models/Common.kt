@@ -1,4 +1,6 @@
-package io.bladewallet.bladesdk
+package io.bladewallet.bladesdk.models
+
+import com.google.gson.JsonElement
 
 data class ContractFunctionParameter (
     var type: String,
@@ -29,11 +31,25 @@ data class InfoResponse(
 data class InfoData(
     var apiKey: String,
     var dAppCode: String,
-    var network: String,
+    var chainId: KnownChainIds,
+    var isTestnet: Boolean,
     var visitorId: String,
-    var sdkEnvironment: String,
+    var sdkEnvironment: BladeEnv,
     var sdkVersion: String,
-    var nonce: Int
+    var nonce: Int,
+    var user: UserInfoData
+)
+
+data class UserInfoResponse(
+    override var completionKey: String,
+    override var data: UserInfoData
+): Result<UserInfoData>
+
+data class UserInfoData(
+    var accountId: String,
+    var accountProvider: AccountProvider?,
+    var userPrivateKey: String,
+    var userPublicKey: String
 )
 
 data class BalanceResponse(
@@ -42,13 +58,19 @@ data class BalanceResponse(
 ) : Result<BalanceData>
 
 data class BalanceData(
-    var hbars: Double,
-    var tokens: List<BalanceDataToken>
+    var balance: String,
+    var rawBalance: String,
+    var decimals: Int,
+    var tokens: List<TokenBalanceData>
 )
 
-data class BalanceDataToken(
-    var balance: Double,
-    var tokenId: String
+data class TokenBalanceData(
+    var balance: String,
+    var decimals: Int,
+    var name: String,
+    var symbol: String,
+    var address: String,
+    var rawBalance: String
 )
 
 data class AccountInfoResponse(
@@ -57,7 +79,7 @@ data class AccountInfoResponse(
 ): Result<AccountInfoData>
 
 data class AccountInfoData(
-    var accountId: String,
+    var accountAddress: String,
     var evmAddress: String,
     var calculatedEvmAddress: String,
     var publicKey: String,
@@ -99,11 +121,19 @@ data class CreatedAccountData(
     var seedPhrase: String,
     var publicKey: String,
     var privateKey: String,
-    var accountId: String?,
+    var accountAddress: String?,
     var evmAddress: String,
-    var transactionId: String?,
     var status: String,
-    var queueNumber: Int?
+)
+
+data class TransactionResponseResponse(
+    override var completionKey: String,
+    override var data: TransactionResponseData
+): Result<TransactionResponseData>
+
+data class TransactionResponseData(
+    var transactionHash: String,
+    var transactionId: String
 )
 
 data class TransactionReceiptResponse(
@@ -113,26 +143,52 @@ data class TransactionReceiptResponse(
 
 data class TransactionReceiptData(
     var status: String,
-    var contractId: String?,
+    var contractAddress: String?,
     var topicSequenceNumber: String?,
     var totalSupply: String?,
-    var serials: List<String>?
+    var serials: List<String>?,
+    var transactionHash: String
 )
 
-data class ContractQueryResponse(
+data class TokenInfoResponse(
     override var completionKey: String,
-    override var data: ContractQueryData
-): Result<ContractQueryData>
+    override var data: TokenInfoData
+): Result<TokenInfoData>
 
-data class ContractQueryData(
+data class TokenInfoData(
+    val token: TokenInfo,
+    val nft: NftInfo?,
+    val metadata: NftMetadata?
+)
+
+data class ContractCallQueryRecordsResponse(
+    override var completionKey: String,
+    override var data: ContractCallQueryRecordsData
+): Result<ContractCallQueryRecordsData>
+
+data class ContractCallQueryRecordsData(
     var gasUsed: Int,
-    var values: List<ContractQueryRecord>
+    var values: List<ContractCallQueryRecord>
 )
 
-data class ContractQueryRecord(
+data class ContractCallQueryRecord(
     var type: String,
-    var value: String
-)
+    var value: JsonElement // Use JsonElement to represent any type
+) {
+    val actualValue: Any
+        get() = when {
+            value.isJsonPrimitive -> {
+                val primitive = value.asJsonPrimitive
+                when {
+                    primitive.isBoolean -> primitive.asBoolean
+                    primitive.isNumber -> primitive.asNumber
+                    primitive.isString -> primitive.asString
+                    else -> throw IllegalStateException("Unknown primitive type")
+                }
+            }
+            else -> throw IllegalStateException("Unknown value type")
+        }
+}
 
 data class PrivateKeyResponse(
     override var completionKey: String,
@@ -463,7 +519,26 @@ enum class KeyType(val value: String) {
 
 enum class BladeEnv(val value: String) {
     Prod("Prod"),
-    CI("CI")
+    CI("CI");
+
+    companion object {
+        fun fromKey(key: String): BladeEnv {
+            return BladeEnv.values().find { it.name == key }
+                ?: throw IllegalArgumentException("Unknown BladeEnv key: $key")
+        }
+    }
+}
+
+enum class AccountProvider(val value: String) {
+    PrivateKey("PrivateKey"),
+    Magic("Magic");
+
+    companion object {
+        fun fromKey(key: String): AccountProvider {
+            return AccountProvider.values().find { it.name == key }
+                ?: throw IllegalArgumentException("Unknown AccountProvider key: $key")
+        }
+    }
 }
 
 enum class CryptoFlowServiceStrategy(val value: String) {
@@ -501,4 +576,10 @@ enum class ScheduleTransferType(val value: String) {
     HBAR("HBAR"),
     FT("FT"),
     NFT("NFT")
+}
+
+enum class SupportedEncoding(val value: String) {
+    base64("base64"),
+    hex("hex"),
+    utf8("utf8")
 }

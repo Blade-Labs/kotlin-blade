@@ -14,18 +14,21 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import com.google.gson.Gson
+import io.bladewallet.bladesdk.models.BladeEnv
+import io.bladewallet.bladesdk.models.RemoteConfig
 import java.io.IOException
 
 
-internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersion: String, bladeEnv: BladeEnv): RemoteConfig = withContext(Dispatchers.IO) {
+internal suspend fun getRemoteConfig(dAppCode: String, sdkVersion: String, bladeEnv: BladeEnv): RemoteConfig = withContext(Dispatchers.IO) {
     val url: String
     val fallbackConfig = RemoteConfig(fpApiKey = "")
 
     if (bladeEnv === BladeEnv.Prod) {
-        url = "https://rest.prod.bladewallet.io/openapi/v7/sdk/config"
+        url = "https://rest.prod.bladewallet.io/dapi/v8/public/sdk/config"
         fallbackConfig.fpApiKey = "Li4RsMbgPldpOVfWjnaF"
+        throw Exception("Prod env not available for v1.0.0 now")
     } else {
-        url = "https://api.bld-dev.bladewallet.io/openapi/v7/sdk/config"
+        url = "https://dapi.bld-dev.bladewallet.io/dapi/public/v8/sdk/config"
         fallbackConfig.fpApiKey = "0fScXqpS7MzpCl9HgEsI"
     }
 
@@ -33,7 +36,6 @@ internal suspend fun getRemoteConfig(network: String, dAppCode: String, sdkVersi
         val connection = URL(url).openConnection() as HttpURLConnection
         connection.requestMethod = "GET"
 
-        connection.setRequestProperty("x-network", network.uppercase())
         connection.setRequestProperty("x-dapp-code", dAppCode)
         connection.setRequestProperty("x-sdk-version", sdkVersion)
         connection.setRequestProperty("content-type", "application/json")

@@ -1,6 +1,7 @@
 package io.bladewallet.bladesdk
 
 import com.google.gson.Gson
+import io.bladewallet.bladesdk.models.ContractFunctionParameter
 import java.math.BigInteger
 import java.util.Base64
 

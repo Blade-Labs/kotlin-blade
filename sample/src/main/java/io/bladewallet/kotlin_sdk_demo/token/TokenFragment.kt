@@ -22,10 +22,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.Blade
-import io.bladewallet.bladesdk.KeyRecord
-import io.bladewallet.bladesdk.KeyType
-import io.bladewallet.bladesdk.NFTStorageConfig
-import io.bladewallet.bladesdk.NFTStorageProvider
+import io.bladewallet.bladesdk.models.KeyRecord
+import io.bladewallet.bladesdk.models.KeyType
+import io.bladewallet.bladesdk.models.NFTStorageConfig
+import io.bladewallet.bladesdk.models.NFTStorageProvider
 import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentTokenBinding
 import kotlinx.coroutines.launch
@@ -97,8 +97,6 @@ class TokenFragment : Fragment() {
                 KeyRecord(Config.privateKey2, KeyType.admin)
             )
             Blade.createToken(
-                    treasuryAccountId = Config.accountId,
-                    supplyPrivateKey = Config.privateKey,
                     tokenName = binding?.tokenNameEditText?.text.toString(),
                     tokenSymbol = binding?.tokenSymbolEditText?.text.toString(),
                     isNft = true,
@@ -171,9 +169,7 @@ class TokenFragment : Fragment() {
             )
 
             Blade.nftMint(
-                tokenId = binding!!.tokenIdEditText.text.toString(),
-                supplyAccountId = Config.accountId,
-                supplyPrivateKey = Config.privateKey,
+                tokenAddress = binding!!.tokenIdEditText.text.toString(),
                 file = base64Image,
                 metadata = metaData,
                 storageConfig = NFTStorageConfig(
@@ -195,8 +191,6 @@ class TokenFragment : Fragment() {
             output("")
             Blade.associateToken(
                 tokenIdOrCampaign = binding?.tokenIdEditText?.text.toString(),
-                accountId = Config.privateKey2Account,
-                accountPrivateKey = Config.privateKey2
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
@@ -207,11 +201,9 @@ class TokenFragment : Fragment() {
         binding!!.buttonSendToken.setOnClickListener {
             output("")
             Blade.transferTokens(
-                tokenId = binding?.tokenIdEditText?.text.toString(),
-                accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey,
-                receiverId = Config.privateKey2Account,
-                amountOrSerial = 1.0,
+                tokenAddress = binding?.tokenIdEditText?.text.toString(),
+                receiverAddress = Config.privateKey2Account,
+                amountOrSerial = "0.01",
                 memo = "Send NFT from SDK",
             ) { result, bladeJSError ->
                 lifecycleScope.launch {

@@ -1,13 +1,18 @@
 package io.bladewallet.kotlin_sdk_demo
 
-import io.bladewallet.bladesdk.BladeEnv
+import io.bladewallet.bladesdk.models.AccountProvider
+import io.bladewallet.bladesdk.models.BladeEnv
+import io.bladewallet.bladesdk.models.KnownChainIds
 
 object Config {
     var apiKey = "FG9dUBQcBaBAPgCHz7DqmNZzrJyhewAMJytjwp3VFIEMFTXQyVSIDq6wRvtPcSAt"
     var dAppCode = "unitysdktest"
-    var network: String = "Testnet"
+    var chainId: KnownChainIds = KnownChainIds.HEDERA_TESTNET
     var bladeEnv: BladeEnv = BladeEnv.CI
+    var accountProvider: AccountProvider = AccountProvider.PrivateKey
+//    var accountProvider: AccountProvider = AccountProvider.Magic
 
+    var magicEmail = "the.gary.du+sdk2@gmail.com"
     var accountId = "0.0.1443"
     var accountId2 = "0.0.1767"
     var contractId = "0.0.2215872"
