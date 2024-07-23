@@ -52,7 +52,7 @@
     <string name="button_verify">verify</string>
     <string name="button_contract_call">contract call</string>
     <string name="button_contract_query">contract query</string>
-    <string name="button_transfer_hbars">send HBARS</string>
+    <string name="button_transfer_balance">send balance</string>
     <string name="button_transfer_tokens">send tokens</string>
     <string name="label_receiver">Receiver</string>
     <string name="label_amount">Amount</string>

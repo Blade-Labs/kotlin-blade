@@ -838,7 +838,7 @@ object Blade {
      * Get configured url to buy or sell tokens or fiat
      *
      * @param strategy: Buy / Sell
-     * @param accountId: account id
+     * @param accountAddress: account id
      * @param sourceCode: name (HBAR, KARATE, USDC, other token code)
      * @param sourceAmount: amount to buy/sell
      * @param targetCode: name (HBAR, KARATE, USDC, other token code)
@@ -850,7 +850,7 @@ object Blade {
      * @sample
      * Blade.getTradeUrl(
      *     strategy = CryptoFlowServiceStrategy.BUY,
-     *     accountId = "0.0.10002",
+     *     accountAddress = "0.0.10002",
      *     sourceCode = "EUR",
      *     sourceAmount = 50.0,
      *     targetCode = "HBAR",
@@ -860,12 +860,12 @@ object Blade {
      *     println(result ?: error)
      * }
     */
-    fun getTradeUrl(strategy: CryptoFlowServiceStrategy, accountId: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, redirectUrl: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
+    fun getTradeUrl(strategy: CryptoFlowServiceStrategy, accountAddress: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, redirectUrl: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getTradeUrl")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<IntegrationUrlData, IntegrationUrlResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getTradeUrl('${esc(strategy.value)}', '${esc(accountId)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '${esc(redirectUrl)}', '$completionKey')")
+        executeJS("bladeSdk.getTradeUrl('${esc(strategy.value)}', '${esc(accountAddress)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '${esc(redirectUrl)}', '$completionKey')")
     }
 
     /**

@@ -94,7 +94,7 @@ class TokenFragment : Fragment() {
             output("")
 
             val keys = listOf(
-                KeyRecord(Config.privateKey2, KeyType.admin)
+                KeyRecord(Config.accountPrivateKey2, KeyType.admin)
             )
             Blade.createToken(
                     tokenName = binding?.tokenNameEditText?.text.toString(),
@@ -202,7 +202,7 @@ class TokenFragment : Fragment() {
             output("")
             Blade.transferTokens(
                 tokenAddress = binding?.tokenIdEditText?.text.toString(),
-                receiverAddress = Config.privateKey2Account,
+                receiverAddress = Config.accountAddress2,
                 amountOrSerial = "0.01",
                 memo = "Send NFT from SDK",
             ) { result, bladeJSError ->

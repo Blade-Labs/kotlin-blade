@@ -131,8 +131,8 @@ class InitFragment : Fragment() {
         binding!!.setUserButton.setOnClickListener {
             Blade.setUser(
                 Config.accountProvider,
-                if (Config.accountProvider === AccountProvider.PrivateKey) Config.accountId else Config.magicEmail,
-                if (Config.accountProvider === AccountProvider.PrivateKey) Config.privateKey else "",
+                if (Config.accountProvider === AccountProvider.PrivateKey) Config.accountAddress else Config.magicEmail,
+                if (Config.accountProvider === AccountProvider.PrivateKey) Config.accountPrivateKey  else "",
             ) { userInfoData, bladeJSError ->
                 lifecycleScope.launch {
                     if (userInfoData != null && userInfoData.userPublicKey != "") {
@@ -189,7 +189,12 @@ class InitFragment : Fragment() {
                 binding!!.chainSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                         if (position > 0) {
-                            Config.chainId = KnownChainIds.fromKey(items[position])
+                            Config.setChain(KnownChainIds.fromKey(items[position]))
+
+                            binding!!.accountIdEditText.setText(Config.accountAddress)
+                            binding!!.privateKeyEditText.setText(Config.accountPrivateKey)
+                            binding!!.contractIdEditText.setText(Config.contractAddress)
+                            binding!!.tokenIdEditText.setText(Config.tokenAddress)
                         }
                     }
                     override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -278,18 +283,14 @@ class InitFragment : Fragment() {
 
         binding!!.dAppCodeEditText.setText(Config.dAppCode)
         binding!!.apiTokenEditText.setText(Config.apiKey)
-        binding!!.accountIdEditText.setText(Config.accountId)
-        binding!!.privateKeyEditText.setText(Config.privateKey)
         binding!!.magicEmailEditText.setText(Config.magicEmail)
-        binding!!.contractIdEditText.setText(Config.contractId)
-        binding!!.tokenIdEditText.setText(Config.tokenId)
 
         binding!!.accountIdEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 s?.let {
-                    Config.accountId = s.toString();
+                    Config.accountAddress = s.toString();
                 }
             }
         })
@@ -299,7 +300,7 @@ class InitFragment : Fragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 s?.let {
-                    Config.privateKey = s.toString();
+                    Config.accountPrivateKey = s.toString();
                 }
             }
         })
@@ -319,7 +320,7 @@ class InitFragment : Fragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 s?.let {
-                    Config.contractId = s.toString();
+                    Config.contractAddress = s.toString();
                 }
             }
         })
@@ -329,7 +330,7 @@ class InitFragment : Fragment() {
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 s?.let {
-                    Config.tokenId = s.toString();
+                    Config.tokenAddress = s.toString();
                 }
             }
         })
