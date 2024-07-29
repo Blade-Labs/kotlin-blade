@@ -292,7 +292,7 @@ object Blade {
      * @param receiverAddress receiver account address (0.0.xxxxx or 0x123456789abcdef...)
      * @param amountOrSerial amount of fungible tokens to send (with token-decimals correction) on NFT serial number. (e.g. amount 0.01337 when token decimals 8 will send 1337000 units of token)
      * @param memo: transaction memo (limited to 100 characters)
-     * @param usePaymaster if true, Paymaster account will pay fee transaction. Only for single dApp configured fungible-token. In that case tokenId not used
+     * @param usePaymaster if true, Paymaster account will pay fee transaction, for dApp configured fungible-token
      * @param completion callback function, with result of TransactionReceiptData or BladeJSError
      * @return {TransactionResponseData} receipt
      * @sample
