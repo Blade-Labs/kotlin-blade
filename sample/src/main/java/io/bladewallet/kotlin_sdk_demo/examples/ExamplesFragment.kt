@@ -102,7 +102,7 @@ class ExamplesFragment : Fragment() {
         binding!!.buttonTransactions.setOnClickListener {
             output("")
             Blade.getTransactions(
-                accountId = binding?.editAccountId?.text.toString(),
+                accountAddress = binding?.editAccountId?.text.toString(),
                 transactionType = "",
                 nextPage = "",
                 transactionsLimit = 15
