@@ -84,20 +84,19 @@ object Blade {
     private val gson = Gson()
 
     /**
-     * Init instance of BladeSDK for correct work with Blade API and Hedera network.
+     * Init instance of BladeSDK for correct work with Blade API and other endpoints.
      *
      * @param apiKey Unique key for API provided by Blade team.
-     * @param dAppCode your dAppCode - request specific one by contacting Bladelabs team
      * @param chainId one of supported chains from KnownChainIds
+     * @param dAppCode your dAppCode - request specific one by contacting BladeLabs team
      * @param bladeEnv field to set BladeAPI environment (Prod, CI). Prod used by default.
      * @param context android context
      * @param force optional field to force init. Will not crash if already initialized
      * @param completion: callback function, with result of InfoData or BladeJSError
      * @return {InfoData} with information about Blade instance, including visitorId
      * @sample
-     * TODO
      * Blade.initialize(
-     *     Config.apiKey, Config.dAppCode, Config.network, Config.bladeEnv, requireContext(), false
+     *     Config.apiKey, Config.chainId, Config.dAppCode, Config.bladeEnv, requireContext(), false
      * ) { infoData, error ->
      *     println(infoData ?: error)
      * }
@@ -176,7 +175,7 @@ object Blade {
     }
 
     /**
-     * Get SDK info and check if SDK initialized
+     * Returns information about initialized instance of BladeSDK.
      *
      * @param completion: callback function, with result of InfoData or BladeJSError
      * @return {InfoData} with information about Blade instance, including visitorId
@@ -236,14 +235,12 @@ object Blade {
         executeJS("bladeSdk.resetUser('$completionKey')")
     }
 
-
-
     /**
      * Get balance and token balances for specific account.
      *
      * @param accountAddress Hedera account id (0.0.xxxxx) or Ethereum address (0x...) or empty string to use current user account
      * @param completion callback function, with result of BalanceData or BladeJSError
-     * @return {BalanceData} with information about Hedera account balances (hbar and list of token balances)
+     * @return {BalanceData}
      * @sample
      * Blade.getBalance("0.0.45467464") { result, error ->
      *     println("${ result ?: error}")
@@ -258,10 +255,10 @@ object Blade {
     }
 
     /**
-     * Send HBAR/ETH to specific account.
+     * Send account balance (HBAR/ETH) to specific account.
      *
      * @param receiverAddress receiver address (0.0.xxxxx, 0x123456789abcdef...)
-     * @param amount amount of currency to send (decimal string)
+     * @param amount amount of currency to send, as a string representing a decimal number (e.g., "211.3424324")
      * @param memo: memo (limited to 100 characters)
      * @param completion callback function, with result of TransactionReceiptData or BladeJSError
      * @return {TransactionResponseData} receipt
@@ -443,8 +440,6 @@ object Blade {
     /**
      * Create scheduled transaction
      *
-     * @param accountId account id (0.0.xxxxx)
-     * @param accountPrivateKey account key (hex encoded privateKey with DER-prefix)
      * @param type schedule transaction type (currently only TRANSFER supported)
      * @param transfers array of transfers to schedule (HBAR, FT, NFT)
      * @param usePaymaster if true, Paymaster account will pay transaction fee (also dApp had to be configured for free schedules)
@@ -452,6 +447,7 @@ object Blade {
      * @return {CreateScheduleData} scheduleId
      * @sample
      * val senderId = "0.0.10001"
+     * val receiverId = "0.0.10002"
      * val tokenId = "0.0.1337"
      * var scheduleId = ""
      *
@@ -495,7 +491,7 @@ object Blade {
      *
      * Blade.signScheduleId(
      *     scheduleId = scheduleId,
-     *     receiverAccountAddress = receiverId,
+     *     receiverAccountAddress = receiverAddress,
      *     usePaymaster = true
      * ) { result, bladeJSError ->
      *     println(result ?: bladeJSError)
@@ -515,9 +511,7 @@ object Blade {
     }
 
     /**
-     * Create new Hedera account (ECDSA). Only for configured dApps. Depending on dApp config Blade create account, associate tokens, etc.
-     * In case of not using pre-created accounts pool and network high load, this method can return transactionId and no accountId.
-     * In that case account creation added to queue, and you should wait some time and call `getPendingAccount()` method.
+     * Create new account (ECDSA by default). Depending on dApp config Blade will create an account, associate tokens, etc.
      *
      * @param privateKey: optional field if you need specify account key (hex encoded privateKey with DER-prefix)
      * @param deviceId: optional field unique device id (advanced security feature, required only for some dApps)
@@ -537,7 +531,7 @@ object Blade {
     }
 
     /**
-     * Delete Hedera account. This method requires account private key and operator private key. Operator is the one who paying fees
+     * Delete Hedera account.
      *
      * @param deleteAccountId: account id of account to delete (0.0.xxxxx)
      * @param deletePrivateKey: account private key (DER encoded hex string)
@@ -587,7 +581,7 @@ object Blade {
     }
 
     /**
-     * Get Node list and use it for choosing account stacking node
+     * Get Hedera node list available for stake
      *
      * @param completion callback function, with result of NodesData or BladeJSError
      * @return {NodesData} node list
@@ -605,7 +599,7 @@ object Blade {
     }
 
     /**
-     * Stake/unstake account
+     * Stake/unstake hedera account
      *
      * @param nodeId node id to stake to. If negative or null, account will be unstaked
      * @param completion callback function, with result of TransactionReceiptData or BladeJSError
@@ -652,10 +646,7 @@ object Blade {
      * @return {TokenDropData} status
      * @sample
      * val secretNonce = "[ REDACTED ]"
-     *
-     * Blade.dropTokens(
-     *     secretNonce,
-     * ) { result, error ->
+     * Blade.dropTokens(secretNonce) { result, error ->
      *     println(result ?: error)
      * }
      */
@@ -676,13 +667,9 @@ object Blade {
      * @param completion callback function, with result of SignMessageData or BladeJSError
      * @return {SignMessageData} signature
      * @sample
-     * import java.util.Base64
-     *
-     * // ...
-     *
      * val encodedMessage = "hello"
      * val encoding = SupportedEncoding.utf8
-     * val likeEthers = true
+     * val likeEthers = false
      *
      * Blade.sign(
      *     encodedMessage,
@@ -783,7 +770,7 @@ object Blade {
      * If transaction type is not provided, all transactions will be returned.
      * If transaction type is CRYPTOTRANSFERTOKEN records will additionally contain plainData field with decoded data.
      *
-     * @param accountId: account id to get transactions for (0.0.xxxxx)
+     * @param accountAddress: account id to get transactions for (0.0.xxxxx)
      * @param transactionType: one of enum MirrorNodeTransactionType or "CRYPTOTRANSFERTOKEN"
      * @param nextPage: link to next page of transactions from previous request
      * @param transactionsLimit: number of transactions to return. Speed of request depends on this value if transactionType is set.
@@ -791,7 +778,7 @@ object Blade {
      * @return {TransactionsHistoryData} transactions list
      * @sample
      * Blade.getTransactions(
-     *     accountId = "0.0.10002",
+     *     accountAddress = "0.0.10002",
      *     transactionType = "",
      *     nextPage = "",
      *     transactionsLimit = 15
@@ -799,12 +786,12 @@ object Blade {
      *     println(result ?: error)
      * }
      */
-    fun getTransactions(accountId: String, transactionType: String, nextPage: String = "", transactionsLimit: Int = 10, completion: (TransactionsHistoryData?, BladeJSError?) -> Unit) {
+    fun getTransactions(accountAddress: String, transactionType: String, nextPage: String = "", transactionsLimit: Int = 10, completion: (TransactionsHistoryData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getTransactions")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<TransactionsHistoryData, TransactionsHistoryResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.getTransactions('${esc(accountId)}', '${esc(transactionType)}', '${esc(nextPage)}', '$transactionsLimit', '$completionKey')")
+        executeJS("bladeSdk.getTransactions('${esc(accountAddress)}', '${esc(transactionType)}', '${esc(nextPage)}', '$transactionsLimit', '$completionKey')")
     }
 
     /**
@@ -946,7 +933,7 @@ object Blade {
     }
 
     /**
-     * Associate token to account. Association fee will be covered by PayMaster, if tokenId configured in dApp
+     * Associate token to hedera account. Association fee will be covered by PayMaster, if tokenId configured in dApp
      *
      * @param tokenIdOrCampaign: token id to associate. Empty to associate all tokens configured in dApp.  Campaign name to associate on demand
      * @param completion: callback function, with result of TransactionReceiptData or BladeJSError
@@ -1016,6 +1003,17 @@ object Blade {
         executeJS("bladeSdk.nftMint('${esc(tokenAddress)}', '${esc(file)}', ${gson.toJson(metadata)}, ${gson.toJson(storageConfig)}, '$completionKey')")
     }
 
+    /**
+     * Get FT or NFT token info
+     * @param tokenAddress token address (0.0.xxxxx or 0x123456789abcdef...)
+     * @param serial serial number in case of NFT token
+     * @param completion callback function, with result of TokenInfoData or BladeJSError
+     * @returns {TokenInfoData}
+     * @sample
+     * Blade.getTokenInfo("0.0.1234", "3") { result, error ->
+     *     println(result ?: error)
+     * }
+     */
     fun getTokenInfo(
         tokenAddress: String,
         serial: String,
@@ -1027,7 +1025,6 @@ object Blade {
         }
         executeJS("bladeSdk.getTokenInfo('${esc(tokenAddress)}', '${esc(serial)}', '$completionKey')")
     }
-
 
     /**
      * Method to clean-up webView

@@ -24,9 +24,8 @@ internal suspend fun getRemoteConfig(dAppCode: String, sdkVersion: String, blade
     val fallbackConfig = RemoteConfig(fpApiKey = "")
 
     if (bladeEnv === BladeEnv.Prod) {
-        url = "https://rest.prod.bladewallet.io/dapi/v8/public/sdk/config"
+        url = "https://dapi.prod.bladewallet.io/dapi/public/v8/sdk/config"
         fallbackConfig.fpApiKey = "Li4RsMbgPldpOVfWjnaF"
-        throw Exception("Prod env not available for v1.0.0 now")
     } else {
         url = "https://dapi.bld-dev.bladewallet.io/dapi/public/v8/sdk/config"
         fallbackConfig.fpApiKey = "0fScXqpS7MzpCl9HgEsI"
