@@ -2,37 +2,36 @@
 
 * [initialize](usage.md#initialize)
 * [getInfo](usage.md#getinfo)
+* [setUser](usage.md#setuser)
+* [resetUser](usage.md#resetuser)
 * [getBalance](usage.md#getbalance)
+* [transferBalance](usage.md#transferbalance)
+* [transferTokens](usage.md#transfertokens)
 * [getCoinList](usage.md#getcoinlist)
 * [getCoinPrice](usage.md#getcoinprice)
-* [transferHbars](usage.md#transferhbars)
-* [transferTokens](usage.md#transfertokens)
+* [contractCallFunction](usage.md#contractcallfunction)
+* [contractCallQueryFunction](usage.md#contractcallqueryfunction)
 * [createScheduleTransaction](usage.md#createscheduletransaction)
 * [signScheduleId](usage.md#signscheduleid)
-* [createHederaAccount](usage.md#createhederaaccount)
-* [getPendingAccount](usage.md#getpendingaccount)
-* [deleteHederaAccount](usage.md#deletehederaaccount)
+* [createAccount](usage.md#createaccount)
+* [deleteAccount](usage.md#deleteaccount)
 * [getAccountInfo](usage.md#getaccountinfo)
 * [getNodeList](usage.md#getnodelist)
 * [stakeToNode](usage.md#staketonode)
-* [getKeysFromMnemonic](usage.md#getkeysfrommnemonic)
 * [searchAccounts](usage.md#searchaccounts)
 * [dropTokens](usage.md#droptokens)
 * [sign](usage.md#sign)
-* [signVerify](usage.md#signverify)
-* [contractCallFunction](usage.md#contractcallfunction)
-* [contractCallQueryFunction](usage.md#contractcallqueryfunction)
-* [ethersSign](usage.md#etherssign)
+* [verify](usage.md#verify)
 * [splitSignature](usage.md#splitsignature)
 * [getParamsSignature](usage.md#getparamssignature)
 * [getTransactions](usage.md#gettransactions)
-* [getC14url](usage.md#getc14url)
 * [exchangeGetQuotes](usage.md#exchangegetquotes)
 * [getTradeUrl](usage.md#gettradeurl)
 * [swapTokens](usage.md#swaptokens)
 * [createToken](usage.md#createtoken)
 * [associateToken](usage.md#associatetoken)
 * [nftMint](usage.md#nftmint)
+* [getTokenInfo](usage.md#gettokeninfo)
 * [cleanup](usage.md#cleanup)
 * [postMessage](usage.md#postmessage)
 
@@ -40,17 +39,17 @@
 
 ## initialize
 
-Init instance of BladeSDK for correct work with Blade API and Hedera network.
+Init instance of BladeSDK for correct work with Blade API and other endpoints.
 
-`initialize (apiKey: String, dAppCode: String, network: String, bladeEnv: BladeEnv = BladeEnv.Prod, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit)`
+`initialize (apiKey: String, chainId: KnownChainIds, dAppCode: String, bladeEnv: BladeEnv = BladeEnv.Prod, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
 | `apiKey` | `String` | Unique key for API provided by Blade team. |
-| `dAppCode` | `String` | your dAppCode - request specific one by contacting Bladelabs team |
-| `network` | `String` | "Mainnet" or "Testnet" of Hedera network |
+| `chainId` | `KnownChainIds` | one of supported chains from KnownChainIds |
+| `dAppCode` | `String` | your dAppCode - request specific one by contacting BladeLabs team |
 | `bladeEnv` | `BladeEnv` | field to set BladeAPI environment (Prod, CI). Prod used by default. |
 | `context` | `Context` | android context |
 | `force` | `Boolean` | optional field to force init. Will not crash if already initialized |
@@ -64,7 +63,7 @@ Init instance of BladeSDK for correct work with Blade API and Hedera network.
 
 ```kotlin
 Blade.initialize(
-    Config.apiKey, Config.dAppCode, Config.network, Config.bladeEnv, requireContext(), false
+    Config.apiKey, Config.chainId, Config.dAppCode, Config.bladeEnv, requireContext(), false
 ) { infoData, error ->
     println(infoData ?: error)
 }
@@ -72,7 +71,7 @@ Blade.initialize(
 
 ## getInfo
 
-Get SDK info and check if SDK initialized
+Returns information about initialized instance of BladeSDK.
 
 `getInfo (completion: (InfoData?, BladeJSError?) -> Unit)`
 
@@ -94,28 +93,149 @@ Blade.getInfo { infoData, error ->
 }
 ```
 
-## getBalance
+## setUser
 
-Get balances by account id.
+Set active user for further operations.
 
-`getBalance (id: String, completion: (BalanceData?, BladeJSError?) -> Unit)`
+`setUser (accountProvider: AccountProvider, accountIdOrEmail: String, privateKey: String, completion: (UserInfoData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `id` | `String` | Hedera account id |
+| `accountProvider` | `AccountProvider` | one of supported providers: PrivateKey or Magic |
+| `accountIdOrEmail` | `String` | account id (0.0.xxxxx, 0xABCDEF..., EMAIL) or empty string for some ChainId |
+| `privateKey` | `String` | private key for account (hex encoded privateKey with DER-prefix or 0xABCDEF...) In case of Magic provider - empty string |
+| `completion` | `(UserInfoData?,BladeJSError?)->Unit` |  |
+
+#### Returns
+
+`UserInfoData` - with information about active user
+
+#### Example
+
+```kotlin
+Blade.setUser(AccountProvider.PrivateKey, "0.0.1234", "302d300706052b8104000a032200029dc73991b0d9cd...") { userInfoData, error ->
+    println(userInfoData ?: error)
+}
+```
+
+## resetUser
+
+Reset active user
+
+`resetUser (completion: (UserInfoData?, BladeJSError?) -> Unit)`
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------| ----------- |
+| `completion` | `(UserInfoData?,BladeJSError?)->Unit` |  |
+
+#### Returns
+
+`UserInfoData` - with information about active user
+
+#### Example
+
+```kotlin
+Blade.resetUser { userInfoData, error ->
+    println(userInfoData ?: error)
+}
+```
+
+## getBalance
+
+Get balance and token balances for specific account.
+
+`getBalance (accountAddress: String, completion: (BalanceData?, BladeJSError?) -> Unit)`
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------| ----------- |
+| `accountAddress` | `String` | Hedera account id (0.0.xxxxx) or Ethereum address (0x...) or empty string to use current user account |
 | `completion` | `(BalanceData?,BladeJSError?)->Unit` | callback function, with result of BalanceData or BladeJSError |
 
 #### Returns
 
-`BalanceData` - with information about Hedera account balances (hbar and list of token balances)
+{BalanceData}
 
 #### Example
 
 ```kotlin
 Blade.getBalance("0.0.45467464") { result, error ->
     println("${ result ?: error}")
+}
+```
+
+## transferBalance
+
+Send account balance (HBAR/ETH) to specific account.
+
+`transferBalance (receiverAddress: String, amount: String, memo: String, completion: (TransactionResponseData?, BladeJSError?) -> Unit)`
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------| ----------- |
+| `receiverAddress` | `String` | receiver address (0.0.xxxxx, 0x123456789abcdef...) |
+| `amount` | `String` | amount of currency to send, as a string representing a decimal number (e.g., "211.3424324") |
+| `memo` | `String` | memo (limited to 100 characters) |
+| `completion` | `(TransactionResponseData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
+
+#### Returns
+
+`TransactionResponseData` - receipt
+
+#### Example
+
+```kotlin
+val receiverAddress = "0.0.10002"
+val amount = "2.5"
+Blade.transferBalance(
+    receiverAddress,
+    amount,
+    "Some memo text"
+) { result, error ->
+    println(result ?: error)
+}
+```
+
+## transferTokens
+
+Send token to specific address
+
+`transferTokens (tokenAddress: String, receiverAddress: String, amountOrSerial: String, memo: String, usePaymaster: Boolean = true, completion: (TransactionResponseData?, BladeJSError?) -> Unit)`
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------| ----------- |
+| `tokenAddress` | `String` | token address to send (0.0.xxxxx or 0x123456789abcdef...) |
+| `receiverAddress` | `String` | receiver account address (0.0.xxxxx or 0x123456789abcdef...) |
+| `amountOrSerial` | `String` | amount of fungible tokens to send (with token-decimals correction) on NFT serial number. (e.g. amount 0.01337 when token decimals 8 will send 1337000 units of token) |
+| `memo` | `String` | transaction memo (limited to 100 characters) |
+| `usePaymaster` | `Boolean` | if true, Paymaster account will pay fee transaction, for dApp configured fungible-token |
+| `completion` | `(TransactionResponseData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
+
+#### Returns
+
+`TransactionResponseData` - receipt
+
+#### Example
+
+```kotlin
+val tokenAddress = "0.0.1337"
+val receiverAddress = "0.0.10002"
+val amount = "2.5"
+Blade.transferTokens(
+    tokenAddress,
+    receiverAddress,
+    amount,
+    "Token transfer memo"
+) { result, error ->
+    println(result ?: error)
 }
 ```
 
@@ -180,21 +300,21 @@ Blade.getCoinPrice(
 }
 ```
 
-## transferHbars
+## contractCallFunction
 
-Method to execute Hbar transfers from current account to receiver
+Call contract function. Directly or via BladeAPI using paymaster account (fee will be paid by Paymaster account), depending on your dApp configuration.
 
-`transferHbars (accountId: String, accountPrivateKey: String, receiverId: String, amount: Double, memo: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit)`
+`contractCallFunction (contractAddress: String, functionName: String, params: ContractFunctionParameters, gas: Int = 100000, usePaymaster: Boolean, completion: (TransactionReceiptData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `accountId` | `String` | sender account id |
-| `accountPrivateKey` | `String` | sender's private key to sign transfer transaction |
-| `receiverId` | `String` | receiver |
-| `amount` | `Double` | amount |
-| `memo` | `String` | memo (limited to 100 characters) |
+| `contractAddress` | `String` | - contract address (0.0.xxxxx or 0x123456789abcdef...) |
+| `functionName` | `String` | name of the contract function to call |
+| `params` | `ContractFunctionParameters` | function argument. Can be generated with |
+| `gas` | `Int` | gas limit for the transaction |
+| `usePaymaster` | `Boolean` | if true, fee will be paid by Paymaster account (note: msg.sender inside the contract will be Paymaster account) |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
 
 #### Returns
@@ -204,61 +324,64 @@ Method to execute Hbar transfers from current account to receiver
 #### Example
 
 ```kotlin
-val senderId = "0.0.10001"
-val senderKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
-val receiverId = "0.0.10002"
-val amount = 2.5
-Blade.transferHbars(
-    senderId,
-    senderKey,
-    receiverId,
-    amount,
-    "Some memo text"
+val contractAddress = "0.0.123456"
+val functionName = "set_message"
+val parameters = ContractFunctionParameters().addString("hello")
+val gas = 155000
+val usePaymaster = false
+Blade.contractCallFunction(
+    contractId,
+    functionName,
+    parameters,
+    gas,
+    usePaymaster
 ) { result, error ->
     println(result ?: error)
 }
 ```
 
-## transferTokens
+## contractCallQueryFunction
 
-Method to execute token transfers from current account to receiver
+Call query on contract function. Similar to {@link contractCallFunction} can be called directly or via BladeAPI using Paymaster account.
 
-`transferTokens (tokenId: String, accountId: String, accountPrivateKey: String, receiverId: String, amountOrSerial: Double, memo: String, usePaymaster: Boolean = true, completion: (TransactionReceiptData?, BladeJSError?) -> Unit)`
+`contractCallQueryFunction (contractAddress: String, functionName: String, params: ContractFunctionParameters, gas: Int = 100000, usePaymaster: Boolean, returnTypes: List<String>, completion: (ContractCallQueryRecordsData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `tokenId` | `String` | token id to send (0.0.xxxxx) |
-| `accountId` | `String` | sender account id (0.0.xxxxx) |
-| `accountPrivateKey` | `String` | sender's hex-encoded private key with DER-header (302e020100300506032b657004220420...). ECDSA or Ed25519 |
-| `receiverId` | `String` | receiver account id (0.0.xxxxx) |
-| `amountOrSerial` | `Double` | amount of fungible tokens to send (with token-decimals correction) on NFT serial number |
-| `memo` | `String` | transaction memo (limited to 100 characters) |
-| `usePaymaster` | `Boolean` | if true, Paymaster account will pay fee transaction. Only for single dApp configured fungible-token. In that case tokenId not used |
-| `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
+| `contractAddress` | `String` | contract address (0.0.xxxxx or 0x123456789abcdef...) |
+| `functionName` | `String` | name of the contract function to call |
+| `params` | `ContractFunctionParameters` | function argument. Can be generated with |
+| `gas` | `Int` | gas limit for the transaction |
+| `usePaymaster` | `Boolean` | if true, the fee will be paid by paymaster account (note: msg.sender inside the contract will be Paymaster account) |
+| `returnTypes` | `List<String>` | List of return types, e.g. listOf("string", "int32") |
+| `completion` | `(ContractCallQueryRecordsData?,BladeJSError?)->Unit` | callback function, with result of ContractQueryData or BladeJSError |
 
 #### Returns
 
-`TransactionReceiptData` - receipt
+`ContractCallQueryRecordsData` - contract query call result
 
 #### Example
 
 ```kotlin
-val tokenId = "0.0.1337"
-val senderId = "0.0.10001"
-val senderKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
-val receiverId = "0.0.10002"
-val amount = 2.5
-Blade.transferTokens(
-    tokenId,
-    senderId,
-    senderKey,
-    receiverId,
-    amount,
-    "Token transfer memo"
+val contractAddress = "0.0.123456"
+val functionName = "get_message"
+val parameters = ContractFunctionParameters()
+val gas = 55000
+val usePaymaster = false
+val returnTypes = listOf("string", "int32")
+Blade.contractCallQueryFunction(
+    contractAddress,
+    functionName,
+    parameters,
+    gas,
+    usePaymaster,
+    returnTypes
 ) { result, error ->
-    println(result ?: error)
+    lifecycleScope.launch {
+        println(result ?: error)
+    }
 }
 ```
 
@@ -266,14 +389,12 @@ Blade.transferTokens(
 
 Create scheduled transaction
 
-`createScheduleTransaction ( accountId: String, accountPrivateKey: String, type: ScheduleTransactionType, transfers: List<ScheduleTransactionTransfer>, usePaymaster: Boolean = false, completion: (CreateScheduleData?, BladeJSError?) -> Unit )`
+`createScheduleTransaction ( type: ScheduleTransactionType, transfers: List<ScheduleTransactionTransfer>, usePaymaster: Boolean = false, completion: (CreateScheduleData?, BladeJSError?) -> Unit )`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `accountId` | `String` | account id (0.0.xxxxx) |
-| `accountPrivateKey` | `String` | account key (hex encoded privateKey with DER-prefix) |
 | `type` | `ScheduleTransactionType` | schedule transaction type (currently only TRANSFER supported) |
 | `transfers` | `List<ScheduleTransactionTransfer>` | array of transfers to schedule (HBAR, FT, NFT) |
 | `usePaymaster` | `Boolean` | if true, Paymaster account will pay transaction fee (also dApp had to be configured for free schedules) |
@@ -286,14 +407,11 @@ Create scheduled transaction
 #### Example
 
 ```kotlin
-val receiverId = "0.0.10002"
-val receiverKey = "302d300706052b8104000a032200029dc73991b00002..."
 val senderId = "0.0.10001"
+val receiverId = "0.0.10002"
 val tokenId = "0.0.1337"
 var scheduleId = ""
 Blade.createScheduleTransaction(
-    accountId = receiverId,
-    accountPrivateKey = receiverKey,
     type = ScheduleTransactionType.TRANSFER,
     transfers = listOf(
         ScheduleTransactionTransferHbar(sender = senderId, receiver = receiverId, 10000000),
@@ -311,16 +429,14 @@ Blade.createScheduleTransaction(
 
 Method to sign scheduled transaction
 
-`signScheduleId ( scheduleId: String, accountId: String, accountPrivateKey: String, receiverAccountId: String = "", usePaymaster: Boolean = false, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
+`signScheduleId ( scheduleId: String, receiverAccountAddress: String = "", usePaymaster: Boolean = false, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
 | `scheduleId` | `String` | scheduled transaction id (0.0.xxxxx) |
-| `accountId` | `String` | account id (0.0.xxxxx) |
-| `accountPrivateKey` | `String` | account key (hex encoded privateKey with DER-prefix) |
-| `receiverAccountId` | `String` | account id of receiver for additional validation in case of dApp freeSchedule transactions configured |
+| `receiverAccountAddress` | `String` | account id of receiver for additional validation in case of dApp freeSchedule transactions configured |
 | `usePaymaster` | `Boolean` | if true, Paymaster account will pay transaction fee (also dApp had to be configured for free schedules) |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
 
@@ -331,30 +447,22 @@ Method to sign scheduled transaction
 #### Example
 
 ```kotlin
-val senderId = "0.0.10001"
-val senderKey = "302d300706052b8104000a032200029dc73991b00001..."
-val receiverId = "0.0.10002"
+val receiverAddress = "0.0.10002"
 var scheduleId = "0.0...." // result of createScheduleTransaction on receiver side
 Blade.signScheduleId(
     scheduleId = scheduleId,
-    accountId = senderId,
-    accountPrivateKey = senderKey,
-    receiverAccountId = receiverId,
+    receiverAccountAddress = receiverAddress,
     usePaymaster = true
 ) { result, bladeJSError ->
     println(result ?: bladeJSError)
 }
 ```
 
-## createHederaAccount
+## createAccount
 
-Create new Hedera account (ECDSA). Only for configured dApps. Depending on dApp config Blade create account, associate tokens, etc.
+Create new account (ECDSA by default). Depending on dApp config Blade will create an account, associate tokens, etc.
 
-* In case of not using pre-created accounts pool and network high load, this method can return transactionId and no accountId.
-
-* In that case account creation added to queue, and you should wait some time and call `getPendingAccount()` method.
-
-`createHederaAccount (privateKey: String = "", deviceId: String = "", completion: (CreatedAccountData?, BladeJSError?) -> Unit)`
+`createAccount (privateKey: String = "", deviceId: String = "", completion: (CreatedAccountData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
@@ -371,39 +479,16 @@ Create new Hedera account (ECDSA). Only for configured dApps. Depending on dApp 
 #### Example
 
 ```kotlin
-Blade.createHederaAccount() { result, error ->
+Blade.createAccount() { result, error ->
     println(result ?: error)
 }
 ```
 
-## getPendingAccount
+## deleteAccount
 
-Get account from queue (read more at `createAccount()`).
+Delete Hedera account.
 
-* If account already created, return account data.
-
-* If account not created yet, response will be same as in `createAccount()` method if account in queue.
-
-`getPendingAccount (transactionId: String, seedPhrase: String, completion: (CreatedAccountData?, BladeJSError?) -> Unit)`
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------| ----------- |
-| `transactionId` | `String` | can be received on createHederaAccount method, when busy network is busy, and account creation added to queue |
-| `seedPhrase` | `String` | returned from createHederaAccount method, required for updating keys and proper response |
-| `completion` | `(CreatedAccountData?,BladeJSError?)->Unit` | callback function, with result of CreatedAccountData or BladeJSError |
-
-#### Returns
-
-`CreatedAccountData` - new account data
-
-
-## deleteHederaAccount
-
-Delete Hedera account. This method requires account private key and operator private key. Operator is the one who paying fees
-
-`deleteHederaAccount (deleteAccountId: String, deletePrivateKey: String, transferAccountId: String, operatorAccountId: String, operatorPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit)`
+`deleteAccount (deleteAccountId: String, deletePrivateKey: String, transferAccountId: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
@@ -412,8 +497,6 @@ Delete Hedera account. This method requires account private key and operator pri
 | `deleteAccountId` | `String` | account id of account to delete (0.0.xxxxx) |
 | `deletePrivateKey` | `String` | account private key (DER encoded hex string) |
 | `transferAccountId` | `String` | The ID of the account to transfer the remaining funds to. |
-| `operatorAccountId` | `String` | operator account id (0.0.xxxxx). Used for fee |
-| `operatorPrivateKey` | `String` | operator's account private key (DER encoded hex string) |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
 
 #### Returns
@@ -426,14 +509,10 @@ Delete Hedera account. This method requires account private key and operator pri
 val deleteAccountId = "0.0.65468464"
 val deletePrivateKey = "3030020100300706052b8104000a04220420ebc..."
 val transferAccountId = "0.0.10001"
-val operatorAccountId = "0.0.10002"
-val operatorPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
-Blade.deleteHederaAccount(
+Blade.deleteAccount(
     deleteAccountId,
     deletePrivateKey,
     transferAccountId,
-    operatorAccountId,
-    operatorPrivateKey,
 ) { result, error ->
     println(result ?: error)
 }
@@ -470,7 +549,7 @@ Blade.getAccountInfo("0.0.10002") { accountInfoData, error ->
 
 ## getNodeList
 
-Get Node list and use it for choosing account stacking node
+Get Hedera node list available for stake
 
 `getNodeList (completion: (NodesData?, BladeJSError?) -> Unit)`
 
@@ -494,16 +573,14 @@ Blade.getNodeList { nodeListData, error ->
 
 ## stakeToNode
 
-Stake/unstake account
+Stake/unstake hedera account
 
-`stakeToNode (accountId: String, accountPrivateKey: String, nodeId: Int, completion: (TransactionReceiptData?, BladeJSError?) -> Unit)`
+`stakeToNode (nodeId: Int, completion: (TransactionReceiptData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `accountId` | `String` | Hedera account id (0.0.xxxxx) |
-| `accountPrivateKey` | `String` | account private key (DER encoded hex string) |
 | `nodeId` | `Int` | node id to stake to. If negative or null, account will be unstaked |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
 
@@ -514,37 +591,7 @@ Stake/unstake account
 #### Example
 
 ```kotlin
-Blade.stakeToNode("0.0.10002", "302d300706052b8104000a032200029dc73991b0d9cd...", 5) { result, error ->
-    println(result ?: error)
-}
-```
-
-## getKeysFromMnemonic
-
-Get private key and accountId from mnemonic. Supported standard and legacy key derivation.
-
-* If account not found, standard ECDSA key will be returned.
-
-* Keys returned with DER header. EvmAddress computed from Public key.
-
-`getKeysFromMnemonic (mnemonic: String, lookupNames: Boolean = false, completion: (PrivateKeyData?, BladeJSError?) -> Unit)`
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------| ----------- |
-| `mnemonic` | `String` | seed phrase (BIP39 mnemonic) |
-| `lookupNames` | `Boolean` | lookup for accounts (not used anymore, account search is mandatory) |
-| `completion` | `(PrivateKeyData?,BladeJSError?)->Unit` | callback function, with result of PrivateKeyData or BladeJSError |
-
-#### Returns
-
-`PrivateKeyData` - private key derived from mnemonic and account id
-
-#### Example
-
-```kotlin
-Blade.getKeysFromMnemonic("purity slab doctor swamp tackle rebuild summer bean craft toddler blouse switch") { result, error ->
+Blade.stakeToNode(5) { result, error ->
     println(result ?: error)
 }
 ```
@@ -582,14 +629,12 @@ Blade.searchAccounts("purity slab doctor swamp tackle rebuild summer bean craft 
 
 Bladelink drop to account
 
-`dropTokens (accountId: String, accountPrivateKey: String, secretNonce: String, completion: (TokenDropData?, BladeJSError?) -> Unit)`
+`dropTokens (secretNonce: String, completion: (TokenDropData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `accountId` | `String` | Hedera account id (0.0.xxxxx) |
-| `accountPrivateKey` | `String` | account private key (DER encoded hex string) |
 | `secretNonce` | `String` | configured for dApp. Should be kept in secret |
 | `completion` | `(TokenDropData?,BladeJSError?)->Unit` | callback function, with result of TokenDropData or BladeJSError |
 
@@ -600,30 +645,25 @@ Bladelink drop to account
 #### Example
 
 ```kotlin
-val accountId = "0.0.10002"
-val accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
-val secretNonce = "[ CENSORED ]"
-Blade.dropTokens(
-    accountId,
-    accountPrivateKey,
-    secretNonce,
-) { result, error ->
+val secretNonce = "[ REDACTED ]"
+Blade.dropTokens(secretNonce) { result, error ->
     println(result ?: error)
 }
 ```
 
 ## sign
 
-Sign base64-encoded message with private key. Returns hex-encoded signature.
+Sign encoded message with private key. Returns hex-encoded signature.
 
-`sign (messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit)`
+`sign (encodedMessage: String, encoding: SupportedEncoding, likeEthers: Boolean, completion: (SignMessageData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `messageString` | `String` | base64-encoded message to sign |
-| `privateKey` | `String` | hex-encoded private key with DER header |
+| `encodedMessage` | `String` | encoded message to sign |
+| `encoding` | `SupportedEncoding` | one of the supported encodings (hex/base64/utf8) |
+| `likeEthers` | `Boolean` | to get signature in ethers format. Works only for ECDSA keys. Ignored on chains other than Hedera |
 | `completion` | `(SignMessageData?,BladeJSError?)->Unit` | callback function, with result of SignMessageData or BladeJSError |
 
 #### Returns
@@ -633,32 +673,32 @@ Sign base64-encoded message with private key. Returns hex-encoded signature.
 #### Example
 
 ```kotlin
-import java.util.Base64
-// ...
-val originalString = "hello"
-val encodedString: String = Base64.getEncoder().encodeToString(originalString.toByteArray())
-val accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
+val encodedMessage = "hello"
+val encoding = SupportedEncoding.utf8
+val likeEthers = false
 Blade.sign(
-    encodedString,
-    accountPrivateKey
+    encodedMessage,
+    encoding,
+    likeEthers
 ) { result, error ->
     println(result ?: error)
 }
 ```
 
-## signVerify
+## verify
 
 Verify message signature with public key
 
-`signVerify (messageString: String, signature: String, publicKey: String, completion: (SignVerifyMessageData?, BladeJSError?) -> Unit)`
+`verify (encodedMessage: String, encoding: SupportedEncoding, signature: String, addressOrPublicKey: String, completion: (SignVerifyMessageData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `messageString` | `String` | base64-encoded message (same as provided to `sign()` method) |
+| `encodedMessage` | `String` | encoded message (same as provided to `sign()` method) |
+| `encoding` | `SupportedEncoding` | one of the supported encodings (hex/base64/utf8) |
 | `signature` | `String` | hex-encoded signature (result from `sign()` method) |
-| `publicKey` | `String` | hex-encoded public key with DER header |
+| `addressOrPublicKey` | `String` | EVM-address, publicKey, or Hedera address (0x11f8D856FF2aF6700CCda4999845B2ed4502d8fB, 0x0385a2fa81f8acbc47fcfbae4aeee6608c2d50ac2756ed88262d102f2a0a07f5b8, 0.0.1512, or empty for current account) |
 | `completion` | `(SignVerifyMessageData?,BladeJSError?)->Unit` | callback function, with result of SignVerifyMessageData or BladeJSError |
 
 #### Returns
@@ -668,149 +708,19 @@ Verify message signature with public key
 #### Example
 
 ```kotlin
-val originalString = "hello"
-val encodedString: String = Base64.getEncoder().encodeToString(originalString.toByteArray())
+val encodedMessage = "hello"
+val encoding = SupportedEncoding.utf8
 val signature = "27cb9d51434cf1e76d7ac515b19442c619f641e6fccddbf4a3756b14466becb6992dc1d2a82268018147141fc8d66ff9ade43b7f78c176d070a66372d655f942"
-val publicKey = "302d300706052b8104000a032200029dc73991b0d9cdbb59b2cd0a97a0eaff6de801726cb39804ea9461df6be2dd30"
-Blade.signVerify(
-    encodedString,
+val addressOrPublicKey = "302d300706052b8104000a032200029dc73991b0d9cdbb59b2cd0a97a0eaff6de801726cb39804ea9461df6be2dd30"
+Blade.verify(
+    encodedMessage,
+    encoding,
     signature,
-    publicKey
+    addressOrPublicKey
 ) { result, error ->
     lifecycleScope.launch {
         println(result ?: error)
     }
-}
-```
-
-## contractCallFunction
-
-Call contract function. Directly or via BladeAPI using paymaster account (fee will be paid by Paymaster account), depending on your dApp configuration.
-
-`contractCallFunction (contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, usePaymaster: Boolean, completion: (TransactionReceiptData?, BladeJSError?) -> Unit)`
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------| ----------- |
-| `contractId` | `String` | contract id (0.0.xxxxx) |
-| `functionName` | `String` | name of the contract function to call |
-| `params` | `ContractFunctionParameters` | function argument. Can be generated with |
-| `accountId` | `String` | operator account id (0.0.xxxxx) |
-| `accountPrivateKey` | `String` | operator's hex-encoded private key with DER-header, ECDSA or Ed25519 |
-| `gas` | `Int` | gas limit for the transaction |
-| `usePaymaster` | `Boolean` | if true, fee will be paid by Paymaster account (note: msg.sender inside the contract will be Paymaster account) |
-| `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
-
-#### Returns
-
-`TransactionReceiptData` - receipt
-
-#### Example
-
-```kotlin
-val contractId = "0.0.123456"
-val functionName = "set_message"
-val parameters = ContractFunctionParameters().addString("hello")
-val accountId = "0.0.10002"
-val accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
-val gas = 155000
-val usePaymaster = false
-Blade.contractCallFunction(
-    contractId,
-    functionName,
-    parameters,
-    accountId,
-    accountPrivateKey,
-    gas,
-    usePaymaster
-) { result, error ->
-    println(result ?: error)
-}
-```
-
-## contractCallQueryFunction
-
-Call query on contract function. Similar to {@link contractCallFunction} can be called directly or via BladeAPI using Paymaster account.
-
-`contractCallQueryFunction (contractId: String, functionName: String, params: ContractFunctionParameters, accountId: String, accountPrivateKey: String, gas: Int = 100000, usePaymaster: Boolean, returnTypes: List<String>, completion: (ContractQueryData?, BladeJSError?) -> Unit)`
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------| ----------- |
-| `contractId` | `String` | contract id (0.0.xxxxx) |
-| `functionName` | `String` | name of the contract function to call |
-| `params` | `ContractFunctionParameters` | function argument. Can be generated with |
-| `accountId` | `String` | operator account id (0.0.xxxxx) |
-| `accountPrivateKey` | `String` | operator's hex-encoded private key with DER-header, ECDSA or Ed25519 |
-| `gas` | `Int` | gas limit for the transaction |
-| `usePaymaster` | `Boolean` | if true, the fee will be paid by paymaster account (note: msg.sender inside the contract will be Paymaster account) |
-| `returnTypes` | `List<String>` | List of return types, e.g. listOf("string", "int32") |
-| `completion` | `(ContractQueryData?,BladeJSError?)->Unit` | callback function, with result of ContractQueryData or BladeJSError |
-
-#### Returns
-
-`ContractQueryData` - contract query call result
-
-#### Example
-
-```kotlin
-val contractId = "0.0.123456"
-val functionName = "get_message"
-val parameters = ContractFunctionParameters()
-val accountId = "0.0.10002"
-val accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
-val gas = 55000
-val usePaymaster = false
-val returnTypes = listOf("string", "int32")
-Blade.contractCallQueryFunction(
-    contractId,
-    functionName,
-    parameters,
-    accountId,
-    accountPrivateKey,
-    gas,
-    usePaymaster,
-    returnTypes
-) { result, error ->
-    lifecycleScope.launch {
-        println(result ?: error)
-    }
-}
-```
-
-## ethersSign
-
-Sign base64-encoded message with private key using ethers lib. Returns hex-encoded signature.
-
-`ethersSign (messageString: String, privateKey: String, completion: (SignMessageData?, BladeJSError?) -> Unit)`
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------| ----------- |
-| `messageString` | `String` | base64-encoded message to sign |
-| `privateKey` | `String` | hex-encoded private key with DER header |
-| `completion` | `(SignMessageData?,BladeJSError?)->Unit` | callback function, with result of SignMessageData or BladeJSError |
-
-#### Returns
-
-`SignMessageData` - signature
-
-#### Example
-
-```kotlin
-import java.util.Base64
-// ...
-val originalString = "hello"
-val encodedString: String = Base64.getEncoder().encodeToString(originalString.toByteArray())
-val accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
-Blade.ethersSign(
-    encodedString,
-    accountPrivateKey
-) { result, error ->
-    println(result ?: error)
 }
 ```
 
@@ -845,14 +755,13 @@ Blade.splitSignature(
 
 Get v-r-s signature of contract function params
 
-`getParamsSignature (params: ContractFunctionParameters, accountPrivateKey: String, completion: (SplitSignatureData?, BladeJSError?) -> Unit)`
+`getParamsSignature (params: ContractFunctionParameters, completion: (SplitSignatureData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
 | `params` | `ContractFunctionParameters` | data to sign. (instance of ContractFunctionParameters) |
-| `accountPrivateKey` | `String` | signer private key (hex-encoded with DER header) |
 | `completion` | `(SplitSignatureData?,BladeJSError?)->Unit` | callback function, with result of SplitSignatureData or BladeJSError |
 
 #### Returns
@@ -863,10 +772,8 @@ Get v-r-s signature of contract function params
 
 ```kotlin
 val parameters = ContractFunctionParameters().addString("hello")
-val accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
 Blade.getParamsSignature(
     parameters,
-    accountPrivateKey
 ) { result, error ->
     println(result ?: error)
 }
@@ -882,13 +789,13 @@ Get transactions history for account. Can be filtered by transaction type.
 
 * If transaction type is CRYPTOTRANSFERTOKEN records will additionally contain plainData field with decoded data.
 
-`getTransactions (accountId: String, transactionType: String, nextPage: String = "", transactionsLimit: Int = 10, completion: (TransactionsHistoryData?, BladeJSError?) -> Unit)`
+`getTransactions (accountAddress: String, transactionType: String, nextPage: String = "", transactionsLimit: Int = 10, completion: (TransactionsHistoryData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `accountId` | `String` | account id to get transactions for (0.0.xxxxx) |
+| `accountAddress` | `String` | account id to get transactions for (0.0.xxxxx) |
 | `transactionType` | `String` | one of enum MirrorNodeTransactionType or "CRYPTOTRANSFERTOKEN" |
 | `nextPage` | `String` | link to next page of transactions from previous request |
 | `transactionsLimit` | `Int` | number of transactions to return. Speed of request depends on this value if transactionType is set. |
@@ -902,41 +809,10 @@ Get transactions history for account. Can be filtered by transaction type.
 
 ```kotlin
 Blade.getTransactions(
-    accountId = "0.0.10002",
+    accountAddress = "0.0.10002",
     transactionType = "",
     nextPage = "",
     transactionsLimit = 15
-) { result, error ->
-    println(result ?: error)
-}
-```
-
-## getC14url
-
-Get configured url for C14 integration (iframe or popup)
-
-`getC14url (asset: String, account: String, amount: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit)`
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------| ----------- |
-| `asset` | `String` | USDC, HBAR, KARATE or C14 asset uuid |
-| `account` | `String` | receiver account id (0.0.xxxxx) |
-| `amount` | `String` | preset amount. May be overwritten if out of range (min/max) |
-| `completion` | `(IntegrationUrlData?,BladeJSError?)->Unit` | callback function, with result of IntegrationUrlData or BladeJSError |
-
-#### Returns
-
-`IntegrationUrlData` - url to open
-
-#### Example
-
-```kotlin
-Blade.getC14url(
-    asset = "HBAR",
-    account = "0.0.10002",
-    amount = "120"
 ) { result, error ->
     println(result ?: error)
 }
@@ -960,7 +836,7 @@ Get quotes from different services for buy, sell or swap
 
 #### Returns
 
-`SwapQuotesData` - quotes from different provider
+`SwapQuotesData` - quotes from different providers
 
 #### Example
 
@@ -979,14 +855,14 @@ Blade.exchangeGetQuotes(
 
 Get configured url to buy or sell tokens or fiat
 
-`getTradeUrl (strategy: CryptoFlowServiceStrategy, accountId: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, redirectUrl: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit)`
+`getTradeUrl (strategy: CryptoFlowServiceStrategy, accountAddress: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, redirectUrl: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
 | `strategy` | `CryptoFlowServiceStrategy` | Buy / Sell |
-| `accountId` | `String` | account id |
+| `accountAddress` | `String` | account id |
 | `sourceCode` | `String` | name (HBAR, KARATE, USDC, other token code) |
 | `sourceAmount` | `Double` | amount to buy/sell |
 | `targetCode` | `String` | name (HBAR, KARATE, USDC, other token code) |
@@ -1004,7 +880,7 @@ Get configured url to buy or sell tokens or fiat
 ```kotlin
 Blade.getTradeUrl(
     strategy = CryptoFlowServiceStrategy.BUY,
-    accountId = "0.0.10002",
+    accountAddress = "0.0.10002",
     sourceCode = "EUR",
     sourceAmount = 50.0,
     targetCode = "HBAR",
@@ -1019,14 +895,12 @@ Blade.getTradeUrl(
 
 Swap tokens
 
-`swapTokens (accountId: String, accountPrivateKey: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (ResultData?, BladeJSError?) -> Unit)`
+`swapTokens (sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (ResultData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `accountId` | `String` | account id |
-| `accountPrivateKey` | `String` | account private key |
 | `sourceCode` | `String` | name (HBAR, KARATE, other token code) |
 | `sourceAmount` | `Double` | amount to swap |
 | `targetCode` | `String` | name (HBAR, KARATE, other token code) |
@@ -1041,13 +915,9 @@ Swap tokens
 #### Example
 
 ```kotlin
-val accountId = "0.0.10001"
-val accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
 val sourceCode = "USDC"
 val targetCode = "KARATE"
 Blade.swapTokens(
-    accountId,
-    accountPrivateKey,
     sourceCode,
     sourceAmount = 123.4,
     targetCode,
@@ -1062,14 +932,12 @@ Blade.swapTokens(
 
 Create token (NFT or Fungible Token)
 
-`createToken ( treasuryAccountId: String, supplyPrivateKey: String, tokenName: String, tokenSymbol: String, isNft: Boolean, keys: List<KeyRecord>, decimals: Int, initialSupply: Int, maxSupply: Int, completion: (CreateTokenData?, BladeJSError?) -> Unit )`
+`createToken ( tokenName: String, tokenSymbol: String, isNft: Boolean, keys: List<KeyRecord>, decimals: Int, initialSupply: Int, maxSupply: Int, completion: (CreateTokenData?, BladeJSError?) -> Unit )`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `treasuryAccountId` | `String` | treasury account id |
-| `supplyPrivateKey` | `String` | supply account private key |
 | `tokenName` | `String` | token name (string up to 100 bytes) |
 | `tokenSymbol` | `String` | token symbol (string up to 100 bytes) |
 | `isNft` | `Boolean` | set token type NFT |
@@ -1090,8 +958,6 @@ val keys = listOf(
     KeyRecord(Config.adminPrivateKey, KeyType.admin)
 )
 Blade.createToken(
-        treasuryAccountId = Config.accountId,
-        supplyPrivateKey = Config.privateKey,
         tokenName = "Blade Demo Token",
         tokenSymbol = "GD",
         isNft = true,
@@ -1106,17 +972,15 @@ Blade.createToken(
 
 ## associateToken
 
-Associate token to account. Association fee will be covered by PayMaster, if tokenId configured in dApp
+Associate token to hedera account. Association fee will be covered by PayMaster, if tokenId configured in dApp
 
-`associateToken ( tokenId: String, accountId: String, accountPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
+`associateToken ( tokenIdOrCampaign: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `tokenId` | `String` | token id to associate. Empty to associate all tokens configured in dApp |
-| `accountId` | `String` | account id to associate token |
-| `accountPrivateKey` | `String` | account private key |
+| `tokenIdOrCampaign` | `String` | token id to associate. Empty to associate all tokens configured in dApp.  Campaign name to associate on demand |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
 
 #### Returns
@@ -1127,9 +991,7 @@ Associate token to account. Association fee will be covered by PayMaster, if tok
 
 ```kotlin
 Blade.associateToken(
-    tokenId = "0.0.1337",
-    accountId = "0.0.10001",
-    accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
+    tokenIdOrCampaign = "0.0.1337",
 ) { result, error ->
     println(result ?: error)
 }
@@ -1139,15 +1001,13 @@ Blade.associateToken(
 
 Mint one NFT
 
-`nftMint ( tokenId: String, supplyAccountId: String, supplyPrivateKey: String, file: String, metadata: Map<String, Any>, storageConfig: NFTStorageConfig, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
+`nftMint ( tokenAddress: String, file: String, metadata: Map<String, Any>, storageConfig: NFTStorageConfig, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `tokenId` | `String` | token id to mint NFT |
-| `supplyAccountId` | `String` | token supply account id |
-| `supplyPrivateKey` | `String` | token supply private key |
+| `tokenAddress` | `String` | token id to mint NFT |
 | `file` | `String` | image to mint (base64 DataUrl image, eg.: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAA...) |
 | `metadata` | `Map<String,Any>` | NFT metadata |
 | `storageConfig` | `NFTStorageConfig` | IPFS provider config |
@@ -1160,9 +1020,7 @@ Mint one NFT
 #### Example
 
 ```kotlin
-val tokenId = "0.0.13377"
-val supplyAccountId = "0.0.10001"
-val supplyPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
+val tokenAddress = "0.0.13377"
 val base64Image = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAARUlEQVR42u3PMREAAAgEIO1fzU5vBlcPGtCVTD3QIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIXCyqyi6fIALs1AAAAAElFTkSuQmCC"
 val metaData = mapOf<String, Any>(
     "name" to "NFTitle",
@@ -1176,13 +1034,37 @@ val storageConfig = NFTStorageConfig(
     apiKey = "eyJhbGcsfgrgsrgInR5cCI6IkpXVCJ9.eyJzd5235326ZXRocjoweDfsdfsdfFM0ZkZFOEJhNjdCNjc1NDk1Q2NEREFiYjk0NTE4Njdsfc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6sdfNDQ2NDUxODQ2MiwibmFt4I6IkJsYWRlUcvxcRLLXRlc3RrdffifQ.t1wCiEuiTvcYOwssdZgiYaug4aF8ZrvMBdkTASojWGU"
 )
 Blade.nftMint(
-    tokenId,
-    supplyAccountId,
-    supplyPrivateKey,
+    tokenAddress,
     file = base64Image,
     metaData,
     storageConfig,
 ) { result, error ->
+    println(result ?: error)
+}
+```
+
+## getTokenInfo
+
+Get FT or NFT token info
+
+`getTokenInfo ( tokenAddress: String, serial: String, completion: (TokenInfoData?, BladeJSError?) -> Unit )`
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------| ----------- |
+| `tokenAddress` | `String` | token address (0.0.xxxxx or 0x123456789abcdef...) |
+| `serial` | `String` | serial number in case of NFT token |
+| `completion` | `(TokenInfoData?,BladeJSError?)->Unit` | callback function, with result of TokenInfoData or BladeJSError |
+
+#### Returns
+
+{TokenInfoData}
+
+#### Example
+
+```kotlin
+Blade.getTokenInfo("0.0.1234", "3") { result, error ->
     println(result ?: error)
 }
 ```

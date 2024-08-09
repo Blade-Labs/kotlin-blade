@@ -23,57 +23,186 @@ data class BladeJSError(
 )   
 ```
 
+# ENUMs
 
-The ContractFunctionParameter data class represents a parameter of a contract function. It has two properties:
 
-* type: A String representing the data type of the parameter.
-* value: A List of Strings representing the value(s) of the parameter.
+### AccountProvider
 
 ```kotlin
-data class ContractFunctionParameter (
-    var type: String,
-    var value: List<String>
-)
+enum class AccountProvider(val value: String) {
+    PrivateKey("PrivateKey"),
+    Magic("Magic");
+
+    companion object {
+        fun fromKey(key: String): AccountProvider {
+            return AccountProvider.values().find { it.name == key }
+                ?: throw IllegalArgumentException("Unknown AccountProvider key: $key")
+        }
+    }
+}
 ```
 
 
-```kotlin
-data class Response (
-    override var completionKey: String,
-    override var data: Any,
-    var error: BladeJSError?,
-) : Result<Any>
-```
+### BladeEnv
 
 ```kotlin
-data class InfoData(
-    var apiKey: String,
-    var dAppCode: String,
-    var network: String,
-    var visitorId: String,
-    var sdkEnvironment: String,
-    var sdkVersion: String,
-    var nonce: Int
-)
+enum class BladeEnv(val value: String) {
+    Prod("Prod"),
+    CI("CI");
+
+    companion object {
+        fun fromKey(key: String): BladeEnv {
+            return BladeEnv.values().find { it.name == key }
+                ?: throw IllegalArgumentException("Unknown BladeEnv key: $key")
+        }
+    }
+}
 ```
 
-```kotlin
-data class BalanceData(
-    var hbars: Double,
-    var tokens: List<BalanceDataToken>
-)
-```
+
+### CryptoFlowServiceStrategy
 
 ```kotlin
-data class BalanceDataToken(
-    var balance: Double,
-    var tokenId: String
-)
+enum class CryptoFlowServiceStrategy(val value: String) {
+    BUY("Buy"),
+    SELL("Sell"),
+    SWAP("Swap");
+
+    companion object {
+        fun fromValue(value: String): CryptoFlowServiceStrategy? {
+            return values().find { it.value == value }
+        }
+    }
+}
 ```
+
+
+### CryptoKeyType
+
+```kotlin
+enum class CryptoKeyType(val value: String) {
+    ECDSA_SECP256K1("ECDSA_SECP256K1"),
+    ED25519("ED25519");
+
+    companion object {
+        fun fromValue(value: String): CryptoKeyType? {
+            return CryptoKeyType.values().find { it.value == value }
+        }
+    }
+}
+```
+
+
+### KeyType
+
+```kotlin
+enum class KeyType(val value: String) {
+    admin("admin"),
+    kyc("kyc"),
+    freeze("freeze"),
+    wipe("wipe"),
+    pause("pause"),
+    feeSchedule("feeSchedule");
+
+    companion object {
+        fun fromValue(value: String): KeyType? {
+            return KeyType.values().find { it.value == value }
+        }
+    }
+}
+```
+
+
+### KnownChainIds
+
+```kotlin
+enum class KnownChainIds(val value: String) {
+    @SerializedName("1")
+    ETHEREUM_MAINNET("1"),
+
+    @SerializedName("11155111")
+    ETHEREUM_SEPOLIA("11155111"),
+
+    @SerializedName("295")
+    HEDERA_MAINNET("295"),
+
+    @SerializedName("296")
+    HEDERA_TESTNET("296");
+
+    companion object {
+        fun fromString(value: String): KnownChainIds {
+            return values().find { it.value == value }
+                ?: throw IllegalArgumentException("Unknown chain ID: $value")
+        }
+
+        fun fromKey(key: String): KnownChainIds {
+            return values().find { it.name == key }
+                ?: throw IllegalArgumentException("Unknown KnownChainIds key: $key")
+        }
+    }
+}
+```
+
+
+### NFTStorageProvider
+
+```kotlin
+enum class NFTStorageProvider(val value: String) {
+    nftStorage("nftStorage");
+
+    companion object {
+        fun fromValue(value: String): NFTStorageProvider? {
+            return NFTStorageProvider.values().find { it.value == value }
+        }
+    }
+}
+```
+
+
+### ScheduleTransactionType
+
+```kotlin
+enum class ScheduleTransactionType(val value: String) {
+    TRANSFER("TRANSFER");
+    // SUBMIT_MESSAGE("SUBMIT_MESSAGE"),
+    // APPROVE_ALLOWANCE("APPROVE_ALLOWANCE"),
+    // TOKEN_MINT("TOKEN_MINT"),
+    // TOKEN_BURN("TOKEN_BURN");
+}
+```
+
+
+### ScheduleTransferType
+
+```kotlin
+enum class ScheduleTransferType(val value: String) {
+    HBAR("HBAR"),
+    FT("FT"),
+    NFT("NFT")
+}
+```
+
+
+### SupportedEncoding
+
+```kotlin
+enum class SupportedEncoding(val value: String) {
+    base64("base64"),
+    hex("hex"),
+    utf8("utf8")
+}
+```
+
+
+
+# Data types
+
+
+### AccountInfoData
 
 ```kotlin
 data class AccountInfoData(
-    var accountId: String,
+    var accountAddress: String,
     var evmAddress: String,
     var calculatedEvmAddress: String,
     var publicKey: String,
@@ -81,89 +210,27 @@ data class AccountInfoData(
 )
 ```
 
-```kotlin
-data class StakingInfo(
-    val pendingReward: Long,
-    val stakedNodeId: Int?,
-    val stakePeriodStart: String?
-)
-```
+
+### AccountInfoResponse
 
 ```kotlin
-data class NodesResponse(
+data class AccountInfoResponse(
     override var completionKey: String,
-    override var data: NodesData
-): Result<NodesData>
+    override var data: AccountInfoData
+): Result<AccountInfoData>
 ```
 
-```kotlin
-data class NodesData(
-    var nodes: List<NodeInfo>,
-)
 
-data class NodeInfo(
-    var description: String,
-    var max_stake: Long,
-    var min_stake: Long,
-    var node_id: Int,
-    var node_account_id: String,
-    var stake: Long,
-    var stake_not_rewarded: Long,
-    var stake_rewarded: Long,
-)
-```
-
-```kotlin
-data class CreatedAccountData(
-    var seedPhrase: String,
-    var publicKey: String,
-    var privateKey: String,
-    var accountId: String?,
-    var evmAddress: String,
-    var transactionId: String?,
-    var status: String,
-    var queueNumber: Int?
-)
-```
-
-```kotlin
-data class TransactionReceiptData(
-    var status: String,
-    var contractId: String?,
-    var topicSequenceNumber: String?,
-    var totalSupply: String?,
-    var serials: List<String>?
-)
-```
-
-```kotlin
-data class ContractQueryData(
-    var gasUsed: Int,
-    var values: List<ContractQueryRecord>
-)
-```
-
-```kotlin
-data class ContractQueryRecord(
-    var type: String,
-    var value: String
-)
-```
-
-```kotlin
-data class PrivateKeyData(
-    var privateKey: String,
-    var publicKey: String,
-    var accounts: List<String>,
-    var evmAddress: String
-)
-```
+### AccountPrivateData
 
 ```kotlin
 data class AccountPrivateData(
     var accounts: List<AccountPrivateRecord>
 )
 ```
+
+
+### AccountPrivateRecord
 
 ```kotlin
 data class AccountPrivateRecord(
@@ -176,106 +243,284 @@ data class AccountPrivateRecord(
 )
 ```
 
+
+### AccountPrivateResponse
+
 ```kotlin
-data class SignMessageData(
-    var signedMessage: String
+data class AccountPrivateResponse(
+    override var completionKey: String,
+    override var data: AccountPrivateData
+): Result<AccountPrivateData>
+```
+
+
+### BalanceData
+
+```kotlin
+data class BalanceData(
+    var balance: String,
+    var rawBalance: String,
+    var decimals: Int,
+    var tokens: List<TokenBalanceData>
 )
 ```
 
-```kotlin
-data class SignVerifyMessageData(
-    var valid: Boolean
-)
-```
+
+### BalanceResponse
 
 ```kotlin
-data class SplitSignatureData(
-    var v: Int,
-    var r: String,
-    var s: String,
-)
+data class BalanceResponse(
+    override var completionKey: String,
+    override var data: BalanceData
+) : Result<BalanceData>
 ```
 
-```kotlin
-data class TransactionsHistoryData(
-    var nextPage: String?,
-    var transactions: List<TransactionHistoryDetail>
-)
-```
+
+### BladeJSError
 
 ```kotlin
-data class TransactionHistoryDetail(
-    var fee: Double,
-    var memo: String,
-    var nftTransfers: List<TransactionHistoryNftTransfer>?,
-    var time: String,
-    var transactionId: String,
-    var transfers: List<TransactionHistoryTransfer>,
-    var type: String,
-    var plainData: TransactionHistoryPlainData?,
-    var consensusTimestamp: String
-)
-```
-
-```kotlin
-data class TransactionHistoryPlainData(
-    var type: String,
-    var token_id: String,
-    var amount: Double,
-    var senders: List<String>,
-    var receivers: List<String>
-)
-```
-
-```kotlin
-data class TransactionHistoryTransfer(
-    var account: String,
-    var amount: Double,
-    var is_approval: Boolean
-)
-```
-
-```kotlin
-data class TransactionHistoryNftTransfer(
-    var is_approval: Boolean,
-    var receiver_account_id: String,
-    var sender_account_id: String,
-    var serial_number: Int,
-    var token_id: String
-)
-```
-
-```kotlin
-data class IntegrationUrlData(
-    var url: String?,
-)
-```
-
-```kotlin
-data class SwapQuotesData(
-    var quotes: List<ICryptoFlowQuote>
-)
-```
-
-```kotlin
-data class ICryptoFlowQuote(
-    var service: ICryptoFlowQuoteService,
-    var source: IAssetQuote,
-    var target: IAssetQuote,
-    var rate: Double?,
-    var widgetUrl: String?,
-    var paymentMethods: List<String>?
-)
-```
-
-```kotlin
-data class ICryptoFlowQuoteService(
-    var id: String,
+data class BladeJSError(
     var name: String,
-    var logo: String,
-    var description: String?
+    var reason: String
+) : Throwable()
+```
+
+
+### CoinData
+
+```kotlin
+data class CoinData(
+    var id: String,
+    var symbol: String,
+    var name: String,
+    var web_slug: String,
+    var description: CoinDataDescription,
+    var image: CoinDataImage,
+    var market_data: CoinDataMarket,
+    var platforms: List<CoinGeckoPlatform>
 )
 ```
+
+
+### CoinDataDescription
+
+```kotlin
+data class CoinDataDescription(
+    val en: String
+)
+```
+
+
+### CoinDataImage
+
+```kotlin
+data class CoinDataImage(
+    val thumb: String,
+    val small: String,
+    val large: String
+)
+```
+
+
+### CoinDataMarket
+
+```kotlin
+data class CoinDataMarket(
+    val current_price: Map<String, Double>
+)
+```
+
+
+### CoinGeckoPlatform
+
+```kotlin
+data class CoinGeckoPlatform (
+    var name: String,
+    var address: String
+)
+```
+
+
+### CoinInfoData
+
+```kotlin
+data class CoinInfoData(
+    var coin: CoinData,
+    var priceUsd: Double,
+    var price: Double?,
+    var currency: String
+)
+```
+
+
+### CoinInfoResponse
+
+```kotlin
+data class CoinInfoResponse(
+    override var completionKey: String,
+    override var data: CoinInfoData
+) : Result<CoinInfoData>
+```
+
+
+### CoinItem
+
+```kotlin
+data class CoinItem (
+    var id: String,
+    var symbol: String,
+    var name: String,
+    var platforms: List<CoinGeckoPlatform>
+)
+```
+
+
+### CoinListData
+
+```kotlin
+data class CoinListData(
+    var coins: List<CoinItem>
+)
+```
+
+
+### CoinListResponse
+
+```kotlin
+data class CoinListResponse(
+    override var completionKey: String,
+    override var data: CoinListData
+) : Result<CoinListData>
+```
+
+
+### ContractCallQueryRecord
+
+```kotlin
+data class ContractCallQueryRecord(
+    var type: String,
+    var value: JsonElement // Use JsonElement to represent any type
+) {
+    val actualValue: Any
+        get() = when {
+            value.isJsonPrimitive -> {
+                val primitive = value.asJsonPrimitive
+                when {
+                    primitive.isBoolean -> primitive.asBoolean
+                    primitive.isNumber -> primitive.asNumber
+                    primitive.isString -> primitive.asString
+                    else -> throw IllegalStateException("Unknown primitive type")
+                }
+            }
+            else -> throw IllegalStateException("Unknown value type")
+        }
+}
+```
+
+
+### ContractCallQueryRecordsData
+
+```kotlin
+data class ContractCallQueryRecordsData(
+    var gasUsed: Int,
+    var values: List<ContractCallQueryRecord>
+)
+```
+
+
+### ContractCallQueryRecordsResponse
+
+```kotlin
+data class ContractCallQueryRecordsResponse(
+    override var completionKey: String,
+    override var data: ContractCallQueryRecordsData
+): Result<ContractCallQueryRecordsData>
+```
+
+
+### ContractFunctionParameter
+
+```kotlin
+data class ContractFunctionParameter (
+    var type: String,
+    var value: List<String>
+)
+```
+
+
+### CreatedAccountData
+
+```kotlin
+data class CreatedAccountData(
+    var seedPhrase: String,
+    var publicKey: String,
+    var privateKey: String,
+    var accountAddress: String?,
+    var evmAddress: String,
+    var status: String,
+)
+```
+
+
+### CreatedAccountResponse
+
+```kotlin
+data class CreatedAccountResponse(
+    override var completionKey: String,
+    override var data: CreatedAccountData
+): Result<CreatedAccountData>
+```
+
+
+### CreateScheduleData
+
+```kotlin
+data class CreateScheduleData(
+    var scheduleId: String
+)
+```
+
+
+### CreateScheduleResponse
+
+```kotlin
+data class CreateScheduleResponse(
+    override var completionKey: String,
+    override var data: CreateScheduleData
+) : Result<CreateScheduleData>
+```
+
+
+### CreateTokenData
+
+```kotlin
+data class CreateTokenData(
+    var tokenId: String
+)
+```
+
+
+### CreateTokenResponse
+
+```kotlin
+data class CreateTokenResponse(
+    override var completionKey: String,
+    override var data: CreateTokenData
+) : Result<CreateTokenData>
+```
+
+
+### HederaKey
+
+```kotlin
+data class HederaKey(
+    val _type: CryptoKeyType,
+    val key: String,
+)
+```
+
+
+### IAssetQuote
 
 ```kotlin
 data class IAssetQuote(
@@ -284,6 +529,9 @@ data class IAssetQuote(
     var totalFee: Double?,
 )
 ```
+
+
+### ICryptoFlowAsset
 
 ```kotlin
 data class ICryptoFlowAsset(
@@ -303,101 +551,80 @@ data class ICryptoFlowAsset(
 )
 ```
 
+
+### ICryptoFlowQuote
+
 ```kotlin
-data class ResultData(
-    var success: Boolean
+data class ICryptoFlowQuote(
+    var service: ICryptoFlowQuoteService,
+    var source: IAssetQuote,
+    var target: IAssetQuote,
+    var rate: Double?,
+    var widgetUrl: String?,
+    var paymentMethods: List<String>?
 )
 ```
 
-```kotlin
-data class CreateTokenData(
-    var tokenId: String
-)
-```
+
+### ICryptoFlowQuoteService
 
 ```kotlin
-data class RemoteConfig(
-    var fpApiKey: String
-)
-```
-
-```kotlin
-data class CoinListResponse(
-    override var completionKey: String,
-    override var data: CoinListData
-) : Result<CoinListData>
-```
-
-```kotlin
-data class CoinListData(
-    var coins: List<CoinItem>
-)
-```
-
-```kotlin
-data class CoinItem (
+data class ICryptoFlowQuoteService(
     var id: String,
-    var symbol: String,
     var name: String,
-    var platforms: List<CoinGeckoPlatform>
+    var logo: String,
+    var description: String?
 )
 ```
 
+
+### InfoData
+
 ```kotlin
-data class CoinGeckoPlatform (
-    var name: String,
-    var address: String
+data class InfoData(
+    var apiKey: String,
+    var dAppCode: String,
+    var chainId: KnownChainIds,
+    var isTestnet: Boolean,
+    var visitorId: String,
+    var sdkEnvironment: BladeEnv,
+    var sdkVersion: String,
+    var nonce: Int,
+    var user: UserInfoData
 )
 ```
 
+
+### InfoResponse
+
 ```kotlin
-data class CoinInfoResponse(
+data class InfoResponse(
     override var completionKey: String,
-    override var data: CoinInfoData
-) : Result<CoinInfoData>
+    override var data: InfoData
+): Result<InfoData>
 ```
 
+
+### IntegrationUrlData
+
 ```kotlin
-data class CoinInfoData(
-    var coin: CoinData,
-    var priceUsd: Double,
-    var price: Double?,
-    var currency: String
+data class IntegrationUrlData(
+    var url: String?,
 )
 ```
 
-```kotlin
-data class CoinData(
-    var id: String,
-    var symbol: String,
-    var name: String,
-    var web_slug: String,
-    var description: CoinDataDescription,
-    var image: CoinDataImage,
-    var market_data: CoinDataMarket,
-    var platforms: List<CoinGeckoPlatform>
-)
-```
+
+### IntegrationUrlResponse
 
 ```kotlin
-data class CoinDataDescription(
-    val en: String
-)
+data class IntegrationUrlResponse(
+    override var completionKey: String,
+    override var data: IntegrationUrlData
+): Result<IntegrationUrlData>
 ```
 
-```kotlin
-data class CoinDataImage(
-    val thumb: String,
-    val small: String,
-    val large: String
-)
-```
 
-```kotlin
-data class CoinDataMarket(
-    val currentPrice: Map<String, Double>
-)
-```
+### KeyRecord
 
 ```kotlin
 data class KeyRecord(
@@ -406,12 +633,307 @@ data class KeyRecord(
 )
 ```
 
+
+### NftInfo
+
+```kotlin
+data class NftInfo(
+    val account_id: String,
+    val token_id: String,
+    val delegating_spender: String?,
+    val spender_id: String,
+    val created_timestamp: String,
+    val deleted: Boolean,
+    val metadata: String,
+    val modified_timestamp: String,
+    val serial_number: Int,
+)
+```
+
+
+### NftMetadata
+
+```kotlin
+data class NftMetadata(
+    val name: String,
+    val type: String,
+    val creator: String,
+    val author: String,
+    val properties: Map<String, Any?>,
+    val image: String
+)
+```
+
+
+### NFTStorageConfig
+
 ```kotlin
 data class NFTStorageConfig(
     val provider: NFTStorageProvider,
     val apiKey: String
 )
 ```
+
+
+### NodeInfo
+
+```kotlin
+data class NodeInfo(
+    var description: String,
+    var max_stake: Long,
+    var min_stake: Long,
+    var node_id: Int,
+    var node_account_id: String,
+    var stake: Long,
+    var stake_not_rewarded: Long,
+    var stake_rewarded: Long,
+)
+```
+
+
+### NodesData
+
+```kotlin
+data class NodesData(
+    var nodes: List<NodeInfo>,
+)
+```
+
+
+### NodesResponse
+
+```kotlin
+data class NodesResponse(
+    override var completionKey: String,
+    override var data: NodesData
+): Result<NodesData>
+```
+
+
+### PrivateKeyData
+
+```kotlin
+data class PrivateKeyData(
+    var privateKey: String,
+    var publicKey: String,
+    var accounts: List<String>,
+    var evmAddress: String
+)
+```
+
+
+### PrivateKeyResponse
+
+```kotlin
+data class PrivateKeyResponse(
+    override var completionKey: String,
+    override var data: PrivateKeyData
+): Result<PrivateKeyData>
+```
+
+
+### RemoteConfig
+
+```kotlin
+data class RemoteConfig(
+    var fpApiKey: String
+)
+```
+
+
+### Response
+
+```kotlin
+data class Response (
+    override var completionKey: String,
+    override var data: Any,
+    var error: BladeJSError?,
+) : Result<Any>
+```
+
+
+### Result
+
+```kotlin
+interface Result<T>{
+    var completionKey: String
+    var data: T
+}
+```
+
+
+### ResultData
+
+```kotlin
+data class ResultData(
+    var success: Boolean
+)
+```
+
+
+### ResultResponse
+
+```kotlin
+data class ResultResponse(
+    override var completionKey: String,
+    override var data: ResultData
+): Result<ResultData>
+```
+
+
+### ScheduleTransactionTransfer
+
+```kotlin
+abstract class ScheduleTransactionTransfer(
+    var type: ScheduleTransferType,
+    sender: String,
+    receiver: String,
+    value: Int,
+    tokenId: String = "",
+    serial: Int
+)
+```
+
+
+### ScheduleTransactionTransferHbar
+
+```kotlin
+data class ScheduleTransactionTransferHbar(
+    var sender: String,
+    var receiver: String,
+    var value: Int,
+) : ScheduleTransactionTransfer(ScheduleTransferType.HBAR, sender, receiver, value, "", 0)
+```
+
+
+### ScheduleTransactionTransferNFT
+
+```kotlin
+data class ScheduleTransactionTransferNFT(
+    var sender: String,
+    var receiver: String,
+    var tokenId: String,
+    var serial: Int
+) : ScheduleTransactionTransfer(ScheduleTransferType.NFT, sender, receiver, 0, tokenId, serial)
+```
+
+
+### ScheduleTransactionTransferToken
+
+```kotlin
+data class ScheduleTransactionTransferToken(
+    var sender: String,
+    var receiver: String,
+    var tokenId: String,
+    var value: Int,
+) : ScheduleTransactionTransfer(ScheduleTransferType.FT, sender, receiver, value, tokenId, 0)
+```
+
+
+### SignMessageData
+
+```kotlin
+data class SignMessageData(
+    var signedMessage: String
+)
+```
+
+
+### SignMessageResponse
+
+```kotlin
+data class SignMessageResponse(
+    override var completionKey: String,
+    override var data: SignMessageData
+): Result<SignMessageData>
+```
+
+
+### SignVerifyMessageData
+
+```kotlin
+data class SignVerifyMessageData(
+    var valid: Boolean
+)
+```
+
+
+### SignVerifyMessageResponse
+
+```kotlin
+data class SignVerifyMessageResponse(
+    override var completionKey: String,
+    override var data: SignVerifyMessageData
+): Result<SignVerifyMessageData>
+```
+
+
+### SplitSignatureData
+
+```kotlin
+data class SplitSignatureData(
+    var v: Int,
+    var r: String,
+    var s: String,
+)
+```
+
+
+### SplitSignatureResponse
+
+```kotlin
+data class SplitSignatureResponse(
+    override var completionKey: String,
+    override var data: SplitSignatureData
+): Result<SplitSignatureData>
+```
+
+
+### StakingInfo
+
+```kotlin
+data class StakingInfo(
+    val pendingReward: Long,
+    val stakedNodeId: Int?,
+    val stakePeriodStart: String?
+)
+```
+
+
+### SwapQuotesData
+
+```kotlin
+data class SwapQuotesData(
+    var quotes: List<ICryptoFlowQuote>
+)
+```
+
+
+### SwapQuotesResponse
+
+```kotlin
+data class SwapQuotesResponse(
+    override var completionKey: String,
+    override var data: SwapQuotesData
+): Result<SwapQuotesData>
+```
+
+
+### TokenBalanceData
+
+```kotlin
+data class TokenBalanceData(
+    var balance: String,
+    var decimals: Int,
+    var name: String,
+    var symbol: String,
+    var address: String,
+    var rawBalance: String
+)
+```
+
+
+### TokenDropData
 
 ```kotlin
 data class TokenDropData(
@@ -425,127 +947,213 @@ data class TokenDropData(
 )
 ```
 
-```kotlin
-abstract class ScheduleTransactionTransfer(
-    var type: ScheduleTransferType,
-    sender: String,
-    receiver: String,
-    value: Int,
-    tokenId: String = "",
-    serial: Int
-)
 
-data class ScheduleTransactionTransferHbar(
-    var sender: String,
-    var receiver: String,
-    var value: Int,
-) : ScheduleTransactionTransfer(ScheduleTransferType.HBAR, sender, receiver, value, "", 0)
-
-data class ScheduleTransactionTransferToken(
-    var sender: String,
-    var receiver: String,
-    var tokenId: String,
-    var value: Int,
-) : ScheduleTransactionTransfer(ScheduleTransferType.FT, sender, receiver, value, tokenId, 0)
-
-data class ScheduleTransactionTransferNFT(
-    var sender: String,
-    var receiver: String,
-    var tokenId: String,
-    var serial: Int
-) : ScheduleTransactionTransfer(ScheduleTransferType.NFT, sender, receiver, 0, tokenId, serial)
-```
+### TokenDropResponse
 
 ```kotlin
-data class CreateScheduleResponse(
+data class TokenDropResponse(
     override var completionKey: String,
-    override var data: CreateScheduleData
-) : Result<CreateScheduleData>
+    override var data: TokenDropData
+) : Result<TokenDropData>
 ```
 
+
+### TokenInfo
+
 ```kotlin
-data class CreateScheduleData(
-    var scheduleId: String
+data class TokenInfo(
+    val admin_key: HederaKey,
+    val auto_renew_account: String,
+    val auto_renew_period: Int,
+    val created_timestamp: String,
+    val decimals: String,
+    val deleted: Boolean,
+    val expiry_timestamp: Int,
+    val fee_schedule_key: HederaKey?,
+    val freeze_default: Boolean,
+    val freeze_key: HederaKey,
+    val initial_supply: String,
+    val kyc_key: HederaKey,
+    val max_supply: String,
+    val memo: String,
+    val modified_timestamp: String,
+    val name: String,
+    val pause_key: HederaKey,
+    val pause_status: String,
+    val supply_key: HederaKey,
+    val supply_type: String,
+    val symbol: String,
+    val token_id: String,
+    val total_supply: String,
+    val treasury_account_id: String,
+    val type: String,
+    val wipe_key: HederaKey?,
 )
 ```
 
-```kotlin
-enum class NFTStorageProvider(val value: String) {
-    nftStorage("nftStorage");
 
-    companion object {
-        fun fromValue(value: String): NFTStorageProvider? {
-            return NFTStorageProvider.values().find { it.value == value }
-        }
-    }
-}
-```
+### TokenInfoData
 
 ```kotlin
-enum class KeyType(val value: String) {
-    admin("admin"),
-    kyc("kyc"),
-    freeze("freeze"),
-    wipe("wipe"),
-    pause("pause"),
-    feeSchedule("feeSchedule");
-
-    companion object {
-        fun fromValue(value: String): KeyType? {
-            return KeyType.values().find { it.value == value }
-        }
-    }
-}
+data class TokenInfoData(
+    val token: TokenInfo,
+    val nft: NftInfo?,
+    val metadata: NftMetadata?
+)
 ```
+
+
+### TokenInfoResponse
 
 ```kotlin
-enum class BladeEnv(val value: String) {
-    Prod("Prod"),
-    CI("CI")
-}
+data class TokenInfoResponse(
+    override var completionKey: String,
+    override var data: TokenInfoData
+): Result<TokenInfoData>
 ```
+
+
+### TransactionHistoryDetail
 
 ```kotlin
-enum class CryptoFlowServiceStrategy(val value: String) {
-    BUY("Buy"),
-    SELL("Sell"),
-    SWAP("Swap");
-
-    companion object {
-        fun fromValue(value: String): CryptoFlowServiceStrategy? {
-            return values().find { it.value == value }
-        }
-    }
-}
+data class TransactionHistoryDetail(
+    var fee: Double,
+    var memo: String,
+    var nftTransfers: List<TransactionHistoryNftTransfer>?,
+    var time: String,
+    var transactionId: String,
+    var transfers: List<TransactionHistoryTransfer>,
+    var type: String,
+    var plainData: TransactionHistoryPlainData?,
+    var consensusTimestamp: String
+)
 ```
+
+
+### TransactionHistoryNftTransfer
 
 ```kotlin
-enum class CryptoKeyType(val value: String) {
-    ECDSA_SECP256K1("ECDSA_SECP256K1"),
-    ED25519("ED25519");
-
-    companion object {
-        fun fromValue(value: String): CryptoKeyType? {
-            return CryptoKeyType.values().find { it.value == value }
-        }
-    }
-}
+data class TransactionHistoryNftTransfer(
+    var is_approval: Boolean,
+    var receiver_account_id: String,
+    var sender_account_id: String?,
+    var serial_number: Int,
+    var token_id: String
+)
 ```
 
-```kotlin
-enum class ScheduleTransactionType(val value: String) {
-    TRANSFER("TRANSFER");
-    // SUBMIT_MESSAGE("SUBMIT_MESSAGE"),
-    // APPROVE_ALLOWANCE("APPROVE_ALLOWANCE"),
-    // TOKEN_MINT("TOKEN_MINT"),
-    // TOKEN_BURN("TOKEN_BURN");
-}
-```
+
+### TransactionHistoryPlainData
 
 ```kotlin
-enum class ScheduleTransferType(val value: String) {
-    HBAR("HBAR"),
-    FT("FT"),
-    NFT("NFT")
-}
+data class TransactionHistoryPlainData(
+    var type: String,
+    var token_id: String,
+    var amount: Double,
+    var senders: List<String>,
+    var receivers: List<String>
+)
 ```
+
+
+### TransactionHistoryTransfer
+
+```kotlin
+data class TransactionHistoryTransfer(
+    var account: String,
+    var amount: Double,
+    var is_approval: Boolean,
+    var token_id: String?
+)
+```
+
+
+### TransactionReceiptData
+
+```kotlin
+data class TransactionReceiptData(
+    var status: String,
+    var contractAddress: String?,
+    var topicSequenceNumber: String?,
+    var totalSupply: String?,
+    var serials: List<String>?,
+    var transactionHash: String
+)
+```
+
+
+### TransactionReceiptResponse
+
+```kotlin
+data class TransactionReceiptResponse(
+    override var completionKey: String,
+    override var data: TransactionReceiptData
+): Result<TransactionReceiptData>
+```
+
+
+### TransactionResponseData
+
+```kotlin
+data class TransactionResponseData(
+    var transactionHash: String,
+    var transactionId: String
+)
+```
+
+
+### TransactionResponseResponse
+
+```kotlin
+data class TransactionResponseResponse(
+    override var completionKey: String,
+    override var data: TransactionResponseData
+): Result<TransactionResponseData>
+```
+
+
+### TransactionsHistoryData
+
+```kotlin
+data class TransactionsHistoryData(
+    var nextPage: String?,
+    var transactions: List<TransactionHistoryDetail>
+)
+```
+
+
+### TransactionsHistoryResponse
+
+```kotlin
+data class TransactionsHistoryResponse(
+    override var completionKey: String,
+    override var data: TransactionsHistoryData
+): Result<TransactionsHistoryData>
+```
+
+
+### UserInfoData
+
+```kotlin
+data class UserInfoData(
+    var accountId: String,
+    var accountProvider: AccountProvider?,
+    var userPrivateKey: String,
+    var userPublicKey: String
+)
+```
+
+
+### UserInfoResponse
+
+```kotlin
+data class UserInfoResponse(
+    override var completionKey: String,
+    override var data: UserInfoData
+): Result<UserInfoData>
+```
+
+
+
+
+

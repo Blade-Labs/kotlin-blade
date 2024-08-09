@@ -5,25 +5,21 @@ Also, it will initialize fingerprint library and retrieve visitorId, which is re
 
 ```kotlin
 import io.bladewallet.bladesdk.Blade
-import io.bladewallet.bladesdk.BalanceData
-import io.bladewallet.bladesdk.BladeJSError
 
-Blade.initialize("api-key", "dAppCode", "Testnet", BladeEnv.Prod, requireContext(), false) { infoData, bladeJSError ->
+Blade.initialize("api-key", KnownChainIds.HEDERA_TESTNET, "dAppCode", BladeEnv.Prod, requireContext(), false) { infoData, error ->
     if (infoData != null) {
         println("BladeInit success: $infoData")
     } else {
-        println("BladeInit fail: ${bladeJSError}")
+        println("BladeInit fail: $error")
     }
 }
-```
 
-After initialization, you can call any public method, e.g.:
-
-```kotlin
+// After initialization, you can call any public method, e.g.: getBalance
 // Get balance by hedera account id
-Blade.getBalance("0.0.49177063") { data: BalanceData?, error: BladeJSError? ->
+Blade.getBalance("0.0.49177063") { balanceData, error ->
     if (data != null) {
-        println(data ?: error)
+        println(balanceData ?: error)
     }
 }
 ```
+
