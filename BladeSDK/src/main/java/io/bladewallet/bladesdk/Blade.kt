@@ -1075,7 +1075,7 @@ object Blade {
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<EmergencyTransferData, EmergencyTransferResponse>(data, error, completion)
         }
-        executeJS("bladeSdk.brokenMnemonicEmergencyTransfer('${esc(seedPhrase)}', '${esc(accountId)}', '${esc(receiverId)}', '${esc(hbarAmount)}', ${tokenList.joinToString(",", "[", "]") {"\'${esc(it)}\'"}}, '$completionKey')")
+        executeJS("bladeSdk.brokenMnemonicEmergencyTransfer('${esc(seedPhrase)}', '${esc(accountId)}', '${esc(receiverId)}', '${esc(hbarAmount)}', ${tokenList.joinToString(",", "[", "]") {"\'${esc(it)}\'"}}, $checkOnly, '$completionKey')")
     }
 
     /**
