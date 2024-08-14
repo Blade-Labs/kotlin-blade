@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.30"
+    private const val sdkVersion: String = "Kotlin@0.6.31"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -1036,6 +1036,46 @@ object Blade {
             typicalDeferredCallback<TransactionReceiptData, TransactionReceiptResponse>(data, error, completion)
         }
         executeJS("bladeSdk.associateToken('${esc(tokenIdOrCampaign)}', '${esc(accountId)}', '${esc(accountPrivateKey)}', '$completionKey')")
+    }
+
+    /**
+     * Emergency balance transfer from broken mnemonic account to new account
+     * Accounts with broken mnemonic sometimes were created because of hedera-sdk issue
+     * To transfer funds from broken mnemonic account to new account a couple of steps required:
+     * 1. Create new account
+     * 2. Associate all tokens with new account that you want to transfer
+     * 3. Call this method to transfer funds to new account
+     * 4. Send some HBAR to broken mnemonic account to cover fees if needed
+     *
+     * @param seedPhrase mnemonic from account
+     * @param accountId account id (broken)
+     * @param receiverId new account id
+     * @param hbarAmount amount of HBAR to resque. Can be 0
+     * @param tokenList list of token ids to transfer all tokens. Can be empty
+     * @param checkOnly if true, will only check if mnemonic is broken. No transfer will be made
+     * @param completion: callback function, with result of TransactionReceiptData or BladeJSError
+     * @return {EmergencyTransferData} receipt
+     * @sample
+     * Blade.brokenMnemonicEmergencyTransfer(
+     *     seedPhrase = "marriage bounce fiscal express wink wire trick allow faith mandate base bone",
+     *     accountId = "0.0.10001",
+     *     newAccountId = "0.0.234567",
+     *     hbarAmount = "0.5",
+     *     tokenList = listOf("0.0.1337"),
+     *     checkOnly = false
+     * ) { result, error ->
+     *     println(result ?: error)
+     * }
+     */
+    fun brokenMnemonicEmergencyTransfer(
+        seedPhrase: String, accountId: String, receiverId: String, hbarAmount: String, tokenList: List<String>, checkOnly: Boolean,
+        completion: (EmergencyTransferData?, BladeJSError?) -> Unit
+    ) {
+        val completionKey = getCompletionKey("brokenMnemonicEmergencyTransfer")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<EmergencyTransferData, EmergencyTransferResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.brokenMnemonicEmergencyTransfer('${esc(seedPhrase)}', '${esc(accountId)}', '${esc(receiverId)}', '${esc(hbarAmount)}', ${tokenList.joinToString(",", "[", "]") {"\'${esc(it)}\'"}}, '$completionKey')")
     }
 
     /**
