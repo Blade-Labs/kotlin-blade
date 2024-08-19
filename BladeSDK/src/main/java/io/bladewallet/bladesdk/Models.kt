@@ -119,6 +119,16 @@ data class TransactionReceiptData(
     var serials: List<String>?
 )
 
+data class EmergencyTransferResponse(
+    override var completionKey: String,
+    override var data: EmergencyTransferData
+): Result<EmergencyTransferData>
+
+data class EmergencyTransferData(
+    var isValid: Boolean,
+    var transferStatus: String
+)
+
 data class ContractQueryResponse(
     override var completionKey: String,
     override var data: ContractQueryData
