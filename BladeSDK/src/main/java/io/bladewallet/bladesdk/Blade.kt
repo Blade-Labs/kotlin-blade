@@ -1051,7 +1051,7 @@ object Blade {
      * @param accountId account id (broken)
      * @param receiverId new account id
      * @param hbarAmount amount of HBAR to resque. Can be 0
-     * @param tokenList list of token ids to transfer all tokens. Can be empty
+     * @param tokenList list of token ids to transfer all tokens. Up to 9 at once. Can be empty
      * @param checkOnly if true, will only check if mnemonic is broken. No transfer will be made
      * @param completion: callback function, with result of TransactionReceiptData or BladeJSError
      * @return {EmergencyTransferData} receipt
