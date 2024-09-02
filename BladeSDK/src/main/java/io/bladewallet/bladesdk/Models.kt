@@ -389,9 +389,9 @@ data class KeyRecord(
     val type: KeyType
 )
 
-data class NFTStorageConfig(
-    val provider: NFTStorageProvider,
-    val apiKey: String
+data class IPFSProviderConfig(
+    val provider: IPFSProvider,
+    val token: String
 )
 
 data class TokenDropResponse(
@@ -447,12 +447,12 @@ data class CreateScheduleData(
     var scheduleId: String
 )
 
-enum class NFTStorageProvider(val value: String) {
-    nftStorage("nftStorage");
+enum class IPFSProvider(val value: String) {
+    pinata("pinata");
 
     companion object {
-        fun fromValue(value: String): NFTStorageProvider? {
-            return NFTStorageProvider.values().find { it.value == value }
+        fun fromValue(value: String): IPFSProvider? {
+            return IPFSProvider.values().find { it.value == value }
         }
     }
 }
