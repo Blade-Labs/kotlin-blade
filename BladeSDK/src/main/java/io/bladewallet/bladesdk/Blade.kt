@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.31"
+    private const val sdkVersion: String = "Kotlin@0.6.33"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
