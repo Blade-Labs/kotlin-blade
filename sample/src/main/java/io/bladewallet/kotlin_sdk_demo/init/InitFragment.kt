@@ -16,7 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.Blade
 import io.bladewallet.bladesdk.models.AccountProvider
 import io.bladewallet.bladesdk.models.BladeEnv
-import io.bladewallet.bladesdk.models.KnownChainIds
+import io.bladewallet.bladesdk.models.KnownChains
 import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentInitBinding
 import kotlinx.coroutines.launch
@@ -78,7 +78,7 @@ class InitFragment : Fragment() {
                     binding?.stopButton?.isEnabled = true
                     toggleElements(false)
 
-                    if (infoData.user.userPublicKey != "") {
+                    if (infoData.user.publicKey != "") {
                         toggleActiveUser(true, true)
                     } else {
                         toggleActiveUser(true, false)
@@ -102,7 +102,7 @@ class InitFragment : Fragment() {
 
             Blade.initialize(
                 Config.apiKey,
-                Config.chainId,
+                Config.chain,
                 Config.dAppCode,
                 Config.bladeEnv,
                 requireContext(),
@@ -135,7 +135,7 @@ class InitFragment : Fragment() {
                 if (Config.accountProvider === AccountProvider.PrivateKey) Config.accountPrivateKey  else "",
             ) { userInfoData, bladeJSError ->
                 lifecycleScope.launch {
-                    if (userInfoData != null && userInfoData.userPublicKey != "") {
+                    if (userInfoData != null && userInfoData.publicKey != "") {
                         toggleActiveUser(true, true)
                         output("$userInfoData")
                     } else {
@@ -149,7 +149,7 @@ class InitFragment : Fragment() {
         binding!!.resetUserButton.setOnClickListener {
             Blade.resetUser { userInfoData, bladeJSError ->
                 lifecycleScope.launch {
-                    if (userInfoData != null && userInfoData.userPublicKey == "") {
+                    if (userInfoData != null && userInfoData.publicKey == "") {
                         toggleActiveUser(true, false)
                         output("$userInfoData")
                     } else {
@@ -162,7 +162,7 @@ class InitFragment : Fragment() {
 
         if (binding != null) {
             val items = arrayOf("Select Chain").plus(
-                KnownChainIds.values().map { it.name }
+                KnownChains.values().map { it.name }
             )
 
             object : ArrayAdapter<String>(
@@ -184,12 +184,12 @@ class InitFragment : Fragment() {
             }.also {
                 it.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 binding!!.chainSpinner.adapter = it
-                binding!!.chainSpinner.setSelection(items.indexOf(Config.chainId.name).coerceAtLeast(0))
+                binding!!.chainSpinner.setSelection(items.indexOf(Config.chain.name).coerceAtLeast(0))
 
                 binding!!.chainSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                         if (position > 0) {
-                            Config.setChain(KnownChainIds.fromKey(items[position]))
+                            Config.setChain(KnownChains.fromKey(items[position]))
 
                             binding!!.accountIdEditText.setText(Config.accountAddress)
                             binding!!.privateKeyEditText.setText(Config.accountPrivateKey)

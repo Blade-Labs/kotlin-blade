@@ -12,7 +12,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import io.bladewallet.bladesdk.Blade
-import io.bladewallet.bladesdk.models.CryptoFlowServiceStrategy
+import io.bladewallet.bladesdk.models.ExchangeStrategy
 import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentExchangeBinding
 import kotlinx.coroutines.launch
@@ -118,7 +118,7 @@ class ExchangeFragment : Fragment() {
         binding!!.buttonQuotes.setOnClickListener {
             output("")
 
-            val strategy = CryptoFlowServiceStrategy.fromValue(binding?.strategySpinner?.selectedItem as String)
+            val strategy = ExchangeStrategy.fromValue(binding?.strategySpinner?.selectedItem as String)
             if (strategy != null) {
                 Blade.exchangeGetQuotes(
                     sourceCode = binding?.editTextSource?.text.toString(),
@@ -152,15 +152,15 @@ class ExchangeFragment : Fragment() {
 
                                 binding!!.serviceSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                                        val strategy = CryptoFlowServiceStrategy.fromValue(binding!!.strategySpinner.selectedItem as String) ?: ""
+                                        val strategy = ExchangeStrategy.fromValue(binding!!.strategySpinner.selectedItem as String) ?: ""
                                         when (strategy) {
-                                            CryptoFlowServiceStrategy.BUY -> {
+                                            ExchangeStrategy.BUY -> {
                                                 binding?.buttonBuy?.isEnabled = true
                                             }
-                                            CryptoFlowServiceStrategy.SELL -> {
+                                            ExchangeStrategy.SELL -> {
                                                 binding?.buttonSell?.isEnabled = true
                                             }
-                                            CryptoFlowServiceStrategy.SWAP -> {
+                                            ExchangeStrategy.SWAP -> {
                                                 binding?.buttonSwap?.isEnabled = true
                                             }
                                         }
@@ -177,7 +177,7 @@ class ExchangeFragment : Fragment() {
         binding!!.buttonBuy.setOnClickListener {
             output("")
             Blade.getTradeUrl(
-                strategy = CryptoFlowServiceStrategy.BUY,
+                strategy = ExchangeStrategy.BUY,
                 accountAddress = Config.accountAddress,
                 sourceCode = binding?.editTextSource?.text.toString(),
                 sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
@@ -199,7 +199,7 @@ class ExchangeFragment : Fragment() {
         binding!!.buttonSell.setOnClickListener {
             output("")
             Blade.getTradeUrl(
-                strategy = CryptoFlowServiceStrategy.SELL,
+                strategy = ExchangeStrategy.SELL,
                 accountAddress = Config.accountAddress,
                 sourceCode = binding?.editTextSource?.text.toString(),
                 sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),

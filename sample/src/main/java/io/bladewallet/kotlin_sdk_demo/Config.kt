@@ -2,12 +2,12 @@ package io.bladewallet.kotlin_sdk_demo
 
 import io.bladewallet.bladesdk.models.AccountProvider
 import io.bladewallet.bladesdk.models.BladeEnv
-import io.bladewallet.bladesdk.models.KnownChainIds
+import io.bladewallet.bladesdk.models.KnownChains
 
 object Config {
     var apiKey = "FG9dUBQcBaBAPgCHz7DqmNZzrJyhewAMJytjwp3VFIEMFTXQyVSIDq6wRvtPcSAt"
     var dAppCode = "unitysdktest"
-    var chainId: KnownChainIds = KnownChainIds.HEDERA_TESTNET
+    var chain: KnownChains = KnownChains.HEDERA_TESTNET
 //    var chainId: KnownChainIds = KnownChainIds.ETHEREUM_SEPOLIA
     var bladeEnv: BladeEnv = BladeEnv.CI
     var accountProvider: AccountProvider = AccountProvider.PrivateKey
@@ -49,11 +49,11 @@ object Config {
     private var ethereumContractAddress = "0xd36b5b8b408bad51009bd2748c3bc130c68948d2"
     private var ethereumTokenAddress = "0xc72073559B3430ed97ecaCa7111B25d7CBa4E91A"
 
-    fun setChain(chainId: KnownChainIds, force: Boolean = false) {
-        if (this.chainId != chainId || force) {
-            this.chainId = chainId;
-            when (chainId) {
-                KnownChainIds.HEDERA_TESTNET -> {
+    fun setChain(chain: KnownChains, force: Boolean = false) {
+        if (this.chain != chain || force) {
+            this.chain = chain;
+            when (chain) {
+                KnownChains.HEDERA_TESTNET -> {
                     accountAddress = hederaAccountId1
                     accountPrivateKey = hederaPrivateKey1
                     accountPublicKey = hederaPublicKey1
@@ -63,7 +63,7 @@ object Config {
                     contractAddress = hederaContractId
                     tokenAddress = hederaTokenAddress
                 }
-                KnownChainIds.ETHEREUM_SEPOLIA -> {
+                KnownChains.ETHEREUM_SEPOLIA -> {
                     accountAddress = ethereumAddress
                     accountPrivateKey = ethereumPrivateKey
                     accountPublicKey = ethereumPublicKey

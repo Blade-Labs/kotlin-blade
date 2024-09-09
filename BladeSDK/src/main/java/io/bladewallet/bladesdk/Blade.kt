@@ -28,13 +28,13 @@ import io.bladewallet.bladesdk.models.CreateTokenData
 import io.bladewallet.bladesdk.models.CreateTokenResponse
 import io.bladewallet.bladesdk.models.CreatedAccountData
 import io.bladewallet.bladesdk.models.CreatedAccountResponse
-import io.bladewallet.bladesdk.models.CryptoFlowServiceStrategy
+import io.bladewallet.bladesdk.models.ExchangeStrategy
 import io.bladewallet.bladesdk.models.InfoData
 import io.bladewallet.bladesdk.models.InfoResponse
 import io.bladewallet.bladesdk.models.IntegrationUrlData
 import io.bladewallet.bladesdk.models.IntegrationUrlResponse
 import io.bladewallet.bladesdk.models.KeyRecord
-import io.bladewallet.bladesdk.models.KnownChainIds
+import io.bladewallet.bladesdk.models.KnownChains
 import io.bladewallet.bladesdk.models.NFTStorageConfig
 import io.bladewallet.bladesdk.models.NodesData
 import io.bladewallet.bladesdk.models.NodesResponse
@@ -75,7 +75,7 @@ object Blade {
     private lateinit var apiKey: String
     private var visitorId: String = ""
     private lateinit var remoteConfig: RemoteConfig
-    private var chainId: KnownChainIds = KnownChainIds.HEDERA_TESTNET
+    private var chain: KnownChains = KnownChains.HEDERA_TESTNET
     private lateinit var dAppCode: String
     private var webViewInitialized: Boolean = false
     private var completionId: Int = 0
@@ -87,7 +87,7 @@ object Blade {
      * Init instance of BladeSDK for correct work with Blade API and other endpoints.
      *
      * @param apiKey Unique key for API provided by Blade team.
-     * @param chainId one of supported chains from KnownChainIds
+     * @param chain one of supported chains from KnownChains
      * @param dAppCode your dAppCode - request specific one by contacting BladeLabs team
      * @param bladeEnv field to set BladeAPI environment (Prod, CI). Prod used by default.
      * @param context android context
@@ -96,13 +96,13 @@ object Blade {
      * @return {InfoData} with information about Blade instance, including visitorId
      * @sample
      * Blade.initialize(
-     *     Config.apiKey, Config.chainId, Config.dAppCode, Config.bladeEnv, requireContext(), false
+     *     Config.apiKey, Config.chain, Config.dAppCode, Config.bladeEnv, requireContext(), false
      * ) { infoData, error ->
      *     println(infoData ?: error)
      * }
      */
     @SuppressLint("SetJavaScriptEnabled")
-    fun initialize(apiKey: String, chainId: KnownChainIds, dAppCode: String, bladeEnv: BladeEnv = BladeEnv.Prod, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit) {
+    fun initialize(apiKey: String, chain: KnownChains, dAppCode: String, bladeEnv: BladeEnv = BladeEnv.Prod, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit) {
         if (webViewInitialized && !force) {
             println("Error while doing double init of BladeSDK")
             throw Exception("Error while doing double init of BladeSDK")
@@ -110,7 +110,7 @@ object Blade {
         initCompletion = completion
         this.apiKey = apiKey
         this.dAppCode = dAppCode
-        this.chainId = chainId
+        this.chain = chain
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
@@ -167,7 +167,7 @@ object Blade {
                         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
                             typicalDeferredCallback<InfoData, InfoResponse>(data, error, initCompletion)
                         }
-                        executeJS("bladeSdk.init('${esc(apiKey)}', '${chainId.value}', '${esc(dAppCode)}', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
+                        executeJS("bladeSdk.init('${esc(apiKey)}', '${chain.value}', '${esc(dAppCode)}', '$visitorId', '$bladeEnv', '${esc(sdkVersion)}', '$completionKey')")
                     }
                 }
             }
@@ -200,7 +200,7 @@ object Blade {
      * Set active user for further operations.
      *
      * @param accountProvider one of supported providers: PrivateKey or Magic
-     * @param accountIdOrEmail account id (0.0.xxxxx, 0xABCDEF..., EMAIL) or empty string for some ChainId
+     * @param accountIdOrEmail account id (0.0.xxxxx, 0xABCDEF..., EMAIL) or empty string for some Chains
      * @param privateKey private key for account (hex encoded privateKey with DER-prefix or 0xABCDEF...) In case of Magic provider - empty string
      * @return {UserInfoData} with information about active user
      * @sample
@@ -813,7 +813,7 @@ object Blade {
      *     println(result ?: error)
      * }
     */
-    fun exchangeGetQuotes(sourceCode: String, sourceAmount: Double, targetCode: String, strategy: CryptoFlowServiceStrategy, completion: (SwapQuotesData?, BladeJSError?) -> Unit) {
+    fun exchangeGetQuotes(sourceCode: String, sourceAmount: Double, targetCode: String, strategy: ExchangeStrategy, completion: (SwapQuotesData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("exchangeGetQuotes")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<SwapQuotesData, SwapQuotesResponse>(data, error, completion)
@@ -847,7 +847,7 @@ object Blade {
      *     println(result ?: error)
      * }
     */
-    fun getTradeUrl(strategy: CryptoFlowServiceStrategy, accountAddress: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, redirectUrl: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
+    fun getTradeUrl(strategy: ExchangeStrategy, accountAddress: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, redirectUrl: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("getTradeUrl")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
             typicalDeferredCallback<IntegrationUrlData, IntegrationUrlResponse>(data, error, completion)

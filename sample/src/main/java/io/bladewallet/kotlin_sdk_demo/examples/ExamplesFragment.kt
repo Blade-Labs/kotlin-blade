@@ -13,7 +13,7 @@ import io.bladewallet.bladesdk.Blade
 import io.bladewallet.bladesdk.ContractFunctionParameters
 import io.bladewallet.bladesdk.models.AccountProvider
 import io.bladewallet.bladesdk.models.CreatedAccountData
-import io.bladewallet.bladesdk.models.KnownChainIds
+import io.bladewallet.bladesdk.models.KnownChains
 import io.bladewallet.bladesdk.models.SupportedEncoding
 import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentExamplesBinding
@@ -228,7 +228,7 @@ class ExamplesFragment : Fragment() {
             output("")
             var parameters = ContractFunctionParameters().addString("${binding?.editMnemonicMessageSignature?.text} ${System.currentTimeMillis()}")
             var functionName = "set_message";
-            if (Config.chainId === KnownChainIds.ETHEREUM_SEPOLIA) {
+            if (Config.chain === KnownChains.ETHEREUM_SEPOLIA) {
                 functionName = "setMood"
             }
 
@@ -256,7 +256,7 @@ class ExamplesFragment : Fragment() {
             val parameters = ContractFunctionParameters()
 
             var functionName = "get_message";
-            if (Config.chainId === KnownChainIds.ETHEREUM_SEPOLIA) {
+            if (Config.chain === KnownChains.ETHEREUM_SEPOLIA) {
                 functionName = "getMood"
             }
 

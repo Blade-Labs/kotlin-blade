@@ -31,7 +31,7 @@ data class InfoResponse(
 data class InfoData(
     var apiKey: String,
     var dAppCode: String,
-    var chainId: KnownChainIds,
+    var chain: KnownChains,
     var isTestnet: Boolean,
     var visitorId: String,
     var sdkEnvironment: BladeEnv,
@@ -46,10 +46,10 @@ data class UserInfoResponse(
 ): Result<UserInfoData>
 
 data class UserInfoData(
-    var accountId: String,
+    var address: String,
     var accountProvider: AccountProvider?,
-    var userPrivateKey: String,
-    var userPublicKey: String
+    var privateKey: String,
+    var publicKey: String
 )
 
 data class BalanceResponse(
@@ -309,10 +309,10 @@ data class SwapQuotesResponse(
 ): Result<SwapQuotesData>
 
 data class SwapQuotesData(
-    var quotes: List<ICryptoFlowQuote>
+    var quotes: List<ExchangeQuote>
 )
 
-data class ICryptoFlowQuote(
+data class ExchangeQuote(
     var service: ICryptoFlowQuoteService,
     var source: IAssetQuote,
     var target: IAssetQuote,
@@ -328,12 +328,12 @@ data class ICryptoFlowQuoteService(
     var description: String?
 )
 data class IAssetQuote(
-    var asset: ICryptoFlowAsset,
+    var asset: ExchangeAsset,
     var amountExpected: Double,
     var totalFee: Double?,
 )
 
-data class ICryptoFlowAsset(
+data class ExchangeAsset(
     var name: String,
     var code: String,
     var type: String,
@@ -541,13 +541,13 @@ enum class AccountProvider(val value: String) {
     }
 }
 
-enum class CryptoFlowServiceStrategy(val value: String) {
+enum class ExchangeStrategy(val value: String) {
     BUY("Buy"),
     SELL("Sell"),
     SWAP("Swap");
 
     companion object {
-        fun fromValue(value: String): CryptoFlowServiceStrategy? {
+        fun fromValue(value: String): ExchangeStrategy? {
             return values().find { it.value == value }
         }
     }
