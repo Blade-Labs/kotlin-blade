@@ -60,23 +60,6 @@ enum class BladeEnv(val value: String) {
 ```
 
 
-### CryptoFlowServiceStrategy
-
-```kotlin
-enum class CryptoFlowServiceStrategy(val value: String) {
-    BUY("Buy"),
-    SELL("Sell"),
-    SWAP("Swap");
-
-    companion object {
-        fun fromValue(value: String): CryptoFlowServiceStrategy? {
-            return values().find { it.value == value }
-        }
-    }
-}
-```
-
-
 ### CryptoKeyType
 
 ```kotlin
@@ -87,6 +70,23 @@ enum class CryptoKeyType(val value: String) {
     companion object {
         fun fromValue(value: String): CryptoKeyType? {
             return CryptoKeyType.values().find { it.value == value }
+        }
+    }
+}
+```
+
+
+### ExchangeStrategy
+
+```kotlin
+enum class ExchangeStrategy(val value: String) {
+    BUY("Buy"),
+    SELL("Sell"),
+    SWAP("Swap");
+
+    companion object {
+        fun fromValue(value: String): ExchangeStrategy? {
+            return values().find { it.value == value }
         }
     }
 }
@@ -113,31 +113,31 @@ enum class KeyType(val value: String) {
 ```
 
 
-### KnownChainIds
+### KnownChains
 
 ```kotlin
-enum class KnownChainIds(val value: String) {
-    @SerializedName("1")
-    ETHEREUM_MAINNET("1"),
+enum class KnownChains(val value: String) {
+    @SerializedName("eip155:1")
+    ETHEREUM_MAINNET("eip155:1"),
 
-    @SerializedName("11155111")
-    ETHEREUM_SEPOLIA("11155111"),
+    @SerializedName("eip155:11155111")
+    ETHEREUM_SEPOLIA("eip155:11155111"),
 
-    @SerializedName("295")
-    HEDERA_MAINNET("295"),
+    @SerializedName("hedera:295")
+    HEDERA_MAINNET("hedera:295"),
 
-    @SerializedName("296")
-    HEDERA_TESTNET("296");
+    @SerializedName("hedera:296")
+    HEDERA_TESTNET("hedera:296");
 
     companion object {
-        fun fromString(value: String): KnownChainIds {
+        fun fromString(value: String): KnownChains {
             return values().find { it.value == value }
-                ?: throw IllegalArgumentException("Unknown chain ID: $value")
+                ?: throw IllegalArgumentException("Unknown chain: $value")
         }
 
-        fun fromKey(key: String): KnownChainIds {
+        fun fromKey(key: String): KnownChains {
             return values().find { it.name == key }
-                ?: throw IllegalArgumentException("Unknown KnownChainIds key: $key")
+                ?: throw IllegalArgumentException("Unknown KnownChains key: $key")
         }
     }
 }
@@ -510,31 +510,10 @@ data class CreateTokenResponse(
 ```
 
 
-### HederaKey
+### ExchangeAsset
 
 ```kotlin
-data class HederaKey(
-    val _type: CryptoKeyType,
-    val key: String,
-)
-```
-
-
-### IAssetQuote
-
-```kotlin
-data class IAssetQuote(
-    var asset: ICryptoFlowAsset,
-    var amountExpected: Double,
-    var totalFee: Double?,
-)
-```
-
-
-### ICryptoFlowAsset
-
-```kotlin
-data class ICryptoFlowAsset(
+data class ExchangeAsset(
     var name: String,
     var code: String,
     var type: String,
@@ -552,16 +531,37 @@ data class ICryptoFlowAsset(
 ```
 
 
-### ICryptoFlowQuote
+### ExchangeQuote
 
 ```kotlin
-data class ICryptoFlowQuote(
+data class ExchangeQuote(
     var service: ICryptoFlowQuoteService,
     var source: IAssetQuote,
     var target: IAssetQuote,
     var rate: Double?,
     var widgetUrl: String?,
     var paymentMethods: List<String>?
+)
+```
+
+
+### HederaKey
+
+```kotlin
+data class HederaKey(
+    val _type: CryptoKeyType,
+    val key: String,
+)
+```
+
+
+### IAssetQuote
+
+```kotlin
+data class IAssetQuote(
+    var asset: ExchangeAsset,
+    var amountExpected: Double,
+    var totalFee: Double?,
 )
 ```
 
@@ -584,7 +584,7 @@ data class ICryptoFlowQuoteService(
 data class InfoData(
     var apiKey: String,
     var dAppCode: String,
-    var chainId: KnownChainIds,
+    var chain: KnownChains,
     var isTestnet: Boolean,
     var visitorId: String,
     var sdkEnvironment: BladeEnv,
@@ -904,7 +904,7 @@ data class StakingInfo(
 
 ```kotlin
 data class SwapQuotesData(
-    var quotes: List<ICryptoFlowQuote>
+    var quotes: List<ExchangeQuote>
 )
 ```
 
@@ -1136,10 +1136,10 @@ data class TransactionsHistoryResponse(
 
 ```kotlin
 data class UserInfoData(
-    var accountId: String,
+    var address: String,
     var accountProvider: AccountProvider?,
-    var userPrivateKey: String,
-    var userPublicKey: String
+    var privateKey: String,
+    var publicKey: String
 )
 ```
 

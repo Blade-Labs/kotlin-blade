@@ -6,7 +6,7 @@ Also, it will initialize fingerprint library and retrieve visitorId, which is re
 ```kotlin
 import io.bladewallet.bladesdk.Blade
 
-Blade.initialize("api-key", KnownChainIds.HEDERA_TESTNET, "dAppCode", BladeEnv.Prod, requireContext(), false) { infoData, error ->
+Blade.initialize("api-key", KnownChains.HEDERA_TESTNET, "dAppCode", BladeEnv.Prod, requireContext(), false) { infoData, error ->
     if (infoData != null) {
         println("BladeInit success: $infoData")
     } else {

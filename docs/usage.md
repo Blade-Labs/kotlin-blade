@@ -41,14 +41,14 @@
 
 Init instance of BladeSDK for correct work with Blade API and other endpoints.
 
-`initialize (apiKey: String, chainId: KnownChainIds, dAppCode: String, bladeEnv: BladeEnv = BladeEnv.Prod, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit)`
+`initialize (apiKey: String, chain: KnownChains, dAppCode: String, bladeEnv: BladeEnv = BladeEnv.Prod, context: Context, force: Boolean = false, completion: (InfoData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
 | `apiKey` | `String` | Unique key for API provided by Blade team. |
-| `chainId` | `KnownChainIds` | one of supported chains from KnownChainIds |
+| `chain` | `KnownChains` | one of supported chains from KnownChains |
 | `dAppCode` | `String` | your dAppCode - request specific one by contacting BladeLabs team |
 | `bladeEnv` | `BladeEnv` | field to set BladeAPI environment (Prod, CI). Prod used by default. |
 | `context` | `Context` | android context |
@@ -63,7 +63,7 @@ Init instance of BladeSDK for correct work with Blade API and other endpoints.
 
 ```kotlin
 Blade.initialize(
-    Config.apiKey, Config.chainId, Config.dAppCode, Config.bladeEnv, requireContext(), false
+    Config.apiKey, Config.chain, Config.dAppCode, Config.bladeEnv, requireContext(), false
 ) { infoData, error ->
     println(infoData ?: error)
 }
@@ -104,7 +104,7 @@ Set active user for further operations.
 | Name | Type | Description |
 |------|------| ----------- |
 | `accountProvider` | `AccountProvider` | one of supported providers: PrivateKey or Magic |
-| `accountIdOrEmail` | `String` | account id (0.0.xxxxx, 0xABCDEF..., EMAIL) or empty string for some ChainId |
+| `accountIdOrEmail` | `String` | account id (0.0.xxxxx, 0xABCDEF..., EMAIL) or empty string for some Chains |
 | `privateKey` | `String` | private key for account (hex encoded privateKey with DER-prefix or 0xABCDEF...) In case of Magic provider - empty string |
 | `completion` | `(UserInfoData?,BladeJSError?)->Unit` |  |
 
@@ -822,7 +822,7 @@ Blade.getTransactions(
 
 Get quotes from different services for buy, sell or swap
 
-`exchangeGetQuotes (sourceCode: String, sourceAmount: Double, targetCode: String, strategy: CryptoFlowServiceStrategy, completion: (SwapQuotesData?, BladeJSError?) -> Unit)`
+`exchangeGetQuotes (sourceCode: String, sourceAmount: Double, targetCode: String, strategy: ExchangeStrategy, completion: (SwapQuotesData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
@@ -831,7 +831,7 @@ Get quotes from different services for buy, sell or swap
 | `sourceCode` | `String` | name (HBAR, KARATE, other token code) |
 | `sourceAmount` | `Double` | amount to swap, buy or sell |
 | `targetCode` | `String` | name (HBAR, KARATE, USDC, other token code) |
-| `strategy` | `CryptoFlowServiceStrategy` | one of enum CryptoFlowServiceStrategy (Buy, Sell, Swap) |
+| `strategy` | `ExchangeStrategy` | one of enum CryptoFlowServiceStrategy (Buy, Sell, Swap) |
 | `completion` | `(SwapQuotesData?,BladeJSError?)->Unit` | callback function, with result of SwapQuotesData or BladeJSError |
 
 #### Returns
@@ -855,13 +855,13 @@ Blade.exchangeGetQuotes(
 
 Get configured url to buy or sell tokens or fiat
 
-`getTradeUrl (strategy: CryptoFlowServiceStrategy, accountAddress: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, redirectUrl: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit)`
+`getTradeUrl (strategy: ExchangeStrategy, accountAddress: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, redirectUrl: String = "", completion: (IntegrationUrlData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `strategy` | `CryptoFlowServiceStrategy` | Buy / Sell |
+| `strategy` | `ExchangeStrategy` | Buy / Sell |
 | `accountAddress` | `String` | account id |
 | `sourceCode` | `String` | name (HBAR, KARATE, USDC, other token code) |
 | `sourceAmount` | `Double` | amount to buy/sell |
