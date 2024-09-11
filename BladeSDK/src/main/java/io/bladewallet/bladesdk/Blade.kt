@@ -1123,7 +1123,7 @@ object Blade {
         supplyPrivateKey: String,
         file: String,
         metadata: Map<String, Any>,
-        storageConfig: NFTStorageConfig,
+        storageConfig: IPFSProviderConfig,
         completion: (TransactionReceiptData?, BladeJSError?) -> Unit
     ) {
         val completionKey = getCompletionKey("nftMint")
