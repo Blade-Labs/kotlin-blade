@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.34"
+    private const val sdkVersion: String = "Kotlin@0.6.35"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -929,8 +929,8 @@ object Blade {
      * @param targetCode: name (HBAR, KARATE, other token code)
      * @param slippage: slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage.
      * @param serviceId: service id to use for swap (saucerswap, etc)
-     * @param completion: callback function, with result of ResultData or BladeJSError
-     * @return {ResultData} swap result
+     * @param completion: callback function, with result of SwapResultData or BladeJSError
+     * @return {SwapResultData} swap result
      * @sample
      * val accountId = "0.0.10001"
      * val accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
@@ -949,10 +949,10 @@ object Blade {
      *     println(result ?: error)
      * }
      */
-    fun swapTokens(accountId: String, accountPrivateKey: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (ResultData?, BladeJSError?) -> Unit) {
+    fun swapTokens(accountId: String, accountPrivateKey: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (SwapResultData?, BladeJSError?) -> Unit) {
         val completionKey = getCompletionKey("swapTokens")
         deferCompletion(completionKey) { data: String, error: BladeJSError? ->
-            typicalDeferredCallback<ResultData, ResultResponse>(data, error, completion)
+            typicalDeferredCallback<SwapResultData, SwapResultResponse>(data, error, completion)
         }
         executeJS("bladeSdk.swapTokens('${esc(accountId)}', '${esc(accountPrivateKey)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '$completionKey')")
     }
