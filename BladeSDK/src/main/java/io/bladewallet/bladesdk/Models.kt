@@ -312,6 +312,18 @@ data class ResultData(
     var success: Boolean
 )
 
+data class SwapResultResponse(
+    override var completionKey: String,
+    override var data: SwapResultData
+): Result<SwapResultData>
+
+data class SwapResultData(
+    var success: Boolean,
+    var sourceAddress: String,
+    var targetAddress: String,
+    var balance: BalanceData
+)
+
 data class CreateTokenResponse(
     override var completionKey: String,
     override var data: CreateTokenData
