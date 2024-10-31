@@ -7,10 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import io.bladewallet.bladesdk.AccountProvider
 import io.bladewallet.bladesdk.Blade
 import io.bladewallet.bladesdk.BladeEnv
+import io.bladewallet.bladesdk.KnownChains
 import io.bladewallet.kotlin_sdk_demo.Config
 import io.bladewallet.kotlin_sdk_demo.databinding.FragmentInitBinding
 import kotlinx.coroutines.launch
@@ -30,6 +33,7 @@ class InitFragment : Fragment() {
 
         _binding = FragmentInitBinding.inflate(inflater, container, false)
         val root: View = binding!!.root
+        Config.setChain(KnownChains.HEDERA_TESTNET, true)
 
         fun toggleElements(enable: Boolean): Boolean {
             binding!!.dAppCodeEditText.isEnabled = enable
@@ -42,6 +46,8 @@ class InitFragment : Fragment() {
             binding!!.contractIdEditText.isEnabled = enable
             binding!!.tokenIdEditText.isEnabled = enable
             binding!!.initButton.isEnabled = enable
+//            binding!!.setUserButton.isEnabled = !enable
+
             return enable
         }
 
@@ -78,11 +84,11 @@ class InitFragment : Fragment() {
         binding!!.initButton.setOnClickListener {
             Config.dAppCode = binding?.dAppCodeEditText?.text.toString()
             Config.apiKey = binding?.apiTokenEditText?.text.toString()
-            Config.accountId = binding?.accountIdEditText?.text.toString()
-            Config.privateKey = binding?.privateKeyEditText?.text.toString()
-            Config.publicKey = binding?.publicKeyEditText?.text.toString()
-            Config.contractId = binding?.contractIdEditText?.text.toString()
-            Config.tokenId = binding?.tokenIdEditText?.text.toString()
+            Config.accountAddress = binding?.accountIdEditText?.text.toString()
+            Config.accountPrivateKey = binding?.privateKeyEditText?.text.toString()
+            Config.accountPublicKey = binding?.publicKeyEditText?.text.toString()
+            Config.contractAddress = binding?.contractIdEditText?.text.toString()
+            Config.tokenAddress = binding?.tokenIdEditText?.text.toString()
 
             toggleElements(false)
             output("")
@@ -99,6 +105,12 @@ class InitFragment : Fragment() {
                     if (infoData != null) {
                         binding?.stopButton?.isEnabled = true
                         output("$infoData")
+//                        val wv = Blade.getWebView();
+//                        wv?.layoutParams = ViewGroup.LayoutParams(
+//                            ViewGroup.LayoutParams.MATCH_PARENT,
+//                            1200
+//                        )
+//                        binding!!.root.addView(wv);
                     } else {
                         toggleElements(true)
                         output("$bladeJSError")
@@ -112,6 +124,24 @@ class InitFragment : Fragment() {
             output("Blade stopped")
             binding?.stopButton?.isEnabled = !toggleElements(true)
         }
+
+//        binding!!.setUserButton.setOnClickListener {
+//            Blade.setUser(
+//                Config.accountProvider,
+//                if (Config.accountProvider === AccountProvider.PrivateKey) Config.accountAddress else Config.magicEmail,
+//                if (Config.accountProvider === AccountProvider.PrivateKey) Config.accountPrivateKey  else "",
+//            ) { userInfoData, bladeJSError ->
+//                lifecycleScope.launch {
+//                    if (userInfoData != null && userInfoData.publicKey != "") {
+////                        toggleActiveUser(true, true)
+//                        output("$userInfoData")
+//                    } else {
+//                        toggleElements(true)
+//                        output("$bladeJSError")
+//                    }
+//                }
+//            }
+//        }
 
         if (binding != null) {
             val items = arrayOf("Select Network", "Mainnet", "Testnet")
@@ -178,11 +208,11 @@ class InitFragment : Fragment() {
 
         binding!!.dAppCodeEditText.setText(Config.dAppCode)
         binding!!.apiTokenEditText.setText(Config.apiKey)
-        binding!!.accountIdEditText.setText(Config.accountId)
-        binding!!.privateKeyEditText.setText(Config.privateKey)
-        binding!!.publicKeyEditText.setText(Config.publicKey)
-        binding!!.contractIdEditText.setText(Config.contractId)
-        binding!!.tokenIdEditText.setText(Config.tokenId)
+        binding!!.accountIdEditText.setText(Config.accountAddress)
+        binding!!.privateKeyEditText.setText(Config.accountPrivateKey)
+        binding!!.publicKeyEditText.setText(Config.accountPublicKey)
+        binding!!.contractIdEditText.setText(Config.contractAddress)
+        binding!!.tokenIdEditText.setText(Config.tokenAddress)
         return root
     }
 

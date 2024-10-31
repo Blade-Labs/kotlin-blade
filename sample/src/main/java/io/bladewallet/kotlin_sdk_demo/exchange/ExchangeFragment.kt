@@ -178,7 +178,7 @@ class ExchangeFragment : Fragment() {
             output("")
             Blade.getTradeUrl(
                 strategy = CryptoFlowServiceStrategy.BUY,
-                accountId = Config.accountId,
+                accountId = Config.accountAddress,
                 sourceCode = binding?.editTextSource?.text.toString(),
                 sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
                 targetCode = binding?.editTextTarget?.text.toString(),
@@ -200,7 +200,7 @@ class ExchangeFragment : Fragment() {
             output("")
             Blade.getTradeUrl(
                 strategy = CryptoFlowServiceStrategy.SELL,
-                accountId = Config.accountId,
+                accountId = Config.accountAddress,
                 sourceCode = binding?.editTextSource?.text.toString(),
                 sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
                 targetCode = binding?.editTextTarget?.text.toString(),
@@ -221,8 +221,8 @@ class ExchangeFragment : Fragment() {
         binding!!.buttonSwap.setOnClickListener {
             output("")
             Blade.swapTokens(
-                accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey,
+                accountId = Config.accountAddress,
+                accountPrivateKey = Config.accountPrivateKey,
                 sourceCode = binding?.editTextSource?.text.toString(),
                 sourceAmount = binding?.editTextAmount?.text.toString().toDouble(),
                 targetCode = binding?.editTextTarget?.text.toString(),

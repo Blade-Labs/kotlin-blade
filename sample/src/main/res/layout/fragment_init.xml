@@ -262,6 +262,14 @@
                         android:layout_weight="5"
                         android:enabled="false"
                         android:text="@string/button_stop" />
+<!--                    <Button-->
+<!--                        android:id="@+id/setUserButton"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_margin="5dp"-->
+<!--                        android:layout_weight="5"-->
+<!--                        android:enabled="false"-->
+<!--                        android:text="setUser" />-->
                 </TableRow>
             </TableLayout>
         </LinearLayout>

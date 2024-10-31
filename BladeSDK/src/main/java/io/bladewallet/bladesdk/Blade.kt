@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.35"
+    private const val sdkVersion: String = "Kotlin@0.6.36"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -96,6 +96,7 @@ object Blade {
                 )
 
                 webView.settings.javaScriptEnabled = true
+                webView.settings.domStorageEnabled = true // to enable localStorage for Magic.link
                 webView.loadUrl("file:///android_asset/index.html")
 
                 webView.addJavascriptInterface(this@Blade, "bladeMessageHandler")
@@ -134,6 +135,46 @@ object Blade {
             typicalDeferredCallback<InfoData, InfoResponse>(data, error, completion)
         }
         executeJS("bladeSdk.getInfo('$completionKey')")
+    }
+
+    /**
+     * Set active user for further operations.
+     *
+     * @param id Hedera account id
+     * @param accountProvider one of supported providers: PrivateKey or Magic
+     * @param accountIdOrEmail account id (0.0.xxxxx, 0xABCDEF..., EMAIL) or empty string for some Chains
+     * @param privateKey private key for account (hex encoded privateKey with DER-prefix or 0xABCDEF...) In case of Magic provider - empty string
+     * @return {UserInfoData} with information about active user
+     * @sample
+     * Blade.setUser(AccountProvider.PrivateKey, "0.0.1234", "302d300706052b8104000a032200029dc73991b0d9cd...") { userInfoData, error ->
+     *     println(userInfoData ?: error)
+     * }
+     */
+    fun setUser(accountProvider: AccountProvider, accountIdOrEmail: String, privateKey: String, completion: (UserInfoData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("setUser")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<UserInfoData, UserInfoResponse>(data, error, completion)
+        }
+
+        executeJS("bladeSdk.setUser('${accountProvider.value}', '${esc(accountIdOrEmail)}', '${esc(privateKey)}', '$completionKey')")
+    }
+
+    /**
+     * Reset active user
+     *
+     * @return {UserInfoData} with information about active user
+     * @sample
+     * Blade.resetUser { userInfoData, error ->
+     *     println(userInfoData ?: error)
+     * }
+     */
+    fun resetUser(completion: (UserInfoData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("resetUser")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<UserInfoData, UserInfoResponse>(data, error, completion)
+        }
+
+        executeJS("bladeSdk.resetUser('$completionKey')")
     }
 
     /**

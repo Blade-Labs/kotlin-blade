@@ -77,9 +77,9 @@ class ExamplesFragment : Fragment() {
             }
         }
 
-        binding!!.editAccountId.setText(Config.accountId)
-        binding!!.editMnemonicMessageSignature.setText(Config.mnemonic)
-        binding!!.editTextReceiver.setText(Config.accountId2)
+        binding!!.editAccountId.setText(Config.accountAddress)
+        binding!!.editMnemonicMessageSignature.setText(Config.accountMnemonic)
+        binding!!.editTextReceiver.setText(Config.accountAddress2)
         binding!!.editTextAmount.setText("1")
 
         binding!!.buttonBalance.setOnClickListener {
@@ -141,7 +141,7 @@ class ExamplesFragment : Fragment() {
                 deletePrivateKey = temporaryAccount?.privateKey.toString(),
                 transferAccountId = binding?.editAccountId?.text.toString(),
                 operatorAccountId = binding?.editAccountId?.text.toString(),
-                operatorPrivateKey = Config.privateKey,
+                operatorPrivateKey = Config.accountPrivateKey,
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
@@ -172,7 +172,7 @@ class ExamplesFragment : Fragment() {
 
             Blade.sign(
                 messageString = encodedString,
-                privateKey = Config.privateKey
+                privateKey = Config.accountPrivateKey
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
@@ -189,7 +189,7 @@ class ExamplesFragment : Fragment() {
                 messageString = encodedString,
                 signature = binding?.editMnemonicMessageSignature?.text.toString(),
                 // signature = "27cb9d51434cf1e76d7ac515b19442c619f641e6fccddbf4a3756b14466becb6992dc1d2a82268018147141fc8d66ff9ade43b7f78c176d070a66372d655f942",
-                publicKey = Config.publicKey
+                publicKey = Config.accountPublicKey
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${ result ?: bladeJSError}")
@@ -202,11 +202,11 @@ class ExamplesFragment : Fragment() {
             val parameters = ContractFunctionParameters().addString("${binding?.editMnemonicMessageSignature?.text} ${System.currentTimeMillis()}")
 
             Blade.contractCallFunction(
-                contractId = Config.contractId,
+                contractId = Config.contractAddress,
                 functionName = "set_message",
                 params = parameters,
-                accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey,
+                accountId = Config.accountAddress,
+                accountPrivateKey = Config.accountPrivateKey,
                 gas = 155000,
                 usePaymaster = false
             ) { result, bladeJSError ->
@@ -221,11 +221,11 @@ class ExamplesFragment : Fragment() {
             val parameters = ContractFunctionParameters()
 
             Blade.contractCallQueryFunction(
-                contractId = Config.contractId,
+                contractId = Config.contractAddress,
                 functionName = "get_message",
                 params = parameters,
-                accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey,
+                accountId = Config.accountAddress,
+                accountPrivateKey = Config.accountPrivateKey,
                 gas = 55000,
                 usePaymaster = false,
                 returnTypes = listOf("string", "int32")
@@ -240,8 +240,8 @@ class ExamplesFragment : Fragment() {
         binding!!.buttonTransferHbars.setOnClickListener {
             output("")
             Blade.transferHbars(
-                accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey,
+                accountId = Config.accountAddress,
+                accountPrivateKey = Config.accountPrivateKey,
                 receiverId = binding?.editTextReceiver?.text.toString(),
                 amount = binding?.editTextAmount?.text.toString().toDouble(),
                 memo = "Test HBar transfer from Kotlin-Blade SDK"
@@ -255,9 +255,9 @@ class ExamplesFragment : Fragment() {
         binding!!.buttonTransferTokens.setOnClickListener {
             output("")
             Blade.transferTokens(
-                tokenId = Config.tokenId,
-                accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey,
+                tokenId = Config.tokenAddress,
+                accountId = Config.accountAddress,
+                accountPrivateKey = Config.accountPrivateKey,
                 receiverId = binding?.editTextReceiver?.text.toString(),
                 amountOrSerial = binding?.editTextAmount?.text.toString().toDouble(),
                 memo = "Test token transfer from Kotlin-Blade SDK"

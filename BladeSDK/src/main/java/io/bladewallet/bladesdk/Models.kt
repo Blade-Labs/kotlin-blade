@@ -1,4 +1,5 @@
 package io.bladewallet.bladesdk
+import com.google.gson.annotations.SerializedName
 
 data class ContractFunctionParameter (
     var type: String,
@@ -34,6 +35,18 @@ data class InfoData(
     var sdkEnvironment: String,
     var sdkVersion: String,
     var nonce: Int
+)
+
+data class UserInfoResponse(
+    override var completionKey: String,
+    override var data: UserInfoData
+): Result<UserInfoData>
+
+data class UserInfoData(
+    var address: String,
+    var accountProvider: AccountProvider?,
+    var privateKey: String,
+    var publicKey: String
 )
 
 data class BalanceResponse(
@@ -524,4 +537,42 @@ enum class ScheduleTransferType(val value: String) {
     HBAR("HBAR"),
     FT("FT"),
     NFT("NFT")
+}
+
+enum class AccountProvider(val value: String) {
+    PrivateKey("PrivateKey"),
+    Magic("Magic");
+
+    companion object {
+        fun fromKey(key: String): AccountProvider {
+            return AccountProvider.values().find { it.name == key }
+                ?: throw IllegalArgumentException("Unknown AccountProvider key: $key")
+        }
+    }
+}
+
+enum class KnownChains(val value: String) {
+    @SerializedName("eip155:1")
+    ETHEREUM_MAINNET("eip155:1"),
+
+    @SerializedName("eip155:11155111")
+    ETHEREUM_SEPOLIA("eip155:11155111"),
+
+    @SerializedName("hedera:295")
+    HEDERA_MAINNET("hedera:295"),
+
+    @SerializedName("hedera:296")
+    HEDERA_TESTNET("hedera:296");
+
+    companion object {
+        fun fromString(value: String): KnownChains {
+            return values().find { it.value == value }
+                ?: throw IllegalArgumentException("Unknown chain: $value")
+        }
+
+        fun fromKey(key: String): KnownChains {
+            return values().find { it.name == key }
+                ?: throw IllegalArgumentException("Unknown KnownChains key: $key")
+        }
+    }
 }

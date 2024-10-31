@@ -94,11 +94,11 @@ class TokenFragment : Fragment() {
             output("")
 
             val keys = listOf(
-                KeyRecord(Config.privateKey2, KeyType.admin)
+                KeyRecord(Config.accountPrivateKey2, KeyType.admin)
             )
             Blade.createToken(
-                    treasuryAccountId = Config.accountId,
-                    supplyPrivateKey = Config.privateKey,
+                    treasuryAccountId = Config.accountAddress,
+                    supplyPrivateKey = Config.accountPrivateKey,
                     tokenName = binding?.tokenNameEditText?.text.toString(),
                     tokenSymbol = binding?.tokenSymbolEditText?.text.toString(),
                     isNft = true,
@@ -172,8 +172,8 @@ class TokenFragment : Fragment() {
 
             Blade.nftMint(
                 tokenId = binding!!.tokenIdEditText.text.toString(),
-                supplyAccountId = Config.accountId,
-                supplyPrivateKey = Config.privateKey,
+                supplyAccountId = Config.accountAddress,
+                supplyPrivateKey = Config.accountPrivateKey,
                 file = base64Image,
                 metadata = metaData,
                 storageConfig = IPFSProviderConfig(
@@ -195,8 +195,8 @@ class TokenFragment : Fragment() {
             output("")
             Blade.associateToken(
                 tokenIdOrCampaign = binding?.tokenIdEditText?.text.toString(),
-                accountId = Config.privateKey2Account,
-                accountPrivateKey = Config.privateKey2
+                accountId = Config.accountAddress2,
+                accountPrivateKey = Config.accountPrivateKey2
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
                     output("${result ?: bladeJSError}")
@@ -208,9 +208,9 @@ class TokenFragment : Fragment() {
             output("")
             Blade.transferTokens(
                 tokenId = binding?.tokenIdEditText?.text.toString(),
-                accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey,
-                receiverId = Config.privateKey2Account,
+                accountId = Config.accountAddress,
+                accountPrivateKey = Config.accountPrivateKey,
+                receiverId = Config.accountAddress2,
                 amountOrSerial = 1.0,
                 memo = "Send NFT from SDK",
             ) { result, bladeJSError ->

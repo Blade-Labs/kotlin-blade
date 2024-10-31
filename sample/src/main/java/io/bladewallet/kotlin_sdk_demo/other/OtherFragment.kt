@@ -70,7 +70,7 @@ class OtherFragment : Fragment() {
                     toggleElements(true)
                     output("$infoData")
 
-                    Blade.getAccountInfo(Config.accountId) { accountInfoData, bladeJSError ->
+                    Blade.getAccountInfo(Config.accountAddress) { accountInfoData, bladeJSError ->
                         lifecycleScope.launch {
                             if (accountInfoData != null) {
                                 var res = "${accountInfoData.accountId}\nStaked? - "
@@ -139,12 +139,12 @@ class OtherFragment : Fragment() {
             output("")
 
             Blade.createScheduleTransaction(
-                accountId = Config.privateKey2Account,
-                accountPrivateKey = Config.privateKey2,
+                accountId = Config.accountAddress2,
+                accountPrivateKey = Config.accountPrivateKey2,
                 type = ScheduleTransactionType.TRANSFER,
                 transfers = listOf(
-                    ScheduleTransactionTransferHbar(sender = Config.accountId, receiver = Config.privateKey2Account, (Math.random() * 10000000).toInt()),
-                    ScheduleTransactionTransferToken(sender = Config.accountId, receiver = Config.privateKey2Account, tokenId = Config.tokenId, value = 2)
+                    ScheduleTransactionTransferHbar(sender = Config.accountAddress, receiver = Config.accountAddress2, (Math.random() * 10000000).toInt()),
+                    ScheduleTransactionTransferToken(sender = Config.accountAddress, receiver = Config.accountAddress2, tokenId = Config.tokenAddress, value = 2)
                 ),
                 usePaymaster = false,
             ) { result, bladeJSError ->
@@ -162,9 +162,9 @@ class OtherFragment : Fragment() {
 
             Blade.signScheduleId(
                 scheduleId = binding?.scheduleIdEditText?.text.toString(),
-                accountId = Config.accountId,
-                accountPrivateKey = Config.privateKey,
-                receiverAccountId = Config.privateKey2Account, // optional, only for freeSchedule = true
+                accountId = Config.accountAddress,
+                accountPrivateKey = Config.accountPrivateKey,
+                receiverAccountId = Config.accountAddress2, // optional, only for freeSchedule = true
                 usePaymaster = false
             ) { result, bladeJSError ->
                 lifecycleScope.launch {
@@ -226,10 +226,10 @@ class OtherFragment : Fragment() {
         binding!!.buttonUpdateAccount.setOnClickListener {
             output("")
 
-            Blade.stakeToNode(Config.accountId, Config.privateKey, Config.stakedNodeId ?: -1) { result, bladeJSError ->
+            Blade.stakeToNode(Config.accountAddress, Config.accountPrivateKey, Config.stakedNodeId ?: -1) { result, bladeJSError ->
                 lifecycleScope.launch {
                     if (result != null) {
-                        var res = "${Config.accountId}\nStaked? - "
+                        var res = "${Config.accountAddress}\nStaked? - "
                         res += if (Config.stakedNodeId === null || Config.stakedNodeId!!.toInt() < 0) {
                             "NO"
                         } else {
