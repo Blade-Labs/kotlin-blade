@@ -11,7 +11,7 @@ import kotlinx.coroutines.*
 
 @SuppressLint("StaticFieldLeak")
 object Blade {
-    private const val sdkVersion: String = "Kotlin@0.6.35"
+    private const val sdkVersion: String = "Kotlin@0.6.36"
     private var webView: WebView? = null
     private lateinit var apiKey: String
     private var visitorId: String = ""
@@ -918,6 +918,27 @@ object Blade {
         }
         executeJS("bladeSdk.getTradeUrl('${esc(strategy.value)}', '${esc(accountId)}', '${esc(sourceCode)}', ${sourceAmount}, '${esc(targetCode)}', ${slippage}, '${esc(serviceId)}', '${esc(redirectUrl)}', '$completionKey')")
     }
+
+
+    /**
+     * Get exchange order status
+     * @param serviceId service id to use for swap (saucerswap, onmeta, etc)
+     * @param orderId order id of operation
+     * @param completion: callback function, with result of IntegrationUrlData or BladeJSError
+     * @return {TransakOrderInfoData}
+     * @sample
+     * Blade.getExchangeStatus("transak", "abaf28be-609f-49f4-a09a-e8e7ea7c8bd9") { result, error ->
+     *     println(result ?: error)
+     * }
+     */
+    fun getExchangeStatus(serviceId: String, orderId: String, completion: (TransakOrderInfoData?, BladeJSError?) -> Unit) {
+        val completionKey = getCompletionKey("getExchangeStatus")
+        deferCompletion(completionKey) { data: String, error: BladeJSError? ->
+            typicalDeferredCallback<TransakOrderInfoData, TransakOrderInfoResponse>(data, error, completion)
+        }
+        executeJS("bladeSdk.getExchangeStatus('${esc(serviceId)}', '${esc(orderId)}', '$completionKey')")
+    }
+
 
     /**
      * Swap tokens
