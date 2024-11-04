@@ -303,6 +303,30 @@ data class ICryptoFlowAsset(
     var imageUrl: String?,
 )
 
+data class TransakOrderInfoResponse(
+    override var completionKey: String,
+    override var data: TransakOrderInfoData
+): Result<TransakOrderInfoData>
+
+data class TransakOrderInfoData(
+    var orderId: String,
+    var status: String,
+    var walletAddress: String?,
+    var createdAt: String,
+    var autoExpiresAt: String,
+    var isBuyOrSell: String,
+    var network: String,
+    var notes: List<String>?,
+    var fiatCurrency: String,
+    var fiatAmount: Double,
+    var cryptoCurrency: String,
+    var cryptoAmount: Double,
+    var conversionPrice: Double?,
+    var slippage: Double?,
+    var totalFeeInFiat: Double,
+    var totalFee: Double?,
+)
+
 data class ResultResponse(
     override var completionKey: String,
     override var data: ResultData
