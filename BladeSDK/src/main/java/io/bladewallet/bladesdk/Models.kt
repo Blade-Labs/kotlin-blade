@@ -309,96 +309,23 @@ data class TransakOrderInfoResponse(
 ): Result<TransakOrderInfoData>
 
 data class TransakOrderInfoData(
-    val meta: Meta,
-    val data: Data
-) {
-    data class Meta(
-        val orderId: String
-    )
-
-    data class Data(
-        val id: String,
-        val createdAt: String,
-        val status: String,
-        val fiatCurrency: String,
-        val cryptoCurrency: String,
-        val isBuyOrSell: String,
-        val fiatAmount: Double,
-        val amountPaid: Double,
-        val paymentOptionId: String,
-        val quoteId: String,
-        val network: String,
-        val conversionPriceData: ConversionPriceData,
-        val autoExpiresAt: String,
-        val stateCode: String,
-        val orderChannelType: String,
-        val userKycType: String,
-        val cardId: String,
-        val conversionPrice: Double,
-        val cryptoAmount: Double,
-        val totalFeeInFiat: Double,
-        val fiatAmountInUsd: Double,
-        val countryCode: String,
-        val cryptoPaymentData: CryptoPaymentData,
-        val cardDetails: CardDetails,
-        val statusHistories: List<StatusHistory>
-    ) {
-        data class ConversionPriceData(
-            val conversionPrice: Double,
-            val cryptoAmount: Double,
-            val fiatAmountInUsd: Double,
-            val id: String,
-            val createdAt: String,
-            val fiatCurrency: String,
-            val cryptoCurrency: String,
-            val paymentMethod: String,
-            val fiatAmount: Double,
-            val network: String,
-            val isBuyOrSell: String,
-            val marketConversionPrice: Double,
-            val slippage: Double,
-            val cryptoLiquidityProvider: String,
-            val sourceTokenAmount: Double,
-            val sourceToken: String,
-            val fiatFeeAmount: Double,
-            val feeDecimal: Double,
-            val internalFees: List<InternalFee>
-        ) {
-            data class InternalFee(
-                val name: String,
-                val id: String,
-                val value: Double
-            )
-        }
-
-        data class CryptoPaymentData(
-            val paymentAddress: String
-        )
-
-        data class CardDetails(
-            val _id: String,
-            val userId: String,
-            val id: String,
-            val issuer: String,
-            val issuer_country: String,
-            val scheme: String,
-            val last4: String,
-            val card_type: String,
-            val expiry_month: Int,
-            val expiry_year: Int,
-            val moneyTransferType: String,
-            val isPayoutAllowed: Boolean
-        )
-
-        data class StatusHistory(
-            val status: String,
-            val createdAt: String,
-            val message: String,
-            val isEmailSentToUser: Boolean,
-            val partnerEventId: String
-        )
-    }
-}
+    var orderId: String,
+    var status: String,
+    var walletAddress: String?,
+    var createdAt: String,
+    var autoExpiresAt: String,
+    var isBuyOrSell: String,
+    var network: String,
+    var notes: List<String>?,
+    var fiatCurrency: String,
+    var fiatAmount: Double,
+    var cryptoCurrency: String,
+    var cryptoAmount: Double,
+    var conversionPrice: Double?,
+    var slippage: Double?,
+    var totalFeeInFiat: Double,
+    var totalFee: Double?,
+)
 
 data class ResultResponse(
     override var completionKey: String,
