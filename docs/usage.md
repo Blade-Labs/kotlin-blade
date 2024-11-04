@@ -29,9 +29,11 @@
 * [getC14url](usage.md#getc14url)
 * [exchangeGetQuotes](usage.md#exchangegetquotes)
 * [getTradeUrl](usage.md#gettradeurl)
+* [getExchangeStatus](usage.md#getexchangestatus)
 * [swapTokens](usage.md#swaptokens)
 * [createToken](usage.md#createtoken)
 * [associateToken](usage.md#associatetoken)
+* [brokenMnemonicEmergencyTransfer](usage.md#brokenmnemonicemergencytransfer)
 * [nftMint](usage.md#nftmint)
 * [cleanup](usage.md#cleanup)
 * [postMessage](usage.md#postmessage)
@@ -960,7 +962,7 @@ Get quotes from different services for buy, sell or swap
 
 #### Returns
 
-`SwapQuotesData` - quotes from different provider
+`SwapQuotesData` - quotes from different providers
 
 #### Example
 
@@ -1015,11 +1017,37 @@ Blade.getTradeUrl(
 }
 ```
 
+## getExchangeStatus
+
+Get exchange order status
+
+`getExchangeStatus (serviceId: String, orderId: String, completion: (TransakOrderInfoData?, BladeJSError?) -> Unit)`
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------| ----------- |
+| `serviceId` | `String` | service id to use for swap (saucerswap, onmeta, etc) |
+| `orderId` | `String` | order id of operation |
+| `completion` | `(TransakOrderInfoData?,BladeJSError?)->Unit` | callback function, with result of IntegrationUrlData or BladeJSError |
+
+#### Returns
+
+{TransakOrderInfoData}
+
+#### Example
+
+```kotlin
+Blade.getExchangeStatus("transak", "abaf28be-609f-49f4-a09a-e8e7ea7c8bd9") { result, error ->
+    println(result ?: error)
+}
+```
+
 ## swapTokens
 
 Swap tokens
 
-`swapTokens (accountId: String, accountPrivateKey: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (ResultData?, BladeJSError?) -> Unit)`
+`swapTokens (accountId: String, accountPrivateKey: String, sourceCode: String, sourceAmount: Double, targetCode: String, slippage: Double, serviceId: String, completion: (SwapResultData?, BladeJSError?) -> Unit)`
 
 #### Parameters
 
@@ -1032,11 +1060,11 @@ Swap tokens
 | `targetCode` | `String` | name (HBAR, KARATE, other token code) |
 | `slippage` | `Double` | slippage in percents. Transaction will revert if the price changes unfavorably by more than this percentage. |
 | `serviceId` | `String` | service id to use for swap (saucerswap, etc) |
-| `completion` | `(ResultData?,BladeJSError?)->Unit` | callback function, with result of ResultData or BladeJSError |
+| `completion` | `(SwapResultData?,BladeJSError?)->Unit` | callback function, with result of SwapResultData or BladeJSError |
 
 #### Returns
 
-`ResultData` - swap result
+`SwapResultData` - swap result
 
 #### Example
 
@@ -1108,13 +1136,13 @@ Blade.createToken(
 
 Associate token to account. Association fee will be covered by PayMaster, if tokenId configured in dApp
 
-`associateToken ( tokenId: String, accountId: String, accountPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
+`associateToken ( tokenIdOrCampaign: String, accountId: String, accountPrivateKey: String, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
 
 #### Parameters
 
 | Name | Type | Description |
 |------|------| ----------- |
-| `tokenId` | `String` | token id to associate. Empty to associate all tokens configured in dApp |
+| `tokenIdOrCampaign` | `String` | token id to associate. Empty to associate all tokens configured in dApp.  Campaign name to associate on demand |
 | `accountId` | `String` | account id to associate token |
 | `accountPrivateKey` | `String` | account private key |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
@@ -1127,9 +1155,58 @@ Associate token to account. Association fee will be covered by PayMaster, if tok
 
 ```kotlin
 Blade.associateToken(
-    tokenId = "0.0.1337",
+    tokenIdOrCampaign = "0.0.1337",
     accountId = "0.0.10001",
     accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
+) { result, error ->
+    println(result ?: error)
+}
+```
+
+## brokenMnemonicEmergencyTransfer
+
+Emergency balance transfer from broken mnemonic account to new account
+
+* Accounts with broken mnemonic sometimes were created because of hedera-sdk issue
+
+* To transfer funds from broken mnemonic account to new account a couple of steps required:
+
+* 1. Create new account
+
+* 2. Associate all tokens with new account that you want to transfer
+
+* 3. Call this method to transfer funds to new account
+
+* 4. Send some HBAR to broken mnemonic account to cover fees if needed
+
+`brokenMnemonicEmergencyTransfer ( seedPhrase: String, accountId: String, receiverId: String, hbarAmount: String, tokenList: List<String>, checkOnly: Boolean, completion: (EmergencyTransferData?, BladeJSError?) -> Unit )`
+
+#### Parameters
+
+| Name | Type | Description |
+|------|------| ----------- |
+| `seedPhrase` | `String` | mnemonic from account |
+| `accountId` | `String` | account id (broken) |
+| `receiverId` | `String` | new account id |
+| `hbarAmount` | `String` | amount of HBAR to resque. Can be 0 |
+| `tokenList` | `List<String>` | list of token ids to transfer all tokens. Up to 9 at once. Can be empty |
+| `checkOnly` | `Boolean` | if true, will only check if mnemonic is broken. No transfer will be made |
+| `completion` | `(EmergencyTransferData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
+
+#### Returns
+
+`EmergencyTransferData` - receipt
+
+#### Example
+
+```kotlin
+Blade.brokenMnemonicEmergencyTransfer(
+    seedPhrase = "marriage bounce fiscal express wink wire trick allow faith mandate base bone",
+    accountId = "0.0.10001",
+    newAccountId = "0.0.234567",
+    hbarAmount = "0.5",
+    tokenList = listOf("0.0.1337"),
+    checkOnly = false
 ) { result, error ->
     println(result ?: error)
 }
@@ -1139,7 +1216,7 @@ Blade.associateToken(
 
 Mint one NFT
 
-`nftMint ( tokenId: String, supplyAccountId: String, supplyPrivateKey: String, file: String, metadata: Map<String, Any>, storageConfig: NFTStorageConfig, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
+`nftMint ( tokenId: String, supplyAccountId: String, supplyPrivateKey: String, file: String, metadata: Map<String, Any>, storageConfig: IPFSProviderConfig, completion: (TransactionReceiptData?, BladeJSError?) -> Unit )`
 
 #### Parameters
 
@@ -1150,7 +1227,7 @@ Mint one NFT
 | `supplyPrivateKey` | `String` | token supply private key |
 | `file` | `String` | image to mint (base64 DataUrl image, eg.: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAA...) |
 | `metadata` | `Map<String,Any>` | NFT metadata |
-| `storageConfig` | `NFTStorageConfig` | IPFS provider config |
+| `storageConfig` | `IPFSProviderConfig` | IPFS provider config |
 | `completion` | `(TransactionReceiptData?,BladeJSError?)->Unit` | callback function, with result of CreateTokenData or BladeJSError |
 
 #### Returns
