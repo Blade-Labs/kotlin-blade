@@ -33,7 +33,6 @@
 * [swapTokens](usage.md#swaptokens)
 * [createToken](usage.md#createtoken)
 * [associateToken](usage.md#associatetoken)
-* [brokenMnemonicEmergencyTransfer](usage.md#brokenmnemonicemergencytransfer)
 * [nftMint](usage.md#nftmint)
 * [cleanup](usage.md#cleanup)
 * [postMessage](usage.md#postmessage)
@@ -1158,55 +1157,6 @@ Blade.associateToken(
     tokenIdOrCampaign = "0.0.1337",
     accountId = "0.0.10001",
     accountPrivateKey = "302d300706052b8104000a032200029dc73991b0d9cd..."
-) { result, error ->
-    println(result ?: error)
-}
-```
-
-## brokenMnemonicEmergencyTransfer
-
-Emergency balance transfer from broken mnemonic account to new account
-
-* Accounts with broken mnemonic sometimes were created because of hedera-sdk issue
-
-* To transfer funds from broken mnemonic account to new account a couple of steps required:
-
-* 1. Create new account
-
-* 2. Associate all tokens with new account that you want to transfer
-
-* 3. Call this method to transfer funds to new account
-
-* 4. Send some HBAR to broken mnemonic account to cover fees if needed
-
-`brokenMnemonicEmergencyTransfer ( seedPhrase: String, accountId: String, receiverId: String, hbarAmount: String, tokenList: List<String>, checkOnly: Boolean, completion: (EmergencyTransferData?, BladeJSError?) -> Unit )`
-
-#### Parameters
-
-| Name | Type | Description |
-|------|------| ----------- |
-| `seedPhrase` | `String` | mnemonic from account |
-| `accountId` | `String` | account id (broken) |
-| `receiverId` | `String` | new account id |
-| `hbarAmount` | `String` | amount of HBAR to resque. Can be 0 |
-| `tokenList` | `List<String>` | list of token ids to transfer all tokens. Up to 9 at once. Can be empty |
-| `checkOnly` | `Boolean` | if true, will only check if mnemonic is broken. No transfer will be made |
-| `completion` | `(EmergencyTransferData?,BladeJSError?)->Unit` | callback function, with result of TransactionReceiptData or BladeJSError |
-
-#### Returns
-
-`EmergencyTransferData` - receipt
-
-#### Example
-
-```kotlin
-Blade.brokenMnemonicEmergencyTransfer(
-    seedPhrase = "marriage bounce fiscal express wink wire trick allow faith mandate base bone",
-    accountId = "0.0.10001",
-    newAccountId = "0.0.234567",
-    hbarAmount = "0.5",
-    tokenList = listOf("0.0.1337"),
-    checkOnly = false
 ) { result, error ->
     println(result ?: error)
 }
